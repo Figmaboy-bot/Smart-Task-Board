@@ -1,0 +1,99 @@
+.otp-page {
+    min-height: 100vh;
+    background: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+img {
+    background-color: transparent;
+    color: var(--color-white);
+}
+
+.back-img {
+    padding: 12px 12px;
+    background-color: var(--primary-50);
+    border-radius: 200px;
+    display: flex;
+}
+
+.Back-Arrow {
+    position: absolute;
+    top: 10rem;
+    left: 25rem;
+} 
+
+.otp-container {
+    width: 30%;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.otp-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.otp-inputs input {
+    width: 100%;
+    height: 56px;
+    font-size: 24px;
+    text-align: center;
+    border-radius: 8px;
+    border: none;
+    background: var(--color-white);
+    color: var(--primary-50);
+    outline: 1px solid var(--grey-10);
+}
+
+input ::placeholder{
+    font-size: 24px;
+    color: green;
+}
+
+.otp-inputs input:focus {
+    outline-color: var(--primary-50);
+    background-color: var(--primary-0);
+    color: var(--primary-50);
+}
+
+.otp-inputs input:-webkit-autofill,
+.otp-inputs input:-webkit-autofill:hover,
+.otp-inputs input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px var(--grey-20) inset !important;
+    -webkit-text-fill-color: var(--primary-10) !important;
+    background-color: var(--grey-20) !important;
+    color: var(--primary-50);
+}
+
+h2 {
+    margin-bottom: 0.25rem;
+}
+
+p {
+    color: var(--grey-20);
+    margin-bottom: 1rem;
+}
+
+
+.error {
+    color: #f87171;
+    margin-top: 1rem;
+}
+
+.Verify-Button {
+    background-color: var(--primary-50);
+    color: var(--color-white);
+    font-size: 14px;
+    padding: 16px 40px;
+    width: 100%;
+    border: none;
+    margin-top: 2rem;
+    border-radius: 0.65rem;
+}

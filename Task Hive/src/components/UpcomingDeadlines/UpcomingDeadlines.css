@@ -1,0 +1,189 @@
+.tasks-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-top: 20px;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.tasks-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.carousel-controls {
+    display: flex;
+    gap: 8px;
+}
+
+/* Carousel navigation buttons */
+.carousel-button {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-button:hover {
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+}
+
+.carousel-button:active {
+    transform: scale(0.95);
+}
+
+.carousel-button svg {
+    width: 18px;
+    height: 18px;
+    color: #6B7280;
+}
+
+/* Carousel wrapper */
+.tasks-carousel {
+    position: relative;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    width: 100%;
+}
+
+
+.tasks-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: hidden; /* Hide horizontal scroll */
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    padding: 10px 0;
+    width: 100%;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tasks-track::-webkit-scrollbar {
+    display: none;
+}
+
+.task {
+    flex: 0 0 350px;
+    max-width: 350px;
+    width: 350px;
+    background: var(--color-background);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tag-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: #F3F4F6;
+    color: #374151;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.statuscircle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.status {
+    font-size: 12px;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.task-body {
+    margin-bottom: 20px;
+}
+
+.task-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.task-subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.5;
+}
+
+.task-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 14px;
+    color: #111827;
+    font-weight: 500;
+}
+
+.who {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+.datetime,
+.links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.datetime-icon {
+    width: 16px;
+    height: 16px;
+    color: #6B7280;
+}
+
+.datetime-text,
+.linkamount {
+    font-size: 14px;
+    color: #6B7280;
+}

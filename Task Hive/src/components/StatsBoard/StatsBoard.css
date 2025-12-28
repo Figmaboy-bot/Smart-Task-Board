@@ -1,0 +1,73 @@
+.Task-container {
+    background-color: var(--color-background);
+    padding: 20px;
+    border-radius: 20px;
+    margin-top: 28px;
+}
+
+.Task-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.Task {
+    width: 100%;
+}
+
+.Task--featured {
+    border-left: 1px solid var(--grey-0);
+    padding-left: 20px;
+  }
+
+.Title-Value {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.Title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--grey-40);
+}
+
+.Value {
+    font-size: 32px;
+    font-weight: 500;
+}
+
+.stat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.statDetails {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+}
+
+.statpositive {
+    color: var(--success-50);
+}
+
+.stat-container .statnegative {
+    color: var(--error-50) !important;
+}
+
+.ArrowUp {
+    width: 24px;
+    color: var(--success-50);
+}
+
+.ArrowDown {
+    width: 24px;
+    color: var(--error-50);
+}
+
+.stat-subtext {
+    font-family: 14px;
+    font-weight: 400;
+}
