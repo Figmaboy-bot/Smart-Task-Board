@@ -104,7 +104,7 @@ export function UpcomingDeadlines() {
                             <div key={index} className="task">
                                 <div className="tag-status">
                                     <div className="tag">{tasks.tag}</div>
-                                    <>
+                                    <div className="status-container">
                                         <div className="statuscircle" style={{
                                             backgroundColor:
                                                 tasks.status === 'Overdue alert' ? '#EF4444' :
@@ -113,7 +113,7 @@ export function UpcomingDeadlines() {
                                                             '#6B7280'
                                         }}></div>
                                         <div className="status">{tasks.status}</div>
-                                    </>
+                                    </div>
                                 </div>
                                 <div className="task-body">
                                     <h4 className="task-title">
