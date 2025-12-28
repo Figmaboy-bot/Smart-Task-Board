@@ -146,7 +146,7 @@ export function TeamActivity() {
 										</div>
 										<div>
 											<div className="task-name">{task.title}</div>
-											<div className="task-desc">{task.desc}</div>
+											<div className="task-description">{task.desc}</div>
 										</div>
 									</div>
 									<div className="task-footer-row">
@@ -170,27 +170,27 @@ export function TeamActivity() {
 				) : (
 					<div className="activity-list-view">
 						<table className="activity-table">
-							<thead>
-								<tr>
-									<th>Task</th>
-									<th>Status</th>
-									<th>Description</th>
-									<th>Assigned</th>
-									<th>Date</th>
-									<th>Links</th>
-									<th>Column</th>
+							<thead className="thead">
+								<tr className="Tableheader">
+									<th className="Task">Task</th>
+									<th className="Status">Status</th>
+									<th className="Description">Description</th>
+									<th className="Assigned">Assigned</th>
+									<th className="Date">Date</th>
+									<th className="Links">Links</th>
+									<th className="Action">Action</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody className="tbody">
 								{columns.flatMap((col) =>
 									col.tasks.map((task, j) => (
 										<tr key={col.title + j}>
-											<td>{task.title}</td>
+											<td className="table-title">{task.title}</td>
 											<td>
 												<span className="task-status-dot" style={{ background: task.statusColor, display: 'inline-block', marginRight: 6 }}></span>
 												{task.status}
 											</td>
-											<td>{task.desc}</td>
+											<td className="table-desc">{task.desc}</td>
 											<td style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
 												<img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
 												{task.user.name}

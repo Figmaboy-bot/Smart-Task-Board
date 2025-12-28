@@ -157,16 +157,17 @@
     margin-right: 6px;
     display: inline-block;
 }
-.task-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #222b45;
+.deadline-task-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-black);
     margin-bottom: 2px;
     letter-spacing: -0.2px;
 }
-.task-desc {
+.deadline-task-subtitle {
     font-size: 14px;
-    color: #6b7a90;
+    font-weight: 400;
+    color: var(--grey-30);
     opacity: 1;
     margin-bottom: 0;
     font-weight: 400;

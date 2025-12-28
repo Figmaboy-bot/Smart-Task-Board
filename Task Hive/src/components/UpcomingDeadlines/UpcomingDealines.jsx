@@ -116,11 +116,11 @@ export function UpcomingDeadlines() {
                                     </div>
                                 </div>
                                 <div className="task-body">
-                                    <h4 className="task-title">
+                                    <h4 className="deadline-task-title">
                                         {tasks.title}
                                     </h4>
 
-                                    <p className="task-subtitle">
+                                    <p className="deadline-task-subtitle">
                                         {tasks.subtitle}
                                     </p>
                                 </div>
