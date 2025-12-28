@@ -31,11 +31,10 @@
 
 .tasks-header h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 400;
     color: var(--color-black);
     letter-spacing: -1px;
-    text-shadow: 0 1px 0 #fff;
 }
 
 .carousel-controls {

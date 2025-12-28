@@ -1,5 +1,5 @@
 import { useAuth } from "../../context/AuthContext"
-import Board from "../../components/Board"
+import TeamActivity from "../../components/TeamActivity/TeamActivity"
 import Sidebar from "../../components/Sidebar/Sidebar"
 import Header from "../../components/Header/Header"
 import './Dashboard.css'
@@ -18,7 +18,7 @@ function Dashboard() {
         <Greetings />
         <StatsDashboard />
         <UpcomingDeadlines />
-        <Board />
+        <TeamActivity />
       </div>
     </div>
   )
