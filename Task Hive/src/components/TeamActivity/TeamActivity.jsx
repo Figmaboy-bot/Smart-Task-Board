@@ -186,24 +186,22 @@ export function TeamActivity() {
 									col.tasks.map((task, j) => (
 										<tr key={col.title + j}>
 											<td className="table-title">{task.title}</td>
-											<td>
+											<td className="table-status">
 												<span className="task-status-dot" style={{ background: task.statusColor, display: 'inline-block', marginRight: 6 }}></span>
 												{task.status}
 											</td>
 											<td className="table-desc">{task.desc}</td>
-											<td style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+											<td className="table-user" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
 												<img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
 												{task.user.name}
 											</td>
-											<td>
-												<CalendarIcon className="task-footer-icon" style={{ width: 18, height: 18, marginRight: 4 }} />
+											<td className="table-date">
 												{task.date}
 											</td>
-											<td>
-												<LinkIcon className="task-footer-icon" style={{ width: 18, height: 18, marginRight: 4 }} />
+											<td className="table-links">
 												{task.links}
 											</td>
-											<td>{col.title}</td>
+											<td className="table-actions">{col.title}</td>
 										</tr>
 									))
 								)}

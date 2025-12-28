@@ -11,5 +11,6 @@
     border-radius: 16px;
     display: flex;
     flex-direction: column;
+    align-content: flex-start;
     width: 100%;
   }

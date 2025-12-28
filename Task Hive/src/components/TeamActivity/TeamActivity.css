@@ -1,89 +1,241 @@
-.activity-table td.table-title, .activity-table th.table-title {
-    max-width: 10vw;
-    width: 10vw;
-    height: 100%;
-    padding: 0;
-    overflow: hidden;
+.activity-table > tbody > tr:last-child > td {
+    border-bottom: none !important;
 }
-/* Truncate long description in table */
-.table-desc {
-    font-size: 14px;
-    max-width: 30vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
+.activity-table tbody tr:last-child td {
+    border-bottom: none;
 }
-
-.table-title {
-    max-width: 20vw;
-    width: 20vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-}
-/* Activity List Table Styles */
-.activity-list-view {
+/* --- Premium Task Table Styles for Team Activity --- */
+.team-activity-table-container {
     width: 100%;
-    overflow-x: auto;
-    margin-top: 24px;
-    border-radius: 20px;
-    background: #fff;
-    box-shadow: 0 8px 32px 0 rgba(80, 80, 120, 0.10), 0 1.5px 6px 0 rgba(80, 80, 120, 0.08);
-    padding: 0;
-    border: 1.5px solid #e5e7eb;
+    max-width: 1280px;
+    background: #fafdff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+    padding: 1.2rem 0.7rem;
+    margin: 0.5rem 0;
+    border: 1.5px solid #dbeafe;
 }
 
 .activity-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    font-size: 1.08rem;
     background: transparent;
-    border-radius: 20px;
-    font-size: 16px;
+    table-layout: fixed;
+    overflow: hidden;
+}
+
+ .activity-table td {
+    font-size: 14px;
+    padding: 0rem 0rem 0rem 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    vertical-align: middle;
+    background: none;
+    word-break: break-word;
+}
+
+td.table-title {
+    padding: 0rem 0rem 0rem 0.9rem;
+}
+
+.activity-table th {
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    color: var(--grey-40);
+    border-top: none;
+}
+
+th.Task {
+    width: 20%;
+    padding: 0.9rem 0rem 0.9rem 0.9rem;
+}
+
+th.Status {
+    width: 10%;
+    padding: 0.9rem 0rem 0.9rem 0.9rem;
+}
+
+th.Description {
+    width: 30%;
+    padding: 0.9rem 0rem 0.9rem 0.9rem;
+}
+
+th.Assigned {
+    width: 15%;
+    padding: 0.9rem 0rem 0.9rem 0.9rem;
+} 
+
+th.Date {
+    width: 15%;
+    padding: 0.9rem 0rem 0.9rem 0.9rem;
+}
+
+th.Links {
+    width: 10%;
+    padding: 0.9rem 0rem 0.9rem 0.9rem;
+}
+
+th.Action {
+    width: 10%;
+    padding: 0.9rem 0rem 0.9rem 0.9rem;
+}
+
+
+.activity-table tbody tr:nth-child(even) {
+    background: #f7fafd;
+}
+
+
+/* Action buttons styling */
+.activity-table .action-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
+    align-items: center;
+    justify-content: flex-end;
+}
+.activity-table .action-btn {
+    background: none;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #5a6473;
+    font-size: 1.3rem;
+}
+
+
+.activity-table button {
+    padding: 0.45rem 1.3rem;
+    border: none;
+    border-radius: 8px;
+    background: #1976d2;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+    outline: none;
+}
+
+.activity-table a {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 500;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin-bottom: 2px;
+}
+
+@media (max-width: 900px) {
+    .team-activity-table-container {
+        padding: 1.2rem 0.2rem;
+        max-width: 99vw;
+    }
+    .activity-table th, .activity-table td {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.98rem;
+    }
+    .activity-table a {
+        max-width: 80px;
+    }
+}
+/* Truncate long description in table */
+.table-desc {
+    font-size: 12px;
+    max-width: 30%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    text-align: left;
+}
+
+.table-title {
+    width: 20%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    padding: 0rem 0rem 0.9rem 0.9rem;
+}
+
+.table-status {
+    width: 10%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.table-user {
+    width: 15%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.table-date {
+    width: 15%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.table-links {
+    width: 10%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+
+}
+
+.table-actions {
+    width: 10%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+tbody:last-child {
+    border-bottom: none;
+}
+
+
+/* Activity List Table Styles */
+.activity-list-view {
+    width: 100%;
+    overflow-x: auto;
+    background: #fff;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid var(--grey-0);
+}
+
+.activity-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
     margin: 0 auto;
     min-width: 900px;
     overflow: hidden;
     box-shadow: none;
-}
-
-.activity-table th {
-    background: linear-gradient(90deg, #f7fafd 60%, #f3f6fa 100%);
-    color: #23272f;
-    font-weight: 700;
-    padding: 22px 20px 20px 20px;
-    text-align: left;
-    border-bottom: 2px solid #e5e7eb;
-    font-size: 16.5px;
-    letter-spacing: 0.12px;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
-    box-shadow: 0 2px 8px 0 rgba(80, 80, 120, 0.03);
-}
-
-.activity-table tr {
-    transition: background 0.13s;
-    background: #fff;
-    border-radius: 16px;
-}
-
-.activity-table td {
-    padding: 16px 16px;
-    border-bottom: 1.5px solid #f3f6fa;
-    color: #23272f;
-    vertical-align: middle;
-    font-size: 14px;
-    background: #fff;
-}
-
-.activity-table tbody tr:hover {
-    background: #f7fafd;
-    box-shadow: 0 2px 12px 0 rgba(80, 80, 120, 0.06);
-    z-index: 1;
 }
 
 /* Pill status style */
@@ -99,7 +251,6 @@
     font-size: 15.5px;
     border: 1.5px solid #22c55e;
     box-shadow: 0 1px 4px 0 rgba(34,197,94,0.07);
-    transition: background 0.15s, color 0.15s, border 0.15s;
 }
 .table-status-pill.inactive {
     background: #fff0f0;
@@ -365,19 +516,23 @@
     display: inline-block;
 }
 
-.thead {
-    background-color: var(--color-background);
-    width: 100%;
-}
 
-.Tableheader {
+.thead {
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     font-size: 12px;
     color: var(--grey-20);
-    margin-bottom: 12px;
+    background-color: var(--color-background);
+    font-size: 12px !important;
     font-weight: 400;
+}
+
+.Tableheader {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 }
 
 .Task,
@@ -388,15 +543,28 @@
 .Links,
 .Action {
     font-weight: 400;
-    border-radius: 12px;
     display: flex;
     flex-direction: column;
     text-align: left;
+    width: 100%;
+    background-color: none !important;
 }
 
 .tbody {
     width: 100%;
     font-size: 12px;
+}
+
+.tbody tr {
+    width: 100%;
+    padding: 12px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--color-black);
+    border-bottom: 1px solid #e5e7eb;
 }
 
 

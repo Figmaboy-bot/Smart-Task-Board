@@ -16,6 +16,7 @@
 .tasks-container {
     width: 100%;
     max-width: 75vw;
+    min-width: 75vw;
     margin: 32px auto 0 auto;
     background: #fff;
     overflow-x: hidden;
@@ -39,13 +40,13 @@
 
 .carousel-controls {
     display: flex;
-    gap: 12px;
+    gap: 8px;
 }
 
 .carousel-button {
-    background: #f7fafd;
-    border: 1.5px solid #c7d2fe;
-    border-radius: 10px;
+    background: var(--color-background);
+    border: none;
+    border-radius: 100px;
     width: 40px;
     height: 40px;
     display: flex;
@@ -53,26 +54,32 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.18s cubic-bezier(.4,0,.2,1);
-    box-shadow: 0 2px 8px rgba(80, 80, 120, 0.08);
     outline: none;
 }
 
 .carousel-button:hover {
-    background: #eef2ff;
-    border-color: #6366f1;
-    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.10);
+    background: var(--primary-20);
 }
 
 .carousel-button:active {
     transform: scale(0.93);
-    background: #e0e7ff;
-    border-color: #6366f1;
+    background: var(--primary-50);
+    color: var(--color-white);
+    border-color: none;
 }
 
-.carousel-button svg {
+.carousel-control-icon:active {
+    color: var(--color-white);
+}
+
+.carousel-control-icon {
     width: 20px;
     height: 20px;
-    color: #6366f1;
+    color: var(--grey-40);
+}
+
+.carousel-control-icon:hover {
+    color: var(--primary-50);
 }
 
 .tasks-carousel {
@@ -113,7 +120,13 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    justify-content: space-between;
+}
+
+.task-body-top {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .tag-status {
@@ -229,7 +242,7 @@
 .profile {
     display: flex;
     flex-direction: row;
-    align-content: center;
+    align-items: center;
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
@@ -258,8 +271,8 @@
 }
 
 .datetime-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     color: var(--grey-40);
 }
 

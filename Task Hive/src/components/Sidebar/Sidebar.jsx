@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import './Sidebar.css';
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -66,6 +66,26 @@ function Sidebar() {
         { name: "Theme", icon: MoonIcon, hasToggle: true },
     ]
 
+    // Dropdown workspace options
+    const workspaceOptions = [
+        { name: "Personal Workspace", email: "personal@email.com" },
+        { name: "Design Team", email: "designteam@email.com" },
+        { name: "Dev Workspace", email: "devworkspace@email.com" },
+    ];
+
+    // Close dropdown on outside click
+    React.useEffect(() => {
+        if (!showWorkspaceDropdown) return;
+        function handleClick(e) {
+            if (!document.querySelector('.workspace-dropdown-menu')?.contains(e.target) &&
+                !document.querySelector('.workspace-dropdown')?.contains(e.target)) {
+                setShowWorkspaceDropdown(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [showWorkspaceDropdown]);
+
     return (
         <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             {/* Toggle Button */}
@@ -79,14 +99,10 @@ function Sidebar() {
             </button>
 
             {/* Workspace Header */}
-            <div className="sidebar-workspace">
+            <div className="sidebar-workspace" style={{ position: 'relative' }}>
                 <div className="workspace-logo">
                     <div className="workspace-icon">
-                        <div className="workspace-grid">
-                            {[...Array(8)].map((_, i) => (
-                                <div key={i} className="grid-square"></div>
-                            ))}
-                        </div>
+                        <img className="workspace-icon" src="/workspace-icon.svg" alt="Workspace Logo" />
                     </div>
                 </div>
                 {!isCollapsed && (
@@ -100,10 +116,45 @@ function Sidebar() {
                         className="workspace-dropdown"
                         onClick={() => setShowWorkspaceDropdown(!showWorkspaceDropdown)}
                         type="button"
+                        aria-haspopup="listbox"
+                        aria-expanded={showWorkspaceDropdown}
                     >
-                        <ChevronUpIcon />
-                        <ChevronDownIcon />
+                        {showWorkspaceDropdown ? <ChevronUpIcon /> : <ChevronDownIcon />}
                     </button>
+                )}
+                {/* Dropdown menu */}
+                {showWorkspaceDropdown && !isCollapsed && (
+                    <div className="workspace-dropdown-menu" style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        background: '#fff',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 16px rgba(44,62,80,0.10)',
+                        marginTop: '8px',
+                        zIndex: 100,
+                        minWidth: '220px',
+                        padding: '8px 0',
+                    }}>
+                        {workspaceOptions.map((ws, idx) => (
+                            <div key={ws.email} style={{
+                                padding: '10px 18px',
+                                cursor: 'pointer',
+                                borderBottom: idx !== workspaceOptions.length - 1 ? '1px solid #f1f5f9' : 'none',
+                                background: '#fff',
+                                transition: 'background 0.13s',
+                            }}
+                                className="workspace-dropdown-item"
+                                tabIndex={0}
+                                role="option"
+                                aria-selected={ws.name === 'Design Team'}
+                            >
+                                <div style={{ fontWeight: 600, color: '#232946', fontSize: '15px' }}>{ws.name}</div>
+                                <div style={{ color: '#7b8ca6', fontSize: '13px' }}>{ws.email}</div>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
 

@@ -82,47 +82,49 @@ export function UpcomingDeadlines() {
             <div className="tasks-header">
                 <h2>Upcoming Deadlines</h2>
                 <div className="carousel-controls">
-                    <button 
+                    <button
                         className="carousel-button"
                         onClick={() => scroll('left')}
                     >
-                        <ChevronLeftIcon />
+                        <ChevronLeftIcon className='carousel-control-icon' />
                     </button>
-                    <button 
+                    <button
                         className="carousel-button"
                         onClick={() => scroll('right')}
                     >
-                        <ChevronRightIcon />
+                        <ChevronRightIcon className='carousel-control-icon' />
                     </button>
                 </div>
             </div>
-            
+
             <div className="tasks-carousel">
                 <div className="tasks-track" ref={trackRef}>
                     {tasks.map((tasks, index) => {
                         return (
                             <div key={index} className="task">
-                                <div className="tag-status">
-                                    <div className="tag">{tasks.tag}</div>
-                                    <div className="status-container">
-                                        <div className="statuscircle" style={{
-                                            backgroundColor:
-                                                tasks.status === 'Overdue alert' ? '#EF4444' :
-                                                    tasks.status === 'High Priority' ? '#FBBC05' :
-                                                        tasks.status === 'On Track' ? '#10B981' :
-                                                            '#6B7280'
-                                        }}></div>
-                                        <div className="status">{tasks.status}</div>
+                                <div className="task-body-top">
+                                    <div className="tag-status">
+                                        <div className="tag">{tasks.tag}</div>
+                                        <div className="status-container">
+                                            <div className="statuscircle" style={{
+                                                backgroundColor:
+                                                    tasks.status === 'Overdue alert' ? '#EF4444' :
+                                                        tasks.status === 'High Priority' ? '#FBBC05' :
+                                                            tasks.status === 'On Track' ? '#10B981' :
+                                                                '#6B7280'
+                                            }}></div>
+                                            <div className="status">{tasks.status}</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="task-body">
-                                    <h4 className="deadline-task-title">
-                                        {tasks.title}
-                                    </h4>
+                                    <div className="task-body">
+                                        <h4 className="deadline-task-title">
+                                            {tasks.title}
+                                        </h4>
 
-                                    <p className="deadline-task-subtitle">
-                                        {tasks.subtitle}
-                                    </p>
+                                        <p className="deadline-task-subtitle">
+                                            {tasks.subtitle}
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div className="task-footer">
