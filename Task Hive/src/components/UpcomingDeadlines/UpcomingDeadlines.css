@@ -265,6 +265,7 @@
 .datetime {
     display: flex;
     align-items: center;
+    align-content: center;
     gap: 4px;
     font-size: 14px;
     color: var(--grey-70);
@@ -276,10 +277,20 @@
     color: var(--grey-40);
 }
 
+.datetime-texts {
+    font-size: 14px;
+    margin: 0;
+}
+
 .links {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.link-amount {
+    font-size: 14px;
+    margin: 0;
 }
 
 @media (max-width: 700px) {

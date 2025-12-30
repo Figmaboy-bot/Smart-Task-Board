@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './Sidebar.css';
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
     HomeIcon,
     CheckCircleIcon,
@@ -22,9 +22,30 @@ import {
 } from "@heroicons/react/24/outline";
 
 function Sidebar() {
+            // User & settings items
+            const settingsItems = [
+                { name: "Settings", icon: Cog6ToothIcon },
+                { name: "Theme", icon: MoonIcon, hasToggle: true },
+            ];
+        // Main navigation items
+        const navItems = [
+            { name: "Dashboard", icon: HomeIcon },
+            { name: "My Tasks", icon: CheckCircleIcon },
+            { name: "All Tasks", icon: ClipboardDocumentListIcon },
+            { name: "Projects", icon: FolderIcon },
+            { name: "Teams", icon: UserGroupIcon },
+            { name: "Calendar", icon: CalendarDaysIcon },
+            { name: "Reports & Insights", icon: ChartBarIcon },
+        ];
+
+        // Collaboration & notifications items
+        const collaborationItems = [
+            { name: "Messages", icon: ChatBubbleLeftRightIcon },
+            { name: "Notifications", icon: BellIcon },
+        ];
     const { user, logout } = useAuth()
     const navigate = useNavigate()
-    const [activeItem, setActiveItem] = useState("Dashboard")
+    const location = useLocation();
     const [isThemeOn, setIsThemeOn] = useState(true)
     const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
@@ -38,33 +59,26 @@ function Sidebar() {
         }
     }
 
+    // Map nav item names to routes
+    const navRoutes = {
+        "Dashboard": "/",
+        "My Tasks": "/my-tasks",
+        "All Tasks": "/all-tasks",
+        "Projects": "/projects",
+        "Teams": "/teams",
+        "Calendar": "/calendar",
+        "Reports & Insights": "/reports-insights",
+    };
+
     const handleNavClick = (item) => {
-        setActiveItem(item)
+        if (navRoutes[item]) {
+            navigate(navRoutes[item]);
+        }
     }
 
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed)
     }
-
-    const navItems = [
-        { name: "Dashboard", icon: HomeIcon },
-        { name: "My Tasks", icon: CheckCircleIcon },
-        { name: "All Tasks", icon: ClipboardDocumentListIcon },
-        { name: "Projects", icon: FolderIcon },
-        { name: "Teams", icon: UserGroupIcon },
-        { name: "Calendar", icon: CalendarDaysIcon },
-        { name: "Reports & Insights", icon: ChartBarIcon },
-    ]
-
-    const collaborationItems = [
-        { name: "Messages", icon: ChatBubbleLeftRightIcon },
-        { name: "Notifications", icon: BellIcon },
-    ]
-
-    const settingsItems = [
-        { name: "Settings", icon: Cog6ToothIcon },
-        { name: "Theme", icon: MoonIcon, hasToggle: true },
-    ]
 
     // Dropdown workspace options
     const workspaceOptions = [
@@ -162,8 +176,10 @@ function Sidebar() {
                 {/* Main Navigation */}
                 <nav className="sidebar-nav">
                     {navItems.map((item) => {
-                        const Icon = item.icon
-                        const isActive = activeItem === item.name
+                        const Icon = item.icon;
+                        const route = navRoutes[item.name];
+                        // Active if current location matches route (Dashboard is special: only active on exact "/")
+                        const isActive = location.pathname === route || (item.name === "Dashboard" && location.pathname === "/");
                         return (
                             <button
                                 key={item.name}
@@ -175,7 +191,7 @@ function Sidebar() {
                                 <Icon className="nav-icon" />
                                 {!isCollapsed && <span>{item.name}</span>}
                             </button>
-                        )
+                        );
                     })}
                 </nav>
 

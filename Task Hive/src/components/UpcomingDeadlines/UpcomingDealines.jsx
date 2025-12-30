@@ -135,12 +135,12 @@ export function UpcomingDeadlines() {
 
                                     <div className="datetime">
                                         <CalendarIcon className='datetime-icon' />
-                                        <p className="datetime-text">{tasks.datetime}</p>
+                                        <p className="datetime-texts">{tasks.datetime}</p>
                                     </div>
 
                                     <div className="links">
                                         <LinkIcon className='datetime-icon' />
-                                        <p className="linkamount">{tasks.link}</p>
+                                        <p className="link-amount">{tasks.link}</p>
                                     </div>
                                 </div>
                             </div>
