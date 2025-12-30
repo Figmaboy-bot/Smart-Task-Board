@@ -107,6 +107,12 @@
   .form-input::placeholder {
     color: #9ca3af;
   }
+
+  .Password-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--grey-40);
+  }
   
   .submit-button {
     width: 100%;

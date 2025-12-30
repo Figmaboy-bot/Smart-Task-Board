@@ -73,6 +73,25 @@
     flex-direction: column;
     gap: 1.25rem;
   }
+
+  .password-toggle-btn {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.password-icon {
+  width: 20px;
+  height: 20px;
+}
   
   .form-group {
     display: flex;

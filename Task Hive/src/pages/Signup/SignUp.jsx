@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import './SignUp.css';
 import '../../index.css';
 import { Link } from "react-router-dom";
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ export default function SignUpForm() {
 
   const navigate = useNavigate();
   const { signup } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -28,14 +31,9 @@ export default function SignUpForm() {
       alert('Passwords do not match!');
       return;
     }
-    
-    // Generate OTP and store it with password
     signup(formData.email, formData.password);
-    
-    // Navigate to verify OTP page
     navigate("/verify-otp");
   };
-
 
   const handleGoogleSignUp = () => {
     console.log('Sign up with Google');
@@ -83,10 +81,11 @@ export default function SignUpForm() {
             </div>
 
             {/* Password Input */}
-            <div className="form-group">
+            <div className="form-group" >
               <label className="form-label">Password</label>
+              <div style={{ position: "relative" }}>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -94,13 +93,24 @@ export default function SignUpForm() {
                 className="form-input"
                 required
               />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword((prev) => !prev)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeSlashIcon className="password-icon" /> : <EyeIcon className="password-icon" />}
+              </button>
+              </div>
             </div>
 
             {/* Confirm Password Input */}
-            <div className="form-group">
+            <div className="form-group" >
               <label className="form-label">Confirm Password</label>
+              <div style={{ position: "relative" }}>
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -108,6 +118,16 @@ export default function SignUpForm() {
                 className="form-input"
                 required
               />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                tabIndex={-1}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <EyeSlashIcon className="password-icon" /> : <EyeIcon className="password-icon" />}
+              </button>
+              </div>
             </div>
 
             {/* Sign Up Button */}
