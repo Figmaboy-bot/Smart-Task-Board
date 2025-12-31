@@ -4,6 +4,6 @@
     { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } }
   ],
   "rewrites": [
-    { "source": "/((?!assets|favicon\\.ico|vite\\.svg|robots\\.txt|manifest\\.json|.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/((?!assets|Icons|Social Icons|upcoming deadlines|favicon\\.ico|vite\\.svg|robots\\.txt|manifest\\.json|.*\\..*).*)", "destination": "/index.html" }
   ]
 }
