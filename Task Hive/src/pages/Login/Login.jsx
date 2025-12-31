@@ -160,7 +160,7 @@ export default function LoginForm() {
 
           {/* Login Link */}
           <p className="login-link">
-            Don't have an account? <Link to="/signup">Sign Up Here</Link>
+            Don't have an account? <Link to="/signup">SignUp Here</Link>
           </p>
         </div>
       </div>
