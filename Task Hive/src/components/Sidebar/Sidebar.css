@@ -180,7 +180,7 @@
 .nav-item span {
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--grey-60);
+    color: var(--grey-30);
 }
 
 .sidebar-divider {
