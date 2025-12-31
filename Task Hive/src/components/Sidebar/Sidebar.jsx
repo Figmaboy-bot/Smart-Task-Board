@@ -20,35 +20,37 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { useTheme } from "../../context/ThemeContext";
 
 function Sidebar() {
-            // User & settings items
-            const settingsItems = [
-                { name: "Settings", icon: Cog6ToothIcon },
-                { name: "Theme", icon: MoonIcon, hasToggle: true },
-            ];
-        // Main navigation items
-        const navItems = [
-            { name: "Dashboard", icon: HomeIcon },
-            { name: "My Tasks", icon: CheckCircleIcon },
-            { name: "All Tasks", icon: ClipboardDocumentListIcon },
-            { name: "Projects", icon: FolderIcon },
-            { name: "Teams", icon: UserGroupIcon },
-            { name: "Calendar", icon: CalendarDaysIcon },
-            { name: "Reports & Insights", icon: ChartBarIcon },
-        ];
+    // User & settings items
+    const settingsItems = [
+        { name: "Settings", icon: Cog6ToothIcon },
+        { name: "Theme", icon: MoonIcon, hasToggle: true },
+    ];
+    // Main navigation items
+    const navItems = [
+        { name: "Dashboard", icon: HomeIcon },
+        { name: "My Tasks", icon: CheckCircleIcon },
+        { name: "All Tasks", icon: ClipboardDocumentListIcon },
+        { name: "Projects", icon: FolderIcon },
+        { name: "Teams", icon: UserGroupIcon },
+        { name: "Calendar", icon: CalendarDaysIcon },
+        { name: "Reports & Insights", icon: ChartBarIcon },
+    ];
 
-        // Collaboration & notifications items
-        const collaborationItems = [
-            { name: "Messages", icon: ChatBubbleLeftRightIcon },
-            { name: "Notifications", icon: BellIcon },
-        ];
+    // Collaboration & notifications items
+    const collaborationItems = [
+        { name: "Messages", icon: ChatBubbleLeftRightIcon },
+        { name: "Notifications", icon: BellIcon },
+    ];
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation();
     const [isThemeOn, setIsThemeOn] = useState(true)
     const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
+    const { theme, toggleTheme } = useTheme();
 
     const handleLogout = () => {
         // Add confirmation to prevent accidental logout
@@ -103,7 +105,7 @@ function Sidebar() {
     return (
         <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             {/* Toggle Button */}
-            <button 
+            <button
                 className="sidebar-toggle"
                 onClick={toggleSidebar}
                 type="button"
@@ -218,7 +220,7 @@ function Sidebar() {
                         )
                     })}
                 </div>
-               <div className="sidebar-divider"></div>
+                <div className="sidebar-divider"></div>
             </div>
 
             {/* User & Settings */}
@@ -239,8 +241,8 @@ function Sidebar() {
                                     <label className="theme-toggle">
                                         <input
                                             type="checkbox"
-                                            checked={isThemeOn}
-                                            onChange={(e) => setIsThemeOn(e.target.checked)}
+                                            checked={theme === "dark"}
+                                            onChange={toggleTheme}
                                         />
                                         <span className="toggle-slider"></span>
                                     </label>

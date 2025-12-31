@@ -1,6 +1,18 @@
 @import "./tokens/colors.css";
 
 
+:root {
+  --color-bg: #fff;
+  --color-text: #111;
+}
+
+[data-theme="dark"] {
+  --color-bg: #18181b;
+  --color-text: #f3f4f6;
+}
+
 body {
-  font-family: 'Geist', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.2s, color 0.2s;
 }

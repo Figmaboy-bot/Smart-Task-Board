@@ -12,11 +12,12 @@ export default function LoginForm() {
     email: '',
     password: '',
   });
+  
   const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, loginWithGoogle } = useAuth()
 
   const handleChange = (e) => {
     setFormData({
@@ -52,9 +53,8 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    console.log('Sign up with Google');
-    alert('Google sign-up clicked');
+  const handleGoogleSignUp = async () => {
+    await loginWithGoogle();
   };
 
   const handleAppleSignUp = () => {

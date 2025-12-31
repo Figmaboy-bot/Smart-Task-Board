@@ -24,16 +24,16 @@ export function AuthProvider({ children }) {
 
   const signup = (email, password) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
-  
+
     const otpData = {
       email,
       password, // Store password temporarily with OTP
       otp,
       expiresAt: Date.now() + 2 * 60 * 1000 // 2 minutes
     }
-  
+
     localStorage.setItem("otp", JSON.stringify(otpData));
-  
+
     // 🔥 SHOW OTP IN CONSOLE
     console.log(`🔐 OTP for ${email}:`, otp);
   }
@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("user", JSON.stringify(newUser))
     console.log("✅ User account created:", newUser.email)
     console.log("💾 Saved to localStorage:", JSON.stringify(newUser))
-    
+
     // Verify it was saved
     const verify = localStorage.getItem("user")
     console.log("🔍 Verification - localStorage after save:", verify)
@@ -56,11 +56,11 @@ export function AuthProvider({ children }) {
     console.log("🔐 Login attempt started")
     console.log("📧 Email entered:", email)
     console.log("🔑 Password entered:", password ? "***" : "(empty)")
-    
+
     // Get user from localStorage
     const savedUserStr = localStorage.getItem("user")
     console.log("📦 Raw localStorage value:", savedUserStr)
-    
+
     if (!savedUserStr || savedUserStr === "null" || savedUserStr === "undefined") {
       console.log("❌ No user found in localStorage")
       return false
@@ -71,13 +71,13 @@ export function AuthProvider({ children }) {
       console.log("👤 Parsed user object:", savedUser)
       console.log("📧 Saved email:", savedUser?.email)
       console.log("🔑 Saved password:", savedUser?.password)
-      
+
       // Trim whitespace from both values for comparison
       const enteredEmail = email?.trim().toLowerCase()
       const savedEmail = savedUser?.email?.trim().toLowerCase()
       const enteredPassword = password?.trim()
       const savedPassword = savedUser?.password?.trim()
-      
+
       console.log("🔍 Comparison:", {
         emailMatch: enteredEmail === savedEmail,
         passwordMatch: enteredPassword === savedPassword,

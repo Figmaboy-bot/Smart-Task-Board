@@ -330,6 +330,7 @@ tbody:last-child {
     vertical-align: middle;
     margin-right: 6px;
     display: inline-block;
+    color: var(--grey-20);
 }
 
 .view-switcher button {
@@ -346,7 +347,7 @@ tbody:last-child {
 }
 
 .view-switcher .active {
-    background: #fff;
+    background: var(--color-white);
     color: var(--color-black);
 }
 
@@ -391,7 +392,7 @@ tbody:last-child {
 .column-title {
     font-size: 16px;
     font-weight: 400;
-    color: #222b45;
+    color: var(--grey-60);
     letter-spacing: 0.2px;
 }
 
@@ -463,13 +464,13 @@ tbody:last-child {
 .task-name {
     font-size: 16px;
     font-weight: 500;
-    color: #222b45;
+    color: var(--grey-80);
     margin-bottom: 4px;
 }
 
 .task-description {
     font-size: 14px;
-    color: var(--grey-40);
+    color: var(--grey-60);
     font-weight: 400;
 }
 
@@ -509,7 +510,7 @@ tbody:last-child {
 }
 
 .task-footer-icon {
-    color: var(--grey-20);
+    color: var(--grey-50);
     width: 22px;
     height: 22px;
     vertical-align: middle;

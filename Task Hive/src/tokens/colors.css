@@ -39,3 +39,40 @@
   /* Error */
   --error-50: #FF0C0C;
 }
+
+[data-theme="dark"] {
+  --color-background: #1E293B;
+  --color-white: #141A1F;
+  --color-black: #f3f4f6;
+
+  /* Primary */
+  --primary-0: #2d225a;
+  --primary-10: #3a2d6d;
+  --primary-20: #4a3a8a;
+  --primary-30: #5a47a7;
+  --primary-40: #6a54c4;
+  --primary-50: #7a61e1;
+  --primary-60: #8a6efe;
+  --primary-70: #a78bfa;
+  --primary-80: #c4b5fd;
+  --primary-90: #ede9fe;
+  --primary-100: #f5f3ff;
+
+  /* Grey */
+  --grey-0: #232946;
+  --grey-10: #1a1a2e;
+  --grey-20: #22223b;
+  --grey-30: #393e46;
+  --grey-40: #4e4e50;
+  --grey-50: #6b7280;
+  --grey-60: #a1a1aa;
+  --grey-70: #d1d5db;
+  --grey-80: #e5e7eb;
+  --grey-90: #f3f4f6;
+  --grey-100: #ffffff;
+
+  /* Success, Warning, Error can stay the same or be changed if you want */
+  --success-50: #22c55e;
+  --warning-50: #f59e42;
+  --error-50: #ef4444;
+}

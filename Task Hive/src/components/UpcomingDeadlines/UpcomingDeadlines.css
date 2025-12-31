@@ -18,7 +18,7 @@
     max-width: 75vw;
     min-width: 75vw;
     margin: 32px auto 0 auto;
-    background: #fff;
+    background: var(--color-white);
     overflow-x: hidden;
 }
 
@@ -173,14 +173,14 @@
 .deadline-task-title {
     font-size: 16px;
     font-weight: 500;
-    color: var(--color-black);
+    color: var(--grey-80);
     margin-bottom: 2px;
     letter-spacing: -0.2px;
 }
 .deadline-task-subtitle {
     font-size: 14px;
     font-weight: 400;
-    color: var(--grey-30);
+    color: var(--grey-60);
     opacity: 1;
     margin-bottom: 0;
     font-weight: 400;
@@ -190,10 +190,10 @@
     align-items: center;
     justify-content: space-between;
     margin-top: 16px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--grey-10);
     padding-top: 10px;
     font-size: 14px;
-    color: #7b8ca6;
+    color: var(--grey-50);
 }
 .footer-left {
     display: flex;
@@ -280,6 +280,7 @@
 .datetime-texts {
     font-size: 14px;
     margin: 0;
+    color: var(--grey-70);
 }
 
 .links {
@@ -291,6 +292,7 @@
 .link-amount {
     font-size: 14px;
     margin: 0;
+    color: var(--grey-70);
 }
 
 @media (max-width: 700px) {

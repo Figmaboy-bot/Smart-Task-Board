@@ -11,6 +11,8 @@ import ReportsInsights from "./pages/ReportsInsights/ReportsInsights"
 import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
 import { useAuth } from "./context/AuthContext"
 
+console.log("useAuth:", useAuth);
+
 function App() {
   const { user } = useAuth()
 

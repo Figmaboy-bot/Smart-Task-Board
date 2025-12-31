@@ -5,7 +5,7 @@
 .sidebar {
     width: 280px;
     height: 96vh;
-    background-color: #F1F5F9;
+    background-color: var(--color-background);
     border-radius: 16px;
     padding: 1.2rem;
     display: flex;
@@ -180,6 +180,7 @@
 .nav-item span {
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--grey-60);
 }
 
 .sidebar-divider {
