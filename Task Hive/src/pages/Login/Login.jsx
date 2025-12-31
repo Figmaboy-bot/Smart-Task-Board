@@ -75,7 +75,7 @@ export default function LoginForm() {
           {/* Logo and Header */}
           <div className="header-section">
             <div className="logo-container">
-              <img className="logo-icon" src="public/TaskHive Logo.svg" alt="Logo" />
+              <img className="logo-icon" src="/TaskHive Logo.svg" alt="Logo" />
             </div>
             <h1 className="title">Login</h1>
             <p className="subtitle">Welcome Back to TaskHive! Let's Get Things Done.</p>
