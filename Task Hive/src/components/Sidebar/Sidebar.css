@@ -163,11 +163,12 @@
 
 .nav-item.active {
     background-color: var(--primary-50);
-    color: var(--color-white);
+    color: var(--color-white) !important;
 }
 
 .nav-item.active .nav-icon {
     color: var(--color-white);
+
 }
 
 .nav-icon {
