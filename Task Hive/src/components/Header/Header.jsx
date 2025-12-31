@@ -36,7 +36,7 @@ function Header() {
         {/* User Profile */}
         <div className="header-profile">
           <img 
-            src="./public/Profile.jpg" 
+            src="/Profile.jpg" 
             alt="Profile" 
             className="profile-image"
           />

@@ -66,7 +66,7 @@ export default function LoginForm() {
     <div className="signup-container">
       {/* Left Panel - Purple Gradient */}
       <div className="left-panel">
-        <img className="Signup-Image" src="public/Login.jpg" alt="Signup" />
+        <img className="Signup-Image" src="/Login.jpg" alt="Signup" />
       </div>
 
       {/* Right Panel - Sign Up Form */}
@@ -148,12 +148,12 @@ export default function LoginForm() {
           {/* Social Sign Up Buttons */}
           <div className="social-buttons">
             <button type="button" onClick={handleGoogleSignUp} className="social-button">
-              <img className="social-icon" src="public/Social Icons/Google.svg" alt="Google" />
+              <img className="social-icon" src="/Social Icons/Google.svg" alt="Google" />
               <span className="social-text">Google</span>
             </button>
 
             <button type="button" onClick={handleAppleSignUp} className="social-button">
-              <img className="social-icon" src="public/Social Icons/Apple.svg" alt="Apple" />
+              <img className="social-icon" src="/Social Icons/Apple.svg" alt="Apple" />
               <span className="social-text">Apple</span>
             </button>
           </div>

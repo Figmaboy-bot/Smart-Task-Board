@@ -49,7 +49,7 @@ export default function SignUpForm() {
     <div className="signup-container">
       {/* Left Panel - Purple Gradient */}
       <div className="left-panel">
-        <img className="Signup-Image" src="public/Signup.jpg" alt="Signup" />
+        <img className="Signup-Image" src="/Signup.jpg" alt="Signup" />
       </div>
 
       {/* Right Panel - Sign Up Form */}
@@ -58,7 +58,7 @@ export default function SignUpForm() {
           {/* Logo and Header */}
           <div className="header-section">
             <div className="logo-container">
-              <img className="logo-icon" src="public/TaskHive Logo.svg" alt="Logo" />
+              <img className="logo-icon" src="/TaskHive Logo.svg" alt="Logo" />
             </div>
             <h1 className="title">Sign Up</h1>
             <p className="subtitle">Join TaskHive – Organize, Collaborate, Thrive.</p>
@@ -146,12 +146,12 @@ export default function SignUpForm() {
           {/* Social Sign Up Buttons */}
           <div className="social-buttons">
             <button type="button" onClick={handleGoogleSignUp} className="social-button">
-              <img className="social-icon" src="public/Social Icons/Google.svg" alt="Google" />
+              <img className="social-icon" src="/Social Icons/Google.svg" alt="Google" />
               <span className="social-text">Google</span>
             </button>
 
             <button type="button" onClick={handleAppleSignUp} className="social-button">
-              <img className="social-icon" src="public/Social Icons/Apple.svg" alt="Apple" />
+              <img className="social-icon" src="/Social Icons/Apple.svg" alt="Apple" />
               <span className="social-text">Apple</span>
             </button>
           </div>
