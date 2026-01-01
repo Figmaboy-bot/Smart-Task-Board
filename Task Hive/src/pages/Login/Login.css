@@ -60,12 +60,12 @@
   .title {
     font-size: 1.875rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--grey-100);
     margin-bottom: 0.3rem;
   }
   
   .subtitle {
-    color: #6b7280;
+    color: var(--grey-50);
     font-size: 1rem;
   }
   
@@ -84,7 +84,7 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #111827;
+    color: var(--grey-100);
     margin-bottom: 0.5rem;
   }
   
@@ -92,7 +92,7 @@
     width: 100%;
     padding: 0.75rem 1rem;
     background-color: white;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--grey-10);
     border-radius: 0.5rem;
     font-size: o.8rem;
     transition: all 0.2s;
@@ -101,11 +101,11 @@
   
   .form-input:focus {
     border-color: transparent;
-    box-shadow: 0 0 0 2px #7c3aed;
+    box-shadow: 0 0 0 2px var(--primary-50);
   }
   
   .form-input::placeholder {
-    color: #9ca3af;
+    color: var(--grey-50);
   }
 
   .Password-icon {
@@ -117,8 +117,8 @@
   .submit-button {
     width: 100%;
     padding: 0.75rem;
-    background-color: #ddd6fe;
-    color: #6d28d9;
+    background-color: var(--primary-10);
+    color: var(--primary-50);
     font-weight: 500;
     font-size: 1rem;
     border: none;
@@ -128,7 +128,7 @@
   }
   
   .submit-button:hover {
-    background-color: #c4b5fd;
+    background-color: var(--primary-20);
   }
   
   .divider {
@@ -137,7 +137,7 @@
   }
   
   .divider-text {
-    color: #9ca3af;
+    color: var(--grey-50);
     font-size: 0.875rem;
   }
   
@@ -153,7 +153,7 @@
     justify-content: center;
     padding: 0.75rem;
     background-color: white;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--grey-10);
     border-radius: 0.5rem;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -161,7 +161,7 @@
   }
   
   .social-button:hover {
-    background-color: #f9fafb;
+    background-color: var(--grey-10);
   }
   
   .social-icon {
@@ -171,26 +171,26 @@
   }
   
   .social-text {
-    color: #374151;
+    color: var(--grey-100);
     font-weight: 500;
   }
   
   .login-link {
     margin-top: 1.5rem;
     text-align: center;
-    color: #6b7280;
+    color: var(--grey-50);
     font-size: 0.875rem;
   }
   
   .login-link a {
-    color: #7c3aed;
+    color: var(--primary-50);
     font-weight: 500;
     text-decoration: none;
     transition: color 0.2s;
   }
   
   .login-link a:hover {
-    color: #6d28d9;
+    color: var(--primary-50);
   }
   
   /* Responsive Design */
