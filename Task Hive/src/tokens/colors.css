@@ -18,17 +18,17 @@
   --primary-100: #150D28;
 
   /* Grey */
-  --grey-0: #D7DADC;
-  --grey-10: #BCC1C4;
-  --grey-20: #9AA2A7;
-  --grey-30: #79838A;
-  --grey-40: #58646C;
-  --grey-50: #36454F;
-  --grey-60: #2D3A42;
-  --grey-70: #242E35;
-  --grey-80: #1B2328;
-  --grey-90: #12171A;
-  --grey-100: #12171A;
+  --grey-0: #F8FAFC;
+  --grey-10: #F1F5F9;
+  --grey-20: #E2E8F0;
+  --grey-30: #CBD5E1;
+  --grey-40: #D1D5DB;
+  --grey-50: #64748B;
+  --grey-60: #475569;
+  --grey-70: #334155;
+  --grey-80: #1E293B;
+  --grey-90: #0F172A;
+  --grey-100: #020617;
 
   /* Success */
   --success-50: #3FA668;
@@ -59,17 +59,17 @@
   --primary-100: #f5f3ff;
 
   /* Grey */
-  --grey-0: #232946;
-  --grey-10: #1a1a2e;
-  --grey-20: #22223b;
-  --grey-30: #393e46;
-  --grey-40: #4e4e50;
-  --grey-50: #6b7280;
-  --grey-60: #a1a1aa;
-  --grey-70: #d1d5db;
-  --grey-80: #e5e7eb;
-  --grey-90: #f3f4f6;
-  --grey-100: #ffffff;
+  --grey-0: #020617;
+  --grey-10: #0F172A;
+  --grey-20: #1E293B;
+  --grey-30: #334155;
+  --grey-40: #475569;
+  --grey-50: #64748B;
+  --grey-60: #94A3B8;
+  --grey-70: #CBD5E1;
+  --grey-80: #E2E8F0;
+  --grey-90: #F1F5F9;
+  --grey-100: #F8FAFC;
 
   /* Success, Warning, Error can stay the same or be changed if you want */
   --success-50: #22c55e;
