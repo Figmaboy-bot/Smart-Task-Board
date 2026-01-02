@@ -153,7 +153,7 @@ export default function LoginForm() {
             </button>
 
             <button type="button" onClick={handleAppleSignUp} className="social-button">
-              <img className="social-icon" src="/Social Icons/Apple.svg" alt="Apple" />
+              <img className="social-icon apple-icon" src="/Social Icons/Apple.svg" alt="Apple" />
               <span className="social-text">Apple</span>
             </button>
           </div>

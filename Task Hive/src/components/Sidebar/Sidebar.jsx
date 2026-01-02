@@ -20,6 +20,7 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import HamburgerMenu from "./HamburgerMenu";
 import { useTheme } from "../../context/ThemeContext";
 
 function Sidebar() {
@@ -105,14 +106,20 @@ function Sidebar() {
     return (
         <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             {/* Toggle Button */}
-            <button
-                className="sidebar-toggle"
-                onClick={toggleSidebar}
-                type="button"
-                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-                {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </button>
+                        <button
+                                className="sidebar-toggle"
+                                onClick={toggleSidebar}
+                                type="button"
+                                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                        >
+                                {/* Show Lottie hamburger menu on mobile, chevrons on desktop */}
+                                <span className="sidebar-hamburger-menu">
+                                    <HamburgerMenu style={{ width: 32, height: 32 }} />
+                                </span>
+                                <span className="sidebar-chevron-icon">
+                                    {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                                </span>
+                        </button>
 
             {/* Workspace Header */}
             <div className="sidebar-workspace" style={{ position: 'relative' }}>
@@ -140,34 +147,17 @@ function Sidebar() {
                 )}
                 {/* Dropdown menu */}
                 {showWorkspaceDropdown && !isCollapsed && (
-                    <div className="workspace-dropdown-menu" style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        background: '#fff',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '12px',
-                        boxShadow: '0 4px 16px rgba(44,62,80,0.10)',
-                        marginTop: '8px',
-                        zIndex: 100,
-                        minWidth: '220px',
-                        padding: '8px 0',
-                    }}>
+                    <div className="workspace-dropdown-menu">
                         {workspaceOptions.map((ws, idx) => (
-                            <div key={ws.email} style={{
-                                padding: '10px 18px',
-                                cursor: 'pointer',
-                                borderBottom: idx !== workspaceOptions.length - 1 ? '1px solid #f1f5f9' : 'none',
-                                background: '#fff',
-                                transition: 'background 0.13s',
-                            }}
-                                className="workspace-dropdown-item"
+                            <div
+                                key={ws.email}
+                                className={`workspace-dropdown-item${idx !== workspaceOptions.length - 1 ? ' with-border' : ''}`}
                                 tabIndex={0}
                                 role="option"
                                 aria-selected={ws.name === 'Design Team'}
                             >
-                                <div style={{ fontWeight: 600, color: '#232946', fontSize: '15px' }}>{ws.name}</div>
-                                <div style={{ color: '#7b8ca6', fontSize: '13px' }}>{ws.email}</div>
+                                <div className="workspace-dropdown-name">{ws.name}</div>
+                                <div className="workspace-dropdown-email">{ws.email}</div>
                             </div>
                         ))}
                     </div>

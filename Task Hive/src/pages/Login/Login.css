@@ -39,7 +39,7 @@
     text-align: left;
     margin-bottom: 2rem;
     padding-bottom: 2rem;
-    border-bottom: 1px solid var(--grey-0);
+    border-bottom: 1px solid var(--grey-20);
   }
   
 .logo-container {
@@ -91,21 +91,25 @@
   .form-input {
     width: 100%;
     padding: 0.75rem 1rem;
-    background-color: white;
+    background-color: var(--color-white);
     border: 1px solid var(--grey-10);
     border-radius: 0.5rem;
     font-size: o.8rem;
-    transition: all 0.2s;
     outline: none;
   }
   
   .form-input:focus {
     border-color: transparent;
     box-shadow: 0 0 0 2px var(--primary-50);
+    color: var(--color-black);
   }
   
   .form-input::placeholder {
     color: var(--grey-50);
+  }
+
+  .form-input:not(:placeholder-shown) {
+    color: var(--color-black);
   }
 
   .Password-icon {
@@ -152,7 +156,7 @@
     align-items: center;
     justify-content: center;
     padding: 0.75rem;
-    background-color: white;
+    background-color: var(--color-white);
     border: 1px solid var(--grey-10);
     border-radius: 0.5rem;
     cursor: pointer;
@@ -169,6 +173,7 @@
     height: 1.25rem;
     margin-right: 0.5rem;
   }
+  
   
   .social-text {
     color: var(--grey-100);
@@ -203,3 +208,9 @@
       width: 50%;
     }
   }
+
+
+/* Or, if you use [data-theme="dark"]: */
+[data-theme="dark"] .apple-icon {
+  filter: brightness(0) invert(1);
+}

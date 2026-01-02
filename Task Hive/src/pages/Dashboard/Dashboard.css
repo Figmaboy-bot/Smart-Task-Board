@@ -1,3 +1,27 @@
+/* Responsive styles for dashboard */
+@media (max-width: 1000px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+  .dashboard-content {
+    border-radius: 8px;
+    padding: 0.5rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    margin-top: 64px;
+    gap: 0.25rem;
+    min-height: 100svh;
+  }
+  .dashboard-content {
+    border-radius: 0;
+    padding: 0.25rem;
+    width: 100vw;
+  }
+}
 .dashboard-container {
     display: flex;
     min-height: 100vh;

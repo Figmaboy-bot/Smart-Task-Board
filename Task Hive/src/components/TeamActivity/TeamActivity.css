@@ -319,18 +319,17 @@ tbody:last-child {
     gap: 8px;
     padding: 2px;
     background: var(--color-background);
-    border: 1px solid var(--grey-0);
+    border: 1px solid var(--grey-20);
     border-radius: 8px;
 }
 
 .view-icon {
     width: 16px;
     height: 16px;
-    color: var(--grey-20);
     vertical-align: middle;
     margin-right: 6px;
     display: inline-block;
-    color: var(--grey-20);
+    color: var(--grey-60);
 }
 
 .view-switcher button {
@@ -338,7 +337,7 @@ tbody:last-child {
     padding: 6px 14px;
     font-size: 14px;
     line-height: 16px;
-    color: var(--grey-40);
+    color: var(--grey-50);
     border: none;
     font-weight: 500;
     cursor: pointer;
@@ -438,10 +437,10 @@ tbody:last-child {
 }
 
 .task-tag {
-    color: #4b5c7a;
+    color: var(--grey-50);
     font-size: 13px;
     font-weight: 500;
-    border: 1px solid var(--grey-0);
+    border: 1px solid var(--grey-30);
     border-radius: 8px;
     padding: 2px 12px;
     display: inline-block;
