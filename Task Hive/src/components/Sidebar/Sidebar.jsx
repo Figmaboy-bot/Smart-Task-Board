@@ -11,7 +11,6 @@ import {
     CalendarDaysIcon,
     ChartBarIcon,
     ChatBubbleLeftRightIcon,
-    BellIcon,
     Cog6ToothIcon,
     MoonIcon,
     ArrowLeftStartOnRectangleIcon,
@@ -40,10 +39,9 @@ function Sidebar() {
         { name: "Reports & Insights", icon: ChartBarIcon },
     ];
 
-    // Collaboration & notifications items
+    // Collaborationitems
     const collaborationItems = [
         { name: "Messages", icon: ChatBubbleLeftRightIcon },
-        { name: "Notifications", icon: BellIcon },
     ];
     const { user, logout } = useAuth()
     const navigate = useNavigate()
@@ -71,6 +69,8 @@ function Sidebar() {
         "Teams": "/teams",
         "Calendar": "/calendar",
         "Reports & Insights": "/reports-insights",
+        "Messages": "/messages",
+        "Settings": "/settings",
     };
 
     const handleNavClick = (item) => {
@@ -164,14 +164,31 @@ function Sidebar() {
                 )}
             </div>
 
-            <div>
+            <div className="side-navs">
                 {/* Main Navigation */}
                 <nav className="sidebar-nav">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const route = navRoutes[item.name];
-                        // Active if current location matches route (Dashboard is special: only active on exact "/")
                         const isActive = location.pathname === route || (item.name === "Dashboard" && location.pathname === "/");
+                        return (
+                            <button
+                                key={item.name}
+                                className={`nav-item ${isActive ? "active" : ""}`}
+                                onClick={() => handleNavClick(item.name)}
+                                type="button"
+                                title={isCollapsed ? item.name : ""}
+                            >
+                                <Icon className="nav-icon" />
+                                {!isCollapsed && <span>{item.name}</span>}
+                            </button>
+                        );
+                    })}
+                    {/* Messages nav item highlight */}
+                    {collaborationItems.map((item) => {
+                        const Icon = item.icon;
+                        const route = navRoutes[item.name];
+                        const isActive = location.pathname === route;
                         return (
                             <button
                                 key={item.name}
@@ -189,28 +206,6 @@ function Sidebar() {
 
                 <div className="sidebar-divider"></div>
 
-                {/* Collaboration & Notifications */}
-                <div className="sidebar-section">
-                    {!isCollapsed && (
-                        <div className="section-title">Collaboration & Notifications</div>
-                    )}
-                    {collaborationItems.map((item) => {
-                        const Icon = item.icon
-                        return (
-                            <button
-                                key={item.name}
-                                className="nav-item"
-                                onClick={() => handleNavClick(item.name)}
-                                type="button"
-                                title={isCollapsed ? item.name : ""}
-                            >
-                                <Icon className="nav-icon" />
-                                {!isCollapsed && <span>{item.name}</span>}
-                            </button>
-                        )
-                    })}
-                </div>
-                <div className="sidebar-divider"></div>
             </div>
 
             {/* User & Settings */}
@@ -219,7 +214,9 @@ function Sidebar() {
                     <div className="section-title">User & Settings</div>
                 )}
                 {settingsItems.map((item) => {
-                    const Icon = item.icon
+                    const Icon = item.icon;
+                    const route = navRoutes[item.name];
+                    const isActive = location.pathname === route;
                     if (item.hasToggle) {
                         return (
                             <div key={item.name} className="nav-item theme-item">
@@ -238,12 +235,12 @@ function Sidebar() {
                                     </label>
                                 )}
                             </div>
-                        )
+                        );
                     }
                     return (
                         <button
                             key={item.name}
-                            className="nav-item"
+                            className={`nav-item ${isActive ? "active" : ""}`}
                             onClick={() => handleNavClick(item.name)}
                             type="button"
                             title={isCollapsed ? item.name : ""}
@@ -251,7 +248,7 @@ function Sidebar() {
                             <Icon className="nav-icon" />
                             {!isCollapsed && <span>{item.name}</span>}
                         </button>
-                    )
+                    );
                 })}
                 <button
                     className="nav-item logout-item"

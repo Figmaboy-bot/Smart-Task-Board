@@ -31,6 +31,11 @@
   --grey-100: #020617;
 
   /* Success */
+  --success-0: #E6F4EA;
+  --success-10: #BFE1C8;
+  --success-20: #99CCA5;
+  --success-30: #73B782;
+  --success-40: #4CA35F; 
   --success-50: #3FA668;
 
   /* Warning */

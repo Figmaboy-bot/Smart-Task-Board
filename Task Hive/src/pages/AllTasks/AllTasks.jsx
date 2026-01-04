@@ -1,11 +1,13 @@
 import Sidebar from "../../components/Sidebar/Sidebar"
+import Header from "../../components/Header/Header"
+import './AllTasks.css'
 
 export default function AllTasks() {
     return (
-        <div className="teams-page">
+        <div className="all-tasks-page">
             <Sidebar />
-            <div className="teams-content">
-                <h1>All Tasks Page</h1>
+            <div className="all-tasks-content">
+                <Header onNotificationClick={() => setNotifOpen(true)} />
             </div>
         </div>
     )

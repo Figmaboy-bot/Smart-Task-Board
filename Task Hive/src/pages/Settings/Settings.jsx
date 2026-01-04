@@ -1,12 +1,12 @@
 import Sidebar from "../../components/Sidebar/Sidebar"
 import Header from "../../components/Header/Header"
-import './Teams.css'
+import './Settings.css'
 
-export default function Teams() {
+export default function Settings() {
     return (
-        <div className="teams-page">
+        <div className="settings-page">
             <Sidebar />
-            <div className="teams-content">
+              <div className="settings-content">
                 <Header onNotificationClick={() => setNotifOpen(true)} />
             </div>
         </div>

@@ -1,4 +1,4 @@
-.teams-page {
+.messages-page {
     display: flex;
     min-height: 100vh;
     background-color: var(--color-white);
@@ -6,7 +6,7 @@
     gap: 1rem;
 }
 
-.teams-content {
+.messages-content {
     flex: 1;
     border-radius: 16px;
     display: flex;

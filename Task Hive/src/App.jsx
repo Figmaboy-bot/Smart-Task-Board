@@ -8,6 +8,8 @@ import Projects from "./pages/Projects/Projects"
 import Teams from "./pages/Teams/Teams"
 import Calendar from "./pages/Calendar/Calendar"
 import ReportsInsights from "./pages/ReportsInsights/ReportsInsights"
+import Messages from "./pages/Messages/Messages"
+import Settings from "./pages/Settings/Settings"
 import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
 import { useAuth } from "./context/AuthContext"
 
@@ -31,6 +33,8 @@ function App() {
       <Route path="/teams" element={<Teams />} />
       <Route path="/calendar" element={<Calendar />} />
       <Route path="/reports-insights" element={<ReportsInsights />} />
+      <Route path="/messages" element={<Messages />} />
+      <Route path="/settings" element={<Settings />} />
 
 
     </Routes>
