@@ -3,14 +3,14 @@ import { useAuth } from "../../context/AuthContext"
 import { MagnifyingGlassIcon, BellIcon } from "@heroicons/react/24/outline"
 import './Header.css'
 
-function Header() {
-  const { user } = useAuth()
-  const [searchQuery, setSearchQuery] = useState("")
+function Header({ onNotificationClick }) {
+  const { user } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value)
+    setSearchQuery(e.target.value);
     // Add search functionality here
-  }
+  };
 
   return (
     <div className="header">
@@ -29,21 +29,26 @@ function Header() {
       {/* Right Side - Notifications and Profile */}
       <div className="header-right">
         {/* Notifications */}
-        <button className="header-notification" type="button" aria-label="Notifications">
+        <button
+          className="header-notification"
+          type="button"
+          aria-label="Notifications"
+          onClick={onNotificationClick}
+        >
           <BellIcon className="notification-icon" />
         </button>
 
         {/* User Profile */}
         <div className="header-profile">
-          <img 
-            src="/Profile.jpg" 
-            alt="Profile" 
+          <img
+            src="/Profile.jpg"
+            alt="Profile"
             className="profile-image"
           />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default Header
