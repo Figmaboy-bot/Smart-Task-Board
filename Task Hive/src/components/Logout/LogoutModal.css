@@ -1,0 +1,90 @@
+.logout-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(1px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.logout-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--color-white);
+    border-radius: 16px;
+    padding: 2rem 1rem 1rem 1rem;
+    min-width: 400px;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.icon-logout {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background-color: var(--error-0);
+    color: var(--error-50);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+        width: 60%;
+        height: 60%;
+    }
+}
+
+.logout-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-black);
+}
+
+.logout-modal-message {
+    font-size: 1rem;
+    color: var(--grey-60);
+    margin-bottom: 1.5rem;
+}
+
+.logout-modal-actions {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.logout-modal-btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s;
+}
+
+.logout-modal-btn.cancel {
+    background: var(--grey-10);
+    color: var(--grey-60);
+}
+
+.logout-modal-btn.cancel:hover {
+    background: var(--grey-40);
+}
+
+.logout-modal-btn.confirm {
+    background: var(--error-50);
+    color: var(--color-white);
+}
+
+.logout-modal-btn.confirm:hover {
+    background: #dc2626;
+}

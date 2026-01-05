@@ -18,47 +18,63 @@ import {
     ChevronDownIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
+    SunIcon,
 } from "@heroicons/react/24/outline";
+import {
+    HomeIcon as HomeIconSolid,
+    CheckCircleIcon as CheckCircleIconSolid,
+    ClipboardDocumentListIcon as ClipboardDocumentListIconSolid,
+    FolderIcon as FolderIconSolid,
+    UserGroupIcon as UserGroupIconSolid,
+    CalendarDaysIcon as CalendarDaysIconSolid,
+    ChartBarIcon as ChartBarIconSolid,
+    ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid,
+    Cog6ToothIcon as Cog6ToothIconSolid,
+    MoonIcon as MoonIconSolid,
+} from "@heroicons/react/24/solid";
 import HamburgerMenu from "./HamburgerMenu";
+import LogoutModal from "../Logout/LogoutModal";
 import { useTheme } from "../../context/ThemeContext";
 
 function Sidebar() {
-    // User & settings items
+        const [showLogoutModal, setShowLogoutModal] = useState(false);
     const settingsItems = [
-        { name: "Settings", icon: Cog6ToothIcon },
-        { name: "Theme", icon: MoonIcon, hasToggle: true },
+        { name: "Settings", icon: Cog6ToothIcon, iconSolid: Cog6ToothIconSolid },
+        { name: "Theme", icon: SunIcon, iconSolid: MoonIconSolid, hasToggle: true },
     ];
-    // Main navigation items
     const navItems = [
-        { name: "Dashboard", icon: HomeIcon },
-        { name: "My Tasks", icon: CheckCircleIcon },
-        { name: "All Tasks", icon: ClipboardDocumentListIcon },
-        { name: "Projects", icon: FolderIcon },
-        { name: "Teams", icon: UserGroupIcon },
-        { name: "Calendar", icon: CalendarDaysIcon },
-        { name: "Reports & Insights", icon: ChartBarIcon },
+        { name: "Dashboard", icon: HomeIcon, iconSolid: HomeIconSolid },
+        { name: "My Tasks", icon: CheckCircleIcon, iconSolid: CheckCircleIconSolid },
+        { name: "All Tasks", icon: ClipboardDocumentListIcon, iconSolid: ClipboardDocumentListIconSolid },
+        { name: "Projects", icon: FolderIcon, iconSolid: FolderIconSolid },
+        { name: "Teams", icon: UserGroupIcon, iconSolid: UserGroupIconSolid },
+        { name: "Calendar", icon: CalendarDaysIcon, iconSolid: CalendarDaysIconSolid },
+        { name: "Reports & Insights", icon: ChartBarIcon, iconSolid: ChartBarIconSolid },
     ];
-
-    // Collaborationitems
     const collaborationItems = [
-        { name: "Messages", icon: ChatBubbleLeftRightIcon },
+        { name: "Messages", icon: ChatBubbleLeftRightIcon, iconSolid: ChatBubbleLeftRightIconSolid },
     ];
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation();
-    const [isThemeOn, setIsThemeOn] = useState(true)
+    // Removed unused isThemeOn state
     const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
     const { theme, toggleTheme } = useTheme();
 
     const handleLogout = () => {
-        // Add confirmation to prevent accidental logout
-        const confirmed = window.confirm("Are you sure you want to logout?")
-        if (confirmed) {
-            logout()
-            navigate("/login")
-        }
-    }
+        setShowLogoutModal(true);
+    };
+
+    const handleLogoutCancel = () => {
+        setShowLogoutModal(false);
+    };
+
+    const handleLogoutConfirm = () => {
+        setShowLogoutModal(false);
+        logout();
+        navigate("/login");
+    };
 
     // Map nav item names to routes
     const navRoutes = {
@@ -104,22 +120,22 @@ function Sidebar() {
     }, [showWorkspaceDropdown]);
 
     return (
+        <>
         <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-            {/* Toggle Button */}
-                        <button
-                                className="sidebar-toggle"
-                                onClick={toggleSidebar}
-                                type="button"
-                                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                        >
-                                {/* Show Lottie hamburger menu on mobile, chevrons on desktop */}
-                                <span className="sidebar-hamburger-menu">
-                                    <HamburgerMenu style={{ width: 32, height: 32 }} />
-                                </span>
-                                <span className="sidebar-chevron-icon">
-                                    {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                                </span>
-                        </button>
+            <button
+                className="sidebar-toggle"
+                onClick={toggleSidebar}
+                type="button"
+                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+                {/* Show Lottie hamburger menu on mobile, chevrons on desktop */}
+                <span className="sidebar-hamburger-menu">
+                    <HamburgerMenu style={{ width: 32, height: 32 }} />
+                </span>
+                <span className="sidebar-chevron-icon">
+                    {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                </span>
+            </button>
 
             {/* Workspace Header */}
             <div className="sidebar-workspace" style={{ position: 'relative' }}>
@@ -169,6 +185,7 @@ function Sidebar() {
                 <nav className="sidebar-nav">
                     {navItems.map((item) => {
                         const Icon = item.icon;
+                        const IconSolid = item.iconSolid;
                         const route = navRoutes[item.name];
                         const isActive = location.pathname === route || (item.name === "Dashboard" && location.pathname === "/");
                         return (
@@ -179,7 +196,7 @@ function Sidebar() {
                                 type="button"
                                 title={isCollapsed ? item.name : ""}
                             >
-                                <Icon className="nav-icon" />
+                                {isActive && IconSolid ? <IconSolid className="nav-icon" /> : <Icon className="nav-icon" />}
                                 {!isCollapsed && <span>{item.name}</span>}
                             </button>
                         );
@@ -187,6 +204,7 @@ function Sidebar() {
                     {/* Messages nav item highlight */}
                     {collaborationItems.map((item) => {
                         const Icon = item.icon;
+                        const IconSolid = item.iconSolid;
                         const route = navRoutes[item.name];
                         const isActive = location.pathname === route;
                         return (
@@ -197,7 +215,7 @@ function Sidebar() {
                                 type="button"
                                 title={isCollapsed ? item.name : ""}
                             >
-                                <Icon className="nav-icon" />
+                                {isActive && IconSolid ? <IconSolid className="nav-icon" /> : <Icon className="nav-icon" />}
                                 {!isCollapsed && <span>{item.name}</span>}
                             </button>
                         );
@@ -215,13 +233,15 @@ function Sidebar() {
                 )}
                 {settingsItems.map((item) => {
                     const Icon = item.icon;
+                    const IconSolid = item.iconSolid;
                     const route = navRoutes[item.name];
                     const isActive = location.pathname === route;
                     if (item.hasToggle) {
+                        const ThemeIcon = theme === "dark" && item.iconSolid ? item.iconSolid : item.icon;
                         return (
                             <div key={item.name} className="nav-item theme-item">
                                 <div className="theme-label">
-                                    <Icon className="nav-icon" />
+                                    <ThemeIcon className="nav-icon" />
                                     {!isCollapsed && <span>{item.name}</span>}
                                 </div>
                                 {!isCollapsed && (
@@ -245,7 +265,7 @@ function Sidebar() {
                             type="button"
                             title={isCollapsed ? item.name : ""}
                         >
-                            <Icon className="nav-icon" />
+                            {isActive && IconSolid ? <IconSolid className="nav-icon" /> : <Icon className="nav-icon" />}
                             {!isCollapsed && <span>{item.name}</span>}
                         </button>
                     );
@@ -261,6 +281,8 @@ function Sidebar() {
                 </button>
             </div>
         </div>
+        <LogoutModal open={showLogoutModal} onCancel={handleLogoutCancel} onConfirm={handleLogoutConfirm} />
+        </>
     )
 }
 

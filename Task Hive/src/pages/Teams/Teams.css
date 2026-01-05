@@ -14,3 +14,20 @@
     align-content: flex-start;
     width: 100%;
 }
+
+.h2 {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.team-top-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.top-buttons {
+    display: flex;
+    gap: 0.5rem;
+}

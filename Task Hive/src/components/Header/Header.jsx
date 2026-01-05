@@ -1,11 +1,14 @@
 import { useState } from "react"
 import { MagnifyingGlassIcon, BellIcon, CheckBadgeIcon, ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/outline"
 import Notifications from "../../pages/Notifications/Notifications"
+import { useLocation } from "react-router-dom";
 import './Header.css'
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
+  const location = useLocation();
+
   const notifications = [
     {
       group: 'Today',
@@ -51,6 +54,20 @@ function Header() {
     }
   ];
 
+  // Map route to search placeholder
+  const searchPlaceholders = {
+    "/": "Search dashboard tasks, projects, or team members",
+    "/my-tasks": "Search your tasks...",
+    "/all-tasks": "Search all tasks...",
+    "/projects": "Search projects...",
+    "/teams": "Search teams or members...",
+    "/calendar": "Search calendar events...",
+    "/reports-insights": "Search reports or insights...",
+    "/messages": "Search messages or people...",
+    "/settings": "Search settings...",
+  };
+  const placeholder = searchPlaceholders[location.pathname] || "Search tasks, projects, or team members";
+
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
     // Add search functionality here
@@ -63,7 +80,7 @@ function Header() {
         <MagnifyingGlassIcon className="search-icon" />
         <input
           type="text"
-          placeholder="Search tasks, projects, or team members"
+          placeholder={placeholder}
           value={searchQuery}
           onChange={handleSearch}
           className="search-input"

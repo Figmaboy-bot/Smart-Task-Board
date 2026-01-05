@@ -134,23 +134,22 @@
     position: absolute;
     top: 1rem;
     right: -12px;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background-color: var(--color-white);
-    border: 2px solid var(--grey-10);
+    border: 2px solid var(--color-background);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 10;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.2s;
 }
 
 .sidebar-toggle:hover {
-    background-color: var(--grey-10);
-    border-color: var(--grey-60);
+    background-color: var(--color-white);
+    border-color: var(--primary-50);
 }
 
 .sidebar-toggle svg {
@@ -462,4 +461,23 @@
     border-radius: 0px 0px 12px 12px;
     z-index: 100;
     min-width: 100%;
+}
+
+.sidebar-chevron-icon {
+    display: inline;
+    width: 16px;
+    height: 16px;
+    background: var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    /* Remove default padding/margin from svg */
+}
+.sidebar-chevron-icon svg {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    display: block;
 }

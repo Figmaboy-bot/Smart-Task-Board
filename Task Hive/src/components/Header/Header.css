@@ -72,11 +72,17 @@
   .header-notification:hover {
     background-color: var(--grey-30);
   }
+
+  .header-notification:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px var(--primary-50);
+  }
   
   .notification-icon {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     color: var(--grey-80);
+    border: 1px solid transparent;
   }
   
   .header-profile {

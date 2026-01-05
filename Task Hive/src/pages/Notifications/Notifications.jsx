@@ -5,10 +5,10 @@ import './Notifications.css';
 
 
 const typeColors = {
-    success: { icon: '#22c55e', bg: 'rgba(34,197,94,0.1)' }, // green
-    error: { icon: '#ef4444', bg: 'rgba(239,68,68,0.1)' },   // red
-    warning: { icon: '#f59e42', bg: 'rgba(245,158,66,0.1)' }, // orange
-    grey: { icon: '#64748b', bg: 'rgba(100,116,139,0.1)' },  // grey
+    success: { icon: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
+    error: { icon: '#ef4444', bg: 'rgba(239,68,68,0.1)' },  
+    warning: { icon: '#f59e42', bg: 'rgba(245,158,66,0.1)' },
+    grey: { icon: '#64748b', bg: 'rgba(100,116,139,0.1)' }, 
     default: { icon: '#64748b', bg: 'rgba(100,116,139,0.1)' }
 };
 

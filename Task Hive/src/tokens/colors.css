@@ -42,6 +42,11 @@
   --warning-50: #FF7C00;
 
   /* Error */
+  --error-0: #FDEAEA;
+  --error-10: #F9C2C2;
+  --error-20: #F39B9B;
+  --error-30: #ED7373;
+  --error-40: #E74C4C;
   --error-50: #FF0C0C;
 }
 

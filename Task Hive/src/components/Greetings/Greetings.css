@@ -9,21 +9,3 @@ h2 {
     font-size: 20px;
     font-weight: 400;
 }
-
-.Add-Task {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: var(--primary-50);
-    color: var(--color-white);
-    font-size: 14px;
-    border: none;
-    border-radius: 12px;
-    padding: 8px 20px;
-    gap: 6px;
-}
-
-.Add-Task-Icon {
-    width: 24px;
-    color: var(--color-white);
-}
