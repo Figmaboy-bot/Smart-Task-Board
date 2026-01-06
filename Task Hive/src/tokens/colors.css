@@ -39,7 +39,17 @@
   --success-50: #3FA668;
 
   /* Warning */
+  --warning-0: #FFF4E6;
+  --warning-10: #FFDDC0;
+  --warning-20: #FFC799;
+  --warning-30: #FFB272;
+  --warning-40: #FF9B4C;
   --warning-50: #FF7C00;
+  --warning-60: #E66F00;
+  --warning-70: #CC6200;
+  --warning-80: #B35900;
+  --warning-90: #994C00;
+  --warning-100: #803F00;
 
   /* Error */
   --error-0: #FDEAEA;
@@ -83,6 +93,20 @@
 
   /* Success, Warning, Error can stay the same or be changed if you want */
   --success-50: #22c55e;
+
+
+  --warning-0: #803F00;
+  --warning-10: #994C00;
+  --warning-20: #B35900;
+  --warning-30: #CC6200;
+  --warning-40: #E66F00;
   --warning-50: #f59e42;
+  --warning-60: #FF9B4C;
+  --warning-70: #FFB272;
+  --warning-80: #FFC799;
+  --warning-90: #FFDDC0;
+  --warning-100: #FFF4E6;
+
+
   --error-50: #ef4444;
 }

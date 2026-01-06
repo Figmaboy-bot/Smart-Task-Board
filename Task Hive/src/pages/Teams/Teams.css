@@ -1,3 +1,23 @@
+.checkbox-header {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    text-align: center;
+    background: var(--grey-10);
+}
+.checkbox-cell {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    text-align: center;
+    vertical-align: middle;
+}
+.table-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-50, #3b82f6);
+    cursor: pointer;
+}
 .teams-page {
     display: flex;
     min-height: 100vh;
@@ -30,4 +50,233 @@
 .top-buttons {
     display: flex;
     gap: 0.5rem;
+}
+
+.users-table {
+    margin-top: 32px;
+    width: 100%;
+    /* Removed flexbox for proper table layout */
+}
+
+.users-table-element {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    overflow: hidden;
+    font-family: inherit;
+    table-layout: fixed;
+}
+
+.users-table {
+    display: flex;
+    flex-direction: row;
+    padding: 12px 12px 0 12px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: 1px solid var(--grey-20);
+}
+
+thead {
+    width: 100%;
+
+}
+
+tr {
+    display: flex;
+    flex-direction: row;
+}
+
+.tb-hd-bg {
+    background: var(--grey-10);
+}
+
+.checkbox-header {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.actions-header {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    overflow: hidden;
+    padding: 0;
+}
+
+
+
+th {
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.table-header-cell {
+    color: var(--grey-60);
+    font-weight: 500;
+
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+
+.users-table-element tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-cell {
+    padding: 14px 12px;
+    font-size: 12px;
+    color: #22223b;
+    border-bottom: 1px solid #e5e7eb;
+    height: 56px;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+.table-cell:last-child {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.img-member {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 56px;
+    width: 35%;
+}
+
+.img-member-header {
+    width: 35%;
+}
+
+.email,
+.email-header {
+    width: 25%;
+}
+
+.role,
+.role-header {
+    width: 15%;
+}
+
+.status,
+.status-header {
+    width: 15%;
+}
+
+.actions,
+.actions-header {
+    width: 10%;
+    justify-content: flex-start;
+}
+
+.action-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--grey-30);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    svg {
+        width: 20px;
+        height: 20px;
+        color: var(--grey-60);
+    }
+}
+
+.table-cell img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0;
+}
+
+.status-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.status-cell {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 10px;
+    width: fit-content;
+}
+
+.status-cell.active {
+    background: var(--success-0);
+    color: var(--success-50);
+}
+
+.status-circle.active {
+    background: var(--success-50);
+}
+
+.status-cell.invited {
+    background: var(--warning-0);
+    color: var(--warning-50);
+}
+
+.status-circle.invited {
+    background: var(--warning-50);
+}
+
+.status-cell.suspended {
+    background: var(--error-0);
+    color: var(--error-50);
+}
+
+.status-circle.suspended {
+    background: var(--error-50);
+}
+
+.header-radius-left {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    background: var(--grey-10);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
+}
+
+.header-radius-right {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    background: var(--grey-10);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
+}
+
+.header-main {
+    background: var(--grey-10);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
 }
