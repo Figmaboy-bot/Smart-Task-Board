@@ -5,13 +5,7 @@
     text-align: center;
     background: var(--grey-10);
 }
-.checkbox-cell {
-    width: 40px;
-    min-width: 40px;
-    max-width: 40px;
-    text-align: center;
-    vertical-align: middle;
-}
+
 .table-checkbox {
     width: 18px;
     height: 18px;
@@ -53,7 +47,6 @@
 }
 
 .users-table {
-    margin-top: 32px;
     width: 100%;
     /* Removed flexbox for proper table layout */
 }
@@ -74,7 +67,7 @@
     width: 100%;
     box-sizing: border-box;
     border-radius: 20px;
-    border: 1px solid var(--grey-20);
+    border: 1px solid var(--grey-30);
 }
 
 thead {
@@ -132,7 +125,7 @@ th {
     padding: 14px 12px;
     font-size: 12px;
     color: var(--color-black);
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--grey-30);
     height: 56px;
     vertical-align: middle;
     box-sizing: border-box;
@@ -249,27 +242,7 @@ th {
     background: var(--error-50);
 }
 
-.header-radius-left {
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
-    background: var(--grey-10);
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 14px 12px;
-}
 
-.header-radius-right {
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    background: var(--grey-10);
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 14px 12px;
-}
 
 .header-main {
     background: var(--grey-10);

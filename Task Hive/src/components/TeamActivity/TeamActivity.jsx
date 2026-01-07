@@ -7,8 +7,9 @@ import ClockIcon from "@heroicons/react/24/outline/ClockIcon";
 import CheckBadgeIcon from "@heroicons/react/24/outline/CheckBadgeIcon";
 import PlusCircleIcon from "@heroicons/react/24/outline/PlusCircleIcon";
 import { EllipsisVerticalIcon,ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline";
+import EditableTable from "../EditableTable/EditableTable";
 
-const columns = [
+const kanbanColumns = [
 	{
 		title: "TO-DO",
 		icon: ClipboardDocumentCheckIcon,
@@ -95,6 +96,37 @@ const columns = [
 
 export function TeamActivity() {
 	const [view, setView] = React.useState("kanban");
+	// Flatten all tasks for the table view
+	const tableData = kanbanColumns.flatMap((col) =>
+		col.tasks.map((task, j) => ({
+			...task,
+			section: col.title,
+			id: `${col.title}-${j}`,
+		}))
+	);
+
+	// Define columns for EditableTable
+	const tableColumns = [
+		{ key: "title", label: "Task", headerClassName: "table-header-cell Task", cellClassName: "table-cell table-title", width: "20%" },
+		{ key: "status", label: "Status", headerClassName: "table-header-cell Status", cellClassName: "table-cell table-status", width: "10%" },
+		{ key: "desc", label: "Description", headerClassName: "table-header-cell Description", cellClassName: "table-cell table-desc", width: "30%" },
+		{ key: "user", label: "Assigned", headerClassName: "table-header-cell Assigned", cellClassName: "table-cell table-user", width: "15%" },
+		{ key: "date", label: "Date", headerClassName: "table-header-cell Date", cellClassName: "table-cell table-date", width: "10%" },
+		{ key: "links", label: "Links", headerClassName: "table-header-cell Links", cellClassName: "table-cell table-links", width: "10%" },
+		{ key: "section", label: "Section", headerClassName: "table-header-cell Action", cellClassName: "table-cell table-actions", width: "5%" },
+	];
+
+	// Map user cell to show avatar and name
+	const processedTableData = tableData.map((row) => ({
+		...row,
+		user: (
+			<span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+				<img src={row.user.avatar} alt={row.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
+				{row.user.name}
+			</span>
+		),
+	}));
+
 	return (
 		<div className="team-activity-container">
 			<div className="team-activity-header">
@@ -120,7 +152,7 @@ export function TeamActivity() {
 			</div>
 			<div className="team-activity-board">
 				{view === "kanban" ? (
-					columns.map((col, i) => (
+					kanbanColumns.map((col, i) => (
 						<div className="activity-column" key={col.title}>
 							<div className="column-header">
 								<div className="column-title-icon">
@@ -169,44 +201,7 @@ export function TeamActivity() {
 					))
 				) : (
 					<div className="activity-list-view">
-						<table className="activity-table">
-							<thead className="thead">
-								<tr className="Tableheader">
-									<th className="Task">Task</th>
-									<th className="Status">Status</th>
-									<th className="Description">Description</th>
-									<th className="Assigned">Assigned</th>
-									<th className="Date">Date</th>
-									<th className="Links">Links</th>
-									<th className="Action">Action</th>
-								</tr>
-							</thead>
-							<tbody className="tbody">
-								{columns.flatMap((col) =>
-									col.tasks.map((task, j) => (
-										<tr key={col.title + j}>
-											<td className="table-title">{task.title}</td>
-											<td className="table-status">
-												<span className="task-status-dot" style={{ background: task.statusColor, display: 'inline-block', marginRight: 6 }}></span>
-												{task.status}
-											</td>
-											<td className="table-desc">{task.desc}</td>
-											<td className="table-user" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-												<img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
-												{task.user.name}
-											</td>
-											<td className="table-date">
-												{task.date}
-											</td>
-											<td className="table-links">
-												{task.links}
-											</td>
-											<td className="table-actions">{col.title}</td>
-										</tr>
-									))
-								)}
-							</tbody>
-						</table>
+						<EditableTable columns={tableColumns} data={processedTableData} />
 					</div>
 				)}
 			</div>

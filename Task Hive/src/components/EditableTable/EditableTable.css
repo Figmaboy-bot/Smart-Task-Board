@@ -1,0 +1,292 @@
+/* Ensure header checkbox is vertically centered */
+/* Checkbox wrapper for centering checkmark icon */
+/* Checkbox wrapper for centering checkmark icon */
+.checkbox-wrapper {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
+}
+/* Remove any restrictions from header-radius-left for checkbox centering */
+.header-radius-left {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.table-checkbox {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    z-index: 1;
+    border: 1.5px solid var(--grey-30);
+    flex-wrap: nowrap;
+}
+
+.checkbox-cell {
+    width: 5% !important;
+    min-width: 40px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.checkbox-checkmark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    color: var(--color-white);
+    stroke-width: 2px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* EditableTable component styles - matches Teams table look */
+
+.editable-table-wrapper {
+    overflow-x: auto;
+}
+
+.users-table-element {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    font-family: inherit;
+    table-layout: fixed;
+}
+
+td, th {
+  white-space: normal;      
+  word-break: break-word;  
+  overflow-wrap: anywhere; 
+  overflow: ellipsis;
+}
+
+/* REMOVE FLEX FROM TABLE ROWS */
+/* .users-table-element thead tr,
+.users-table-element tbody tr {
+  display: flex;
+  flex-direction: row;
+} */
+
+.table-header-cell {
+    color: var(--grey-60);
+    font-weight: 500;
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    vertical-align: middle;
+    box-sizing: border-box;
+    padding: 0;
+    height: 42px;
+    line-height: 42px;
+}
+
+.img-member-header {
+    width: 25%;
+}
+
+.checkbox-header {
+    width: 5%;
+    min-width: 40px;
+    max-width: 80px;
+    text-align: center;
+    vertical-align: middle;
+    background: var(--grey-10);
+    height: 42px;
+    padding: 0;
+    line-height: 42px;
+}
+
+.email-header {
+    width: 25%;
+    min-width: 0;
+    max-width: none;
+    width: 20%;
+}
+
+.status-header {
+    width: 15%;
+}
+
+.actions-header {
+    width: 10%;
+    justify-content: flex-start;
+}
+
+.header-main {
+    background: var(--color-background);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
+}
+
+.header-radius-left {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    background: var(--color-background);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
+}
+
+.header-radius-right {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    background: var(--color-background);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
+}
+
+.table-checkbox {
+    margin: 0;
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--grey-30);
+    appearance: none;
+    background: var(--color-white);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.table-checkbox:checked {
+    background: var(--primary-50);
+    border-color: var(--grey-30);
+}
+
+.table-checkbox:checked::after {
+
+    display: block;
+    color: var(--color-white);
+    font-size: 12px;
+    text-align: center;
+    line-height: 16px;
+}
+
+.col-width-input {
+    margin-left: 6px;
+    width: 36px;
+    font-size: 10px;
+    border: 1px solid var(--grey-30);
+    border-radius: 4px;
+    background: var(--grey-05);
+    color: var(--grey-60);
+    padding: 2px 4px;
+}
+
+.table-cell {
+    padding: 14px 12px;
+    font-size: 12px;
+    color: var(--color-black);
+    border-bottom: 1px solid var(--grey-30);
+    align-content: center;
+    box-sizing: border-box;
+    white-space: nowrap;         /* Prevents wrapping */
+    overflow: hidden;            /* Hides overflow */
+    text-overflow: ellipsis;     /* Shows ellipsis for overflow */
+}
+
+.table-cell:last-child {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.img-member {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 56px;
+    width: 35%;
+}
+
+
+.table-cell img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0;
+}
+
+.status-cell {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 10px;
+    width: auto !important;
+}
+
+.status-cell.active {
+    background: var(--success-0);
+    color: var(--success-50);
+}
+
+.status-cell.invited {
+    background: var(--warning-0);
+    color: var(--warning-50);
+}
+
+.status-cell.suspended {
+    background: var(--error-0);
+    color: var(--error-50);
+}
+
+.status-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.status-circle.active {
+    background: var(--success-50);
+}
+
+.status-circle.invited {
+    background: var(--warning-50);
+}
+
+.status-circle.suspended {
+    background: var(--error-50);
+}
+
+.action-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--grey-30);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.action-button svg {
+    width: 20px;
+    height: 20px;
+    color: var(--grey-60);
+}
