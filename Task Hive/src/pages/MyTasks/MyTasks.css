@@ -23,21 +23,6 @@
     cursor: pointer;
 }
 
-.custom-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding: 6px 36px 6px 12px;
-    border: 1px solid var(--grey-30);
-    border-radius: 8px;
-    font-size: 14px;
-    line-height: 16px;
-    color: var(--color-black);
-    background-color: var(--color-background);
-    cursor: pointer;
-    width: 160px;
-    min-width: 120px;
-}
 
 .custom-arrow {
     pointer-events: none;
