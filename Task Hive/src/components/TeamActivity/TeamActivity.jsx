@@ -8,6 +8,7 @@ import CheckBadgeIcon from "@heroicons/react/24/outline/CheckBadgeIcon";
 import PlusCircleIcon from "@heroicons/react/24/outline/PlusCircleIcon";
 import { EllipsisVerticalIcon,ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline";
 import EditableTable from "../EditableTable/EditableTable";
+import ActivityTaskCard from "../ActivityTaskCard/ActivityTaskCard";
 
 const kanbanColumns = [
 	{
@@ -167,35 +168,7 @@ export function TeamActivity() {
 								</div>
 							</div>
 							{col.tasks.map((task, j) => (
-								<div className="activity-task-card" key={j}>
-									<div className="task-card-top">
-										<div className="task-tags-row">
-											<span className="task-tag">{task.tag}</span>
-											<div className="statusanddot">
-												<span className="task-status-dot" style={{ background: task.statusColor }}></span>
-												<span className="task-status-label">{task.status}</span>
-											</div>
-										</div>
-										<div>
-											<div className="task-name">{task.title}</div>
-											<div className="task-description">{task.desc}</div>
-										</div>
-									</div>
-									<div className="task-footer-row">
-										<div className="task-footer-user">
-											<img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" />
-											<span className="task-user-name">{task.user.name}</span>
-										</div>
-										<div className="task-footer-date">
-											<CalendarIcon className="task-footer-icon" />
-											<span className="task-user-name">{task.date}</span>
-										</div>
-										<div className="task-footer-links">
-											<LinkIcon className="task-footer-icon" />
-											<span className="task-user-name">{task.links}</span>
-										</div>
-									</div>
-								</div>
+								<ActivityTaskCard key={j} task={task} />
 							))}
 						</div>
 					))

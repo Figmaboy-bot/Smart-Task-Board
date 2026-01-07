@@ -29,7 +29,7 @@ export default function Dropdown({ options = [], value, onChange, placeholder = 
         aria-expanded={open}
       >
         <span>{selected ? selected.label : placeholder}</span>
-        <ChevronDownIcon className="custom-dropdown-arrow" style={{ width: 20, height: 20, color: "#fff" }} />
+        <ChevronDownIcon className="custom-dropdown-arrow" />
       </button>
       {open && (
         <ul className="custom-dropdown-menu" role="listbox">

@@ -1,0 +1,107 @@
+.activity-task-card {
+    background: var(--color-white);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.task-card-top {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.statusanddot {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.task-tags-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.task-tag {
+    color: var(--grey-50);
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--grey-30);
+    border-radius: 8px;
+    padding: 2px 12px;
+    display: inline-block;
+}
+
+.task-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+    margin-left: 4px;
+}
+
+.task-status-label {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.task-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--grey-80);
+    margin-bottom: 4px;
+}
+
+.task-description {
+    font-size: 14px;
+    color: var(--grey-60);
+    font-weight: 400;
+}
+
+.task-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-background);
+    padding-top: 8px;
+    font-size: 14px;
+    color: #7b8ca6;
+}
+
+.task-footer-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.task-user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.task-user-name {
+    font-weight: 400;
+    color: var(--color-black);
+}
+
+.task-footer-date,
+.task-footer-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.task-footer-icon {
+    color: var(--grey-50);
+    width: 22px;
+    height: 22px;
+    vertical-align: middle;
+    display: inline-block;
+}

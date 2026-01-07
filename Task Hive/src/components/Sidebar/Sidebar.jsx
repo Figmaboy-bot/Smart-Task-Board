@@ -45,10 +45,10 @@ function Sidebar() {
     const navItems = [
         { name: "Dashboard", icon: HomeIcon, iconSolid: HomeIconSolid },
         { name: "My Tasks", icon: CheckCircleIcon, iconSolid: CheckCircleIconSolid },
+        { name: "Calendar", icon: CalendarDaysIcon, iconSolid: CalendarDaysIconSolid },
         { name: "All Tasks", icon: ClipboardDocumentListIcon, iconSolid: ClipboardDocumentListIconSolid },
         { name: "Projects", icon: FolderIcon, iconSolid: FolderIconSolid },
         { name: "Teams", icon: UserGroupIcon, iconSolid: UserGroupIconSolid },
-        { name: "Calendar", icon: CalendarDaysIcon, iconSolid: CalendarDaysIconSolid },
         { name: "Reports & Insights", icon: ChartBarIcon, iconSolid: ChartBarIconSolid },
     ];
     const collaborationItems = [
