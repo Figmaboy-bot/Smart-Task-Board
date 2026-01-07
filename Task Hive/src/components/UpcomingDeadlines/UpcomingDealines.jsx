@@ -113,7 +113,7 @@ export function UpcomingDeadlines() {
                                                             tasks.status === 'On Track' ? '#10B981' :
                                                                 '#6B7280'
                                             }}></div>
-                                            <div className="status">{tasks.status}</div>
+                                            <div className="statuss">{tasks.status}</div>
                                         </div>
                                     </div>
                                     <div className="task-body">

@@ -1,7 +1,7 @@
 import React from "react";
 import "./Buttons.css"
 
-export function IconButton({ icon: Icon, text, className = "", ...props }) {
+export default function IconButton({ icon: Icon, text, className = "", ...props }) {
     return (
         <button className={`Add-Task ${className}`} {...props}>
             {Icon && <Icon className="Add-Task-Icon" />}

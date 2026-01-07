@@ -152,7 +152,7 @@ export function TeamActivity() {
 			</div>
 			<div className="team-activity-board">
 				{view === "kanban" ? (
-					kanbanColumns.map((col, i) => (
+					kanbanColumns.map((col) => (
 						<div className="activity-column" key={col.title}>
 							<div className="column-header">
 								<div className="column-title-icon">

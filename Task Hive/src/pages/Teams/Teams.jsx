@@ -1,7 +1,8 @@
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
 import './Teams.css';
-import { IconButton, OutlineButton } from "../../components/Buttons/Buttons";
+import IconButton from "../../components/Buttons/Buttons";
+import OutlineButton from "../../components/Buttons/Buttons";
 import { PlusCircleIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 

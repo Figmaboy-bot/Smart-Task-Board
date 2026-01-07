@@ -198,9 +198,9 @@ td, th {
     border-bottom: 1px solid var(--grey-30);
     align-content: center;
     box-sizing: border-box;
-    white-space: nowrap;         /* Prevents wrapping */
-    overflow: hidden;            /* Hides overflow */
-    text-overflow: ellipsis;     /* Shows ellipsis for overflow */
+    white-space: nowrap;         
+    overflow: hidden;            
+    text-overflow: ellipsis;  
 }
 
 .table-cell:last-child {
@@ -233,7 +233,7 @@ td, th {
     border-radius: 20px;
     font-weight: 500;
     font-size: 10px;
-    width: auto !important;
+    width: fit-content !important;
 }
 
 .status-cell.active {

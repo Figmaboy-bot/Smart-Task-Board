@@ -1,6 +1,6 @@
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import "./Greetings.css"
-import { IconButton } from "../Buttons/Buttons";
+import IconButton from "../../components/Buttons/Buttons";
 
 export function Greetings () {
     return (

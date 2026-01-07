@@ -1,3 +1,92 @@
+.custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.my-custom__control{ 
+    background: var(--color-black); 
+    border: 1px solid var(--grey-30); 
+    border-radius: 8px; 
+    padding: 6px 12px; 
+    cursor: pointer;}
+
+
+
+.my-custom__option--is-selected { background: var(--primary-50); color: var(--color-black); }
+
+.css-13cymwt-control {
+    background: var(--color-white);
+    border: 1px solid var(--grey-30);
+    color: var(--color-black);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 6px 36px 6px 12px;
+    border: 1px solid var(--grey-30);
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 16px;
+    color: var(--color-black);
+    background-color: var(--color-background);
+    cursor: pointer;
+    width: 160px;
+    min-width: 120px;
+}
+
+.custom-arrow {
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    width: 16px;
+    height: 16px;
+    background: url('../../assets/arrow-down.svg') no-repeat center center;
+    background-size: contain;
+    transform: translateY(-50%);
+}
+/* Filter Switcher Styles */
+.tasks-filter-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.tasks-filter-time-switcher {
+    display: flex;
+    width: fit-content;
+    gap: 8px;
+    padding: 2px;
+    background: var(--color-background);
+    border: 1px solid var(--grey-20);
+    border-radius: 8px;
+}
+
+.tasks-filter-time-switcher button {
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    line-height: 16px;
+    color: var(--grey-50);
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    align-items: center;
+    transition: all 0.16s cubic-bezier(.4, 0, .2, 1);
+    background: transparent;
+}
+
+.tasks-filter-time-switcher .active {
+    background: var(--color-white);
+    color: var(--color-black);
+}
 .my-tasks-page {
     display: flex;
     min-height: 100vh;
@@ -13,4 +102,34 @@
     flex-direction: column;
     align-content: flex-start;
     width: 100%;
+}
+
+.tasks-filter-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+select {
+    padding: 6px 12px;
+    border: 1px solid var(--grey-30);
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 16px;
+    color: var(--color-black);
+    background-color: var(--color-background);
+    cursor: pointer;
+}
+
+
+
+.h2 {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.my-tasks-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }

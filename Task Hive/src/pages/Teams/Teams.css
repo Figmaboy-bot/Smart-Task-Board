@@ -1,17 +1,4 @@
-.checkbox-header {
-    width: 40px;
-    min-width: 40px;
-    max-width: 40px;
-    text-align: center;
-    background: var(--grey-10);
-}
 
-.table-checkbox {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary-50);
-    cursor: pointer;
-}
 .teams-page {
     display: flex;
     min-height: 100vh;
@@ -240,15 +227,4 @@ th {
 
 .status-circle.suspended {
     background: var(--error-50);
-}
-
-
-
-.header-main {
-    background: var(--grey-10);
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 14px 12px;
 }
