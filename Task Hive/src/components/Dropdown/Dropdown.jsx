@@ -1,8 +1,81 @@
 import React, { useState, useRef, useEffect } from "react";
+// Inline CSS for Dropdown component
+const dropdownStyles = `
+.custom-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+  width: auto;
+}
+.custom-dropdown-trigger {
+  width: auto;
+  background: var(--color-background);
+  color: var(--color-black);
+  border: 1px solid var(--grey-20);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+.custom-dropdown-trigger.open {
+  border-color: var(--primary-50);
+}
+.custom-dropdown-arrow {
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.5px;
+  color: var(--grey-80);
+}
+.custom-dropdown-menu {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4px);
+  background: var(--color-background);
+  border: 1px solid var(--grey-20);
+  border-radius: 8px;
+  z-index: 10;
+  min-width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+.custom-dropdown-option {
+  padding: 8px 12px;
+  color: var(--color-black);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+}
+.custom-dropdown-option:hover {
+  background: var(--color-white);
+}
+.custom-dropdown-option.selected {
+  background: var(--primary-50);
+  color: var(--color-background);
+}
+placeholder {
+    color: var(--grey-50);
+}
+`;
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import "./Dropdown.css";
 
 export default function Dropdown({ options = [], value, onChange, placeholder = "Select", className = "" }) {
+  // Inject styles once per mount
+  useEffect(() => {
+    if (!document.getElementById('dropdown-inline-styles')) {
+      const style = document.createElement('style');
+      style.id = 'dropdown-inline-styles';
+      style.innerHTML = dropdownStyles;
+      document.head.appendChild(style);
+    }
+  }, []);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
