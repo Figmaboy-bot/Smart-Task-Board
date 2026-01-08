@@ -10,10 +10,10 @@ import EditableTable from "../../components/EditableTable/EditableTable";
 
 export default function Teams() {
     const [users, setUsers] = useState([
-        { id: 1, img: '/public/upcoming deadlines/ReportImage.jpg', member: 'Alice Johnson', email: 'alice@example.com', role: 'Developer', status: 'Active', },
-        { id: 2, img: '/public/upcoming deadlines/ReportImage.jpg', member: 'Bob Smith', email: 'bob@example.com', role: 'Designer', status: 'Suspended', },
-        { id: 3, img: '/public/upcoming deadlines/ReportImage.jpg', member: 'Carol Williams', email: 'carol@example.com', role: 'Manager', status: 'Active', },
-        { id: 4, img: '/public/upcoming deadlines/ReportImage.jpg', member: 'David Brown', email: 'david@example.com', role: 'Developer', status: 'Invited', }
+        { id: 1, img: '/upcoming deadlines/ReportImage.jpg', member: 'Alice Johnson', email: 'alice@example.com', role: 'Developer', status: 'Active', },
+        { id: 2, img: '/upcoming deadlines/ReportImage.jpg', member: 'Bob Smith', email: 'bob@example.com', role: 'Designer', status: 'Suspended', },
+        { id: 3, img: '/upcoming deadlines/ReportImage.jpg', member: 'Carol Williams', email: 'carol@example.com', role: 'Manager', status: 'Active', },
+        { id: 4, img: '/upcoming deadlines/ReportImage.jpg', member: 'David Brown', email: 'david@example.com', role: 'Developer', status: 'Invited', }
     ]);
 
     const columns = [
