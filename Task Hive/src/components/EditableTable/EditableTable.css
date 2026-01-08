@@ -1,13 +1,10 @@
-/* Ensure header checkbox is vertically centered */
-/* Checkbox wrapper for centering checkmark icon */
-/* Checkbox wrapper for centering checkmark icon */
 .checkbox-wrapper {
     position: relative;
     width: 16px;
     height: 16px;
-    margin: 0 auto;
+    margin: 0;
 }
-/* Remove any restrictions from header-radius-left for checkbox centering */
+
 .header-radius-left {
     width: 100%;
     height: 100%;
@@ -48,7 +45,6 @@
     z-index: 2;
 }
 
-/* EditableTable component styles - matches Teams table look */
 
 .editable-table-wrapper {
     overflow-x: auto;
@@ -69,13 +65,6 @@ td, th {
   overflow-wrap: anywhere; 
   overflow: ellipsis;
 }
-
-/* REMOVE FLEX FROM TABLE ROWS */
-/* .users-table-element thead tr,
-.users-table-element tbody tr {
-  display: flex;
-  flex-direction: row;
-} */
 
 .table-header-cell {
     color: var(--grey-60);
