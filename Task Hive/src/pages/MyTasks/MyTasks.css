@@ -118,3 +118,8 @@ select {
     justify-content: space-between;
     margin-bottom: 1rem;
 }
+
+.my-tasks-header-buttons {
+    display: flex;
+    gap: 0.5rem;
+}

@@ -10,7 +10,7 @@
   color: var(--color-black);
   border: 1px solid var(--grey-20);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 12px;
   font-size: 14px;
   font-weight: 500;
   display: flex;
@@ -59,4 +59,8 @@
 .custom-dropdown-option.selected {
   background: var(--primary-50);
   color: var(--color-background);
+}
+
+placeholder {
+    color: var(--grey-50);
 }

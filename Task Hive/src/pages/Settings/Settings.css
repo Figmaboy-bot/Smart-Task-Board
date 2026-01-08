@@ -14,3 +14,154 @@
     align-content: flex-start;
     width: 100%;
 }
+
+.settings-sidebar {
+    display: flex;
+    width: fit-content;
+    gap: 8px;
+    padding: 2px;
+    background: var(--color-background);
+    border: 1px solid var(--grey-20);
+    border-radius: 8px;
+}
+
+.settings-sidebar button {
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    line-height: 16px;
+    color: var(--grey-50);
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    align-items: center;
+    transition: all 0.16s cubic-bezier(.4, 0, .2, 1);
+    background: transparent;
+}
+
+.settings-sidebar .active {
+    background: var(--color-white);
+    color: var(--color-black);
+}
+
+.settings-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.tab-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.settings-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--grey-20);
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.settings-content-area p {
+    font-size: 16px;
+    color: var(--grey-60);
+    margin: 0;
+}
+
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.personal-info-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.personal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-white);
+    border: 1px solid var(--grey-30);
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--primary-50);
+}
+
+.form-input::placeholder {
+    color: var(--grey-50);
+}
+
+.label {
+    display: flex;
+    flex-direction: row;
+    gap: 20rem;
+    padding: 1.8rem 0;
+    border-bottom: 1px solid var(--grey-20);
+}
+
+.profile-picture {
+    display: flex;
+    flex-direction: row;
+    gap: 16.9rem;
+    padding: 1.8rem 0;
+    border-bottom: 1px solid var(--grey-20);
+    border-top: 1px solid var(--grey-20);
+}
+
+.placeholder-img-change {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    flex-shrink: none;
+}
+
+.profile-img-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}
+
+.change-pic-btn {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-img-change {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+.personal-info-form p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--grey-60);
+}

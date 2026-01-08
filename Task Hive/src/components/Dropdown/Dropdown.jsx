@@ -19,6 +19,7 @@ export default function Dropdown({ options = [], value, onChange, placeholder = 
   }, []);
 
   const selected = options.find(opt => opt.value === value);
+  const isSelected = selected && selected.value !== options[0]?.value;
 
   return (
     <div className={`custom-dropdown-wrapper ${className}`} ref={ref}>
@@ -27,9 +28,10 @@ export default function Dropdown({ options = [], value, onChange, placeholder = 
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
+        style={{ color: isSelected ? "var(--color-black)" : "var(--grey-60)" }}
       >
         <span>{selected ? selected.label : placeholder}</span>
-        <ChevronDownIcon className="custom-dropdown-arrow" />
+        <ChevronDownIcon className="custom-dropdown-arrow" style={{ width: 20, height: 20, color: isSelected ? "var(--color-black)" : "var(--grey-50)" }} />
       </button>
       {open && (
         <ul className="custom-dropdown-menu" role="listbox">
