@@ -10,6 +10,17 @@ import Dropdown from "../../components/Dropdown/Dropdown";
 
 
 export default function Settings() {
+    // Example connection state for each integration
+    const [integrationStatus, setIntegrationStatus] = useState({
+        'google-calendar': false,
+        'slack': true,
+        'trello': false,
+        'notion': true,
+    });
+
+    const handleConnect = (key) => {
+        setIntegrationStatus((prev) => ({ ...prev, [key]: true }));
+    };
     const [setting, setSetting] = useState("Profile");
     const defaultProfileImg = "/Profile.jpg";
     const [profilePic, setProfilePic] = useState(defaultProfileImg);
@@ -41,6 +52,36 @@ export default function Settings() {
         { value: "project1", label: "Project 1" },
         { value: "project2", label: "Project 2" },
     ];
+
+    // preferences options dropdowns
+    const [timeZone, setTimeZone] = useState("Africa/Lagos");
+    const timeZoneOptions = [
+        { value: "Africa/Lagos", label: "Africa/Lagos" },
+        { value: "GMT +5", label: "GMT +5" },
+        { value: "GMT -3", label: "GMT -3" },
+    ];
+
+    const [dateFormat, setDateFormat] = useState("DD/MM/YYYY");
+    const dateFormatOptions = [
+        { value: "DD/MM/YYYY", label: "DD/MM/YYYY" },
+        { value: "MM/DD/YYYY", label: "MM/DD/YYYY" },
+        { value: "YYYY/MM/DD", label: "YYYY/MM/DD" },
+    ];
+
+    const [timeFormat, setTimeFormat] = useState("24-hour");
+    const timeFormatOptions = [
+        { value: "24-hour", label: "24-hour" },
+        { value: "12-hour", label: "12-hour" },
+    ];
+
+    const [language, setLanguage] = useState("English");
+    const languageOptions = [
+        { value: "English", label: "English" },
+        { value: "Spanish", label: "Spanish" },
+        { value: "French", label: "French" },
+    ];
+
+
     // Tab content mapping
     const tabContent = {
         Profile: (
@@ -271,19 +312,113 @@ export default function Settings() {
             </div>
         ),
         Integrations: (
-            <div className="settings-tab-content tab-header-section">
-                <div className="tab-header">
-                    <h3>Integrations</h3>
-                    <p>Connect with third-party apps and services.</p>
+            <div>
+                <div className="settings-tab-content tab-header-section">
+                    <div className="tab-header">
+                        <h3>Integrations</h3>
+                        <p>Connect with third-party apps and services.</p>
+                    </div>
+                    <div className="save-btn-container">
+                        <IconButton
+                            type="button"
+                            className="save-btn"
+                            onClick={() => { }}
+                            text="Save Changes"
+                            icon={MdOutlineSave}
+                        />
+                    </div>
                 </div>
-                <div className="save-btn-container">
-                    <IconButton
-                        type="button"
-                        className="save-btn"
-                        onClick={() => { }}
-                        text="Save Changes"
-                        icon={MdOutlineSave}
-                    />
+                <div className="settings">
+                    <div className="integrations-list">
+                        <div className="integration-item">
+                            <div className="item-logo-desc">
+                                <img src="Icons/google-calendar.svg" alt="" />
+                                <div className="item-desc">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <h3 style={{ margin: 0 }}>Google Calendar</h3>
+                                        <span className={`status-badge ${integrationStatus['google-calendar'] ? 'connected' : 'not-connected'}`}>
+                                            {integrationStatus['google-calendar'] ? 'Connected' : 'Not Connected'}
+                                        </span>
+                                    </div>
+                                    <p>Sync your tasks with Google Calendar.</p>
+                                </div>
+                            </div>
+                            <IconButton
+                                type="button"
+                                className="connect-btn"
+                                onClick={() => handleConnect('google-calendar')}
+                                text={integrationStatus['google-calendar'] ? 'Connected' : 'Connect'}
+                                icon={PencilIcon}
+                                disabled={integrationStatus['google-calendar']}
+                            />
+                        </div>
+                        <div className="integration-item">
+                            <div className="item-logo-desc">
+                                <img src="Icons/slack.svg" alt="" />
+                                <div className="item-desc">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <h3 style={{ margin: 0 }}>Slack</h3>
+                                        <span className={`status-badge ${integrationStatus['slack'] ? 'connected' : 'not-connected'}`}>
+                                            {integrationStatus['slack'] ? 'Connected' : 'Not Connected'}
+                                        </span>
+                                    </div>
+                                    <p>Receive task notifications in Slack.</p>
+                                </div>
+                            </div>
+                            <IconButton
+                                type="button"
+                                className="connect-btn"
+                                onClick={() => handleConnect('slack')}
+                                text={integrationStatus['slack'] ? 'Connected' : 'Connect'}
+                                icon={PencilIcon}
+                                disabled={integrationStatus['slack']}
+                            />
+                        </div>
+                        <div className="integration-item">
+                            <div className="item-logo-desc">
+                                <img src="Icons/trello.svg" alt="" />
+                                <div className="item-desc">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <h3 style={{ margin: 0 }}>Trello</h3>
+                                        <span className={`status-badge ${integrationStatus['trello'] ? 'connected' : 'not-connected'}`}>
+                                            {integrationStatus['trello'] ? 'Connected' : 'Not Connected'}
+                                        </span>
+                                    </div>
+                                    <p>Import tasks from Trello boards.</p>
+                                </div>
+                            </div>
+                            <IconButton
+                                type="button"
+                                className="connect-btn"
+                                onClick={() => handleConnect('trello')}
+                                text={integrationStatus['trello'] ? 'Connected' : 'Connect'}
+                                icon={PencilIcon}
+                                disabled={integrationStatus['trello']}
+                            />
+                        </div>
+                        <div className="integration-item">
+                            <div className="item-logo-desc">
+                                <img src="Icons/notion.svg" alt="" className="notion-icon" />
+                                <div className="item-desc">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <h3 style={{ margin: 0 }}>Notion</h3>
+                                        <span className={`status-badge ${integrationStatus['notion'] ? 'connected' : 'not-connected'}`}>
+                                            {integrationStatus['notion'] ? 'Connected' : 'Not Connected'}
+                                        </span>
+                                    </div>
+                                    <p>Import tasks from Notion pages.</p>
+                                </div>
+                            </div>
+                            <IconButton
+                                type="button"
+                                className="connect-btn"
+                                onClick={() => handleConnect('notion')}
+                                text={integrationStatus['notion'] ? 'Connected' : 'Connect'}
+                                icon={PencilIcon}
+                                disabled={integrationStatus['notion']}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         ),
@@ -333,9 +468,9 @@ export default function Settings() {
                     <h3>Sessions</h3>
                     <div className="sessions-settings">
                         <div className="session-details">
-                        <p>MacBook Pro</p>
-                        <p>Lagos, NG</p>
-                        <p className="active-now">Active now</p>
+                            <p>MacBook Pro</p>
+                            <p>Lagos, NG</p>
+                            <p className="active-now">Active now</p>
                         </div>
                         <IconButton
                             type="button"
@@ -348,57 +483,102 @@ export default function Settings() {
                 </div>
             </div>
 
-            
-        ),
-    Preferences: (
 
-        <div className="settings-tab-content tab-header-section">
-            <div className="tab-header">
-                <h4>Preferences</h4>
-                <p>Set your app preferences and appearance.</p>
+        ),
+        Preferences: (
+            <div>
+                <div className="settings-tab-content tab-header-section">
+                    <div className="tab-header">
+                        <h4>Preferences</h4>
+                        <p>Set your app preferences and appearance.</p>
+                    </div>
+                    <div className="save-btn-container">
+                        <IconButton
+                            type="button"
+                            className="save-btn"
+                            onClick={() => { }}
+                            text="Save Changes"
+                            icon={MdOutlineSave}
+                        />
+                    </div>
+                </div>
+                <div className="settings">
+                    <div className="task-notifications">
+                        <div className="notification-option">
+                            <span>Time zone</span>
+                            <Dropdown
+                                options={timeZoneOptions}
+                                value={timeZone}
+                                onChange={setTimeZone}
+                                placeholder="Africa/Lagos"
+                                className="custom-select"
+                            />
+                        </div>
+                        <div className="notification-option">
+                            <span>Date format</span>
+                            <Dropdown
+                                options={dateFormatOptions}
+                                value={dateFormat}
+                                onChange={setDateFormat}
+                                placeholder="MM/DD/YYYY"
+                                className="custom-select"
+                            />
+                        </div>
+                        <div className="notification-option">
+                            <span>Time format</span>
+                            <Dropdown
+                                options={timeFormatOptions}
+                                value={timeFormat}
+                                onChange={setTimeFormat}
+                                placeholder="24-hour"
+                                className="custom-select"
+                            />
+                        </div>
+                        <div className="notification-option">
+                            <span>Language</span>
+                            <Dropdown
+                                options={languageOptions}
+                                value={language}
+                                onChange={setLanguage}
+                                placeholder="English"
+                                className="custom-select"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="save-btn-container">
-                <IconButton
-                    type="button"
-                    className="save-btn"
-                    onClick={() => { }}
-                    text="Save Changes"
-                    icon={MdOutlineSave}
-                />
-            </div>
-        </div>
-    ),
+        ),
     };
 
-return (
-    <div className="settings-page">
-        <Sidebar />
-        <div className="settings-content">
-            <Header onNotificationClick={() => { }} />
-            <div className="settings-main">
-                <h2>Settings</h2>
-                <div className="settings-container">
-                    <div className="tab-header">
-                        <div className="settings-sidebar">
-                            {settings.map((item) => (
-                                <button
-                                    key={item}
-                                    className={setting === item ? "active" : ""}
-                                    onClick={() => setSetting(item)}
-                                >
-                                    {item}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="settings-content-area">
-                            {tabContent[setting]}
+    return (
+        <div className="settings-page">
+            <Sidebar />
+            <div className="settings-content">
+                <Header onNotificationClick={() => { }} />
+                <div className="settings-main">
+                    <h2>Settings</h2>
+                    <div className="settings-container">
+                        <div className="tab-header">
+                            <div className="settings-sidebar">
+                                {settings.map((item) => (
+                                    <button
+                                        key={item}
+                                        className={setting === item ? "active" : ""}
+                                        onClick={() => setSetting(item)}
+                                    >
+                                        {item}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="settings-content-area">
+                                {tabContent[setting]}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
 }
 
 // Checkbox with checkmark icon for delivery notifications

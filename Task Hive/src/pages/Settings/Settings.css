@@ -1,3 +1,22 @@
+/* Integration status badge */
+.status-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+.status-badge.connected {
+    background: var(--primary-50);
+    color: var(--color-white);
+    border: none;
+}
+.status-badge.not-connected {
+    background: var(--grey-20);
+    color: var(--grey-50);
+    border: 1px solid var(--grey-30);
+}
 .settings-page {
     display: flex;
     min-height: 100vh;
@@ -235,6 +254,39 @@ div.smart-settings {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.integrations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.2rem 0;
+}
+
+.integration-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    width: 600px;
+}
+
+.notion-icon {
+  filter: invert(1); /* black for light mode */
+}
+.dark .notion-icon {
+  filter: invert(0); /* white for dark mode */
+}
+
+.item-logo-desc {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    img{
+        width: 36px;
+    }
 }
 
 .theme-toggle {
