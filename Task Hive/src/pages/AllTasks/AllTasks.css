@@ -14,3 +14,38 @@
     align-content: flex-start;
     width: 100%;
 }
+
+.all-tasks-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.Tasks-top-section {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+}
+
+.all-tasks-container{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.filter-addtask-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.calendar-container-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}

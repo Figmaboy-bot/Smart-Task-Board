@@ -1,9 +1,232 @@
+.calendar-event-card.high-priority {
+    background: var(--primary-0);
+}
+.calendar-event-card.high-priority .calendar-event-link a {
+    color: var(--primary-50);
+}
+.calendar-time-row:last-child .calendar-slot {
+    border-bottom: none;
+}
 .calendar-page {
     display: flex;
     min-height: 100vh;
-    background-color: var(--color-white);
+    background: var(--color-white);
     padding: 0.8rem;
     gap: 1rem;
+}
+
+.calendar-content {
+    flex: 1;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    width: 100%;
+    background: transparent;
+}
+
+
+.calendar-container-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-grid {
+    position: relative;
+    min-height: 420px;
+    border-radius: 20px;
+    border: 1px solid var(--grey-30);
+        overflow-x: auto;
+        overflow-y: auto;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    margin-top: 1rem;
+    max-height: 81.5vh;
+}
+
+    .calendar-grid::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+.calendar-header-row {
+    display: flex;
+    border-bottom: 1px solid var(--grey-30);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-background);
+}
+
+.calendar-day-col {
+    width: 18.5%;
+    background-color: var(--color-background);
+    border-left: 1px solid var(--grey-30);
+    text-align: center;
+    color: #e5e7eb;
+    font-weight: 600;
+    padding: 0.5rem 0;
+}
+
+
+.calendar-time-row:first-child .calendar-time-col.empty-col {
+    border-top-left-radius: 20px;
+}
+
+.calendar-header-row .empty-col {
+    border-bottom: none;
+}
+
+.calendar-day-label {
+    font-size: 12px;
+    color: var(--grey-60);
+    font-weight: 500;
+}
+
+.calendar-time-col.empty-col{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.calendar-arrow-btn {
+    width: 100%;
+    height: 100%;
+    padding: 4px;
+    color: var(--color-black);
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.calendar-arrow-btn:first-child {
+    border-right: 1px solid var(--grey-30);
+}
+
+.calendar-date-label {
+    color: var(--grey-80);
+    font-size: 12px;
+    font-weight: 600;
+    padding-left: 4px;
+}
+
+.calendar-time-row {
+    display: flex;
+    height: fit-content;
+    min-height: 100px;
+}
+
+.calendar-time-col {
+    width: 7.5%;
+    background: var(--color-background);
+    color: var(--grey-60);
+    border-bottom: 1px solid var(--grey-30);
+    font-weight: 500;
+    text-align: right;
+    padding-right: 0.5rem;
+    padding-top: 1rem;
+    font-size: 12px;
+}
+
+.calendar-time-row:last-child {
+    .calendar-time-col {
+        border-bottom: none;
+    }
+}
+
+.calendar-slot {
+    width: 18.5%;
+    border: none;
+    border-bottom: 1px solid var(--grey-30);
+    border-right: 1px solid var(--grey-30);
+    background: transparent;
+}
+
+.first-slot {
+    border: none;
+    border-left: 1px solid var(--grey-30);
+    border-right: 1px solid var(--grey-30);
+    border-bottom: 1px solid var(--grey-30);
+}
+
+.last-slot {
+    border: none;
+    border-bottom: 1px solid var(--grey-30);
+}
+
+.calendar-slot-inner {
+    padding: 8px;
+}
+
+.calendar-event-card {
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px;
+    z-index: 2;
+    color: var(--color-black);
+    font-family: inherit;
+    font-size: 15px;
+    background: var(--color-background);
+    height: fit-content;
+}
+
+.calendar-event-card[style*='background: #fde2cf'] {
+    color: #b45309;
+}
+
+.calendar-event-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.calendar-event-time {
+    font-size: 13px;
+    color: var(--grey-60);
+}
+
+.calendar-event-participants {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--grey-60);
+}
+
+.calendar-event-participant-count {
+    margin-left: 4px;
+}
+
+.calendar-event-meeting {
+    margin-left: 8px;
+    color: var(--grey-60);
+}
+
+.calendar-event-location {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--primary-50);
+}
+
+.calendar-event-link {
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+.calendar-event-link a {
+    color: var(--primary-50);
+    text-decoration: underline;
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
 }
 
 .calendar-content {
