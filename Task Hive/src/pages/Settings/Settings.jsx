@@ -445,7 +445,7 @@ export default function Settings() {
                         <h3>Account Security</h3>
                         <div className="account-security-form">
                             <p>Password:</p>
-                            <input type="password" placeholder="········" className="form-input password" />
+                            <input type="password" placeholder="········" className="form-inputs password" />
                         </div>
                     </div>
 
