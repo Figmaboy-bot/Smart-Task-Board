@@ -89,7 +89,7 @@ export default function Settings() {
                 <div className="settings-tab-content tab-header-section">
                     <div className="tab-header">
                         <h3>Profile Settings</h3>
-                        <p>Profile Settings</p>
+                        <p>Manage your profile information here.</p>
                     </div>
                     <div className="save-btn-container">
                         <IconButton

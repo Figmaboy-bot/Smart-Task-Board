@@ -22,7 +22,9 @@ function Dashboard() {
         <Header />
         <Greetings />
         <StatsDashboard />
-        <UpcomingDeadlines />
+        <div className="upcoming-deadline-container">
+          <UpcomingDeadlines />
+        </div>
         <TeamActivity />
       </div>
     </div>

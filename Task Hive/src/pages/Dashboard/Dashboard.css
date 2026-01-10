@@ -1,3 +1,8 @@
+.dashboard-content {
+  width: 50vw !important;
+}
+
+
 /* Responsive styles for dashboard */
 @media (max-width: 1000px) {
   .dashboard-container {

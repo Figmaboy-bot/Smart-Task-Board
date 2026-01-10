@@ -21,8 +21,6 @@
 
 .tasks-container {
     width: 100%;
-    max-width: 75vw;
-    min-width: 75vw;
     margin: 32px auto 0 auto;
     background: var(--color-white);
     overflow-x: hidden;

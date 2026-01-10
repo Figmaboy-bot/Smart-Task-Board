@@ -59,15 +59,15 @@ export default function Teams() {
                     <div className="team-top-content">
                         <h2>Teams Page</h2>
                         <div className="top-buttons">
+                            <OutlineButton
+                                icon={FunnelIcon}
+                                text="Filter"
+                                className="Outline-Button Add-Task"
+                            />
                             <IconButton
                                 icon={PlusCircleIcon}
                                 text="Add Team"
                                 className="Add-Task"
-                            />
-                            <OutlineButton
-                                icon={FunnelIcon}
-                                text="Filter"
-                                className="Manage-Teams"
                             />
                         </div>
                     </div>

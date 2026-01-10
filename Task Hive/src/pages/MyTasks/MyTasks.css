@@ -94,6 +94,21 @@
     gap: 0.5rem;
 }
 
+.activity-column{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.team-activity-board {
+    display: flex;
+    flex-direction: colrowumn;
+    gap: 1rem;
+    width: 100%;
+}
+
 select {
     padding: 6px 12px;
     border: 1px solid var(--grey-30);
