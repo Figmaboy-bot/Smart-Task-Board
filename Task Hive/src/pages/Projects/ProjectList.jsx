@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./Projects.css";
 import EditableTable from "../../components/EditableTable/EditableTable";
 
 const columns = [
