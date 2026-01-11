@@ -2,7 +2,6 @@ import React from "react";
 import "./Projects.css";
 
 export default function ProjectCard({
-  color = "#4F8CFF",
   name = "Project Name",
   description = "Short project description goes here.",
   progress = 72,
@@ -13,7 +12,6 @@ export default function ProjectCard({
 }) {
   return (
     <div className="project-card custom-project-card">
-      <div className="project-card-strip" style={{ background: color }} />
       <div className="project-card-content">
         <div className="project-card-title">{name}</div>
         <div className="project-card-desc">{description}</div>
