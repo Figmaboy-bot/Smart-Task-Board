@@ -48,11 +48,9 @@ function Sidebar() {
         { name: "Calendar", icon: CalendarDaysIcon, iconSolid: CalendarDaysIconSolid },
         { name: "All Tasks", icon: ClipboardDocumentListIcon, iconSolid: ClipboardDocumentListIconSolid },
         { name: "Projects", icon: FolderIcon, iconSolid: FolderIconSolid },
+        { name: "Messages", icon: ChatBubbleLeftRightIcon, iconSolid: ChatBubbleLeftRightIconSolid },
         { name: "Teams", icon: UserGroupIcon, iconSolid: UserGroupIconSolid },
         { name: "Reports & Insights", icon: ChartBarIcon, iconSolid: ChartBarIconSolid },
-    ];
-    const collaborationItems = [
-        { name: "Messages", icon: ChatBubbleLeftRightIcon, iconSolid: ChatBubbleLeftRightIconSolid },
     ];
     const { user, logout } = useAuth()
     const navigate = useNavigate()
@@ -82,10 +80,10 @@ function Sidebar() {
         "My Tasks": "/my-tasks",
         "All Tasks": "/all-tasks",
         "Projects": "/projects",
+        "Messages": "/messages",
         "Teams": "/teams",
         "Calendar": "/calendar",
         "Reports & Insights": "/reports-insights",
-        "Messages": "/messages",
         "Settings": "/settings",
     };
 
@@ -188,25 +186,6 @@ function Sidebar() {
                         const IconSolid = item.iconSolid;
                         const route = navRoutes[item.name];
                         const isActive = location.pathname === route || (item.name === "Dashboard" && location.pathname === "/");
-                        return (
-                            <button
-                                key={item.name}
-                                className={`nav-item ${isActive ? "active" : ""}`}
-                                onClick={() => handleNavClick(item.name)}
-                                type="button"
-                                title={isCollapsed ? item.name : ""}
-                            >
-                                {isActive && IconSolid ? <IconSolid className="nav-icon" /> : <Icon className="nav-icon" />}
-                                {!isCollapsed && <span>{item.name}</span>}
-                            </button>
-                        );
-                    })}
-                    {/* Messages nav item highlight */}
-                    {collaborationItems.map((item) => {
-                        const Icon = item.icon;
-                        const IconSolid = item.iconSolid;
-                        const route = navRoutes[item.name];
-                        const isActive = location.pathname === route;
                         return (
                             <button
                                 key={item.name}
