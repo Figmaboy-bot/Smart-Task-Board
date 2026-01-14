@@ -292,7 +292,10 @@ export default function AllTasks() {
                                             <span className="column-title">{col.title}</span>
                                         </div>
                                         <div>
-                                            <PlusCircleIcon className="plusicon" />
+                                            <button
+                                                className="column-add"
+                                                onClick={() => setShowTaskModal(true)}
+                                            ><PlusCircleIcon className="plusicon" /></button>
                                             <EllipsisVerticalIcon className="plusicon" />
                                         </div>
                                     </div>

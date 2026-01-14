@@ -100,7 +100,6 @@ function Header() {
         </button>
         <Notifications open={notifOpen} onClose={() => setNotifOpen(false)} notifications={notifications} />
 
-        {/* User Profile */}
         <div className="header-profile">
           <img
             src="/Profile.jpg"

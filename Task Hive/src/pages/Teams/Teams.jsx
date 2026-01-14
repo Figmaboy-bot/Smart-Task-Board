@@ -3,12 +3,16 @@ import Header from "../../components/Header/Header";
 import './Teams.css';
 import IconButton from "../../components/Buttons/Buttons";
 import OutlineButton from "../../components/Buttons/Buttons";
+import AddTeamModal from "../../components/AddTeamModal/AddTeamModal";
 import { PlusCircleIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 import EditableTable from "../../components/EditableTable/EditableTable";
 
 export default function Teams() {
+    
+    const [showAddTeamModal, setShowAddTeamModal] = useState(false);
+
     const [users, setUsers] = useState([
         { id: 1, img: '/upcoming deadlines/ReportImage.jpg', member: 'Alice Johnson', email: 'alice@example.com', role: 'Developer', status: 'Active', },
         { id: 2, img: '/upcoming deadlines/ReportImage.jpg', member: 'Bob Smith', email: 'bob@example.com', role: 'Designer', status: 'Suspended', },
@@ -68,6 +72,7 @@ export default function Teams() {
                                 icon={PlusCircleIcon}
                                 text="Add Team"
                                 className="Add-Task"
+                                onClick={() => setShowAddTeamModal(true)}
                             />
                         </div>
                     </div>
@@ -79,6 +84,10 @@ export default function Teams() {
                         />
                     </div>
                 </div>
+                <AddTeamModal open={showAddTeamModal} onClose={() => setShowAddTeamModal(false)} onSubmit={(newTeam) => {
+                    setUsers([...users, { id: users.length + 1, ...newTeam }]);
+                    setShowAddTeamModal(false);
+                }} />
             </div>
         </div>
     );

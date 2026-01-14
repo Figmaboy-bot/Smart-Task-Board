@@ -8,9 +8,13 @@ import { useState } from "react";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import ProjectGrid from "./ProjectGrid";
 import ProjectList from "./ProjectList";
+import AddProjectModal from "../../components/AddProjectModal/AddProjectModal";
 import './Projects.css';
 
 export default function Projects() {
+
+    const [showAddProjectModal, setShowAddProjectModal] = useState(false);
+
     const [owner, setOwner] = useState(null);
     const [team, setTeam] = useState(null);
     const [status, setStatus] = useState(null);
@@ -59,7 +63,10 @@ export default function Projects() {
                             icon={PlusCircleIcon}
                             text="Add Project"
                             className="Add-Task"
+                            onClick={() => setShowAddProjectModal(true)}
                         />
+
+                        <AddProjectModal open={showAddProjectModal} onClose={() => setShowAddProjectModal(false)} />
 
                     </div>
                 </div>

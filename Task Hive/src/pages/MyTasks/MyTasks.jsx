@@ -216,8 +216,8 @@ export default function MyTasks() {
                                 text="Add Task"
                                 className="Add-Task"
                                 onClick={() => setShowTaskModal(true)}
-                             />
-                             <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)}
+                            />
+                            <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)}
                             />
                         </div>
                     </div>
@@ -281,7 +281,10 @@ export default function MyTasks() {
                                                 <span className="column-title">{col.title}</span>
                                             </div>
                                             <div>
-                                                <PlusCircleIcon className="plusicon" />
+                                                <button
+                                                    className="column-add"
+                                                    onClick={() => setShowTaskModal(true)}
+                                                ><PlusCircleIcon className="plusicon" /></button>
                                                 <EllipsisVerticalIcon className="plusicon" />
                                             </div>
                                         </div>

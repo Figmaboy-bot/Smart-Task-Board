@@ -9,6 +9,7 @@ import PlusCircleIcon from "@heroicons/react/24/outline/PlusCircleIcon";
 import { EllipsisVerticalIcon,ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline";
 import EditableTable from "../EditableTable/EditableTable";
 import ActivityTaskCard from "../ActivityTaskCard/ActivityTaskCard";
+import TaskModal from "../TaskModal/TaskModal";
 
 const kanbanColumns = [
 	{
@@ -96,6 +97,9 @@ const kanbanColumns = [
 
 
 export function TeamActivity() {
+
+	const [isTaskModalOpen, setIsTaskModalOpen] = React.useState(false);
+
 	const [view, setView] = React.useState("kanban");
 	// Flatten all tasks for the table view
 	const tableData = kanbanColumns.flatMap((col) =>
@@ -163,7 +167,12 @@ export function TeamActivity() {
 									<span className="column-title">{col.title}</span>
 								</div>
 								<div className="column-header-buttons">
-									<button className="column-add"><PlusCircleIcon className="plusicon" /></button>
+									<button
+										className="column-add"
+										onClick={() => setIsTaskModalOpen(true)}
+									>
+										<PlusCircleIcon className="plusicon" />
+									</button>
 									<button className="column-add"><EllipsisVerticalIcon className="plusicon" /></button>
 								</div>
 							</div>
@@ -178,6 +187,8 @@ export function TeamActivity() {
 					</div>
 				)}
 			</div>
+				{/* Render TaskModal only once, always, and control with open prop */}
+				<TaskModal open={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} />
 		</div>
 	);
 }
