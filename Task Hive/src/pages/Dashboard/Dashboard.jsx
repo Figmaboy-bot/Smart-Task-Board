@@ -1,5 +1,3 @@
-
-import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import TeamActivity from "../../components/TeamActivity/TeamActivity";
 import Sidebar from "../../components/Sidebar/Sidebar";

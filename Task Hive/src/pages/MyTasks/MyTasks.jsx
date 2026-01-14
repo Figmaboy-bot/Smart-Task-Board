@@ -6,9 +6,12 @@ import Dropdown from "../../components/Dropdown/Dropdown"
 import React, { useState } from "react";
 import ActivityTaskCard from "../../components/ActivityTaskCard/ActivityTaskCard"
 import EditableTable from "../../components/EditableTable/EditableTable";
+import TaskModal from "../../components/TaskModal/TaskModal"
 import './MyTasks.css'
 
 export default function MyTasks() {
+    const [showTaskModal, setShowTaskModal] = useState(false);
+
     const [date, setDate] = useState("All");
     const dates = ["All", "Today", "Upcoming", "Overdue"];
 
@@ -212,6 +215,9 @@ export default function MyTasks() {
                                 icon={PlusCircleIcon}
                                 text="Add Task"
                                 className="Add-Task"
+                                onClick={() => setShowTaskModal(true)}
+                             />
+                             <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)}
                             />
                         </div>
                     </div>

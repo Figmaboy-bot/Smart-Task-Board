@@ -1,0 +1,123 @@
+.task-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.task-modal {
+  background: var(--color-white);
+  border-radius: 16px;
+  width: 500px;
+  max-width: 90vw;
+  position: relative;
+  padding: 0.5rem;
+}
+
+.task-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  background-color: var(--grey-10);
+  padding: 0.5rem;
+  border-radius: 12px;
+}
+
+.task-modal-body {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.task-modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  font-size: 2rem;
+  background-color: var(--color-white);
+  cursor: pointer;
+}
+
+.task-modal-close-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--grey-60);
+}
+
+.task-modal-field {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.task-modal-field label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  border: 1px solid var(--grey-30);
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--primary-50);
+}
+
+.form-input::placeholder {
+  color: var(--grey-50);
+}
+
+.create-task-button {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.priority-due-date-assignee {
+  display: flex;
+  gap: 1rem;
+}
+
+.custom-dropdown-trigger {
+  width: 100%;
+}
+
+.task-modal-submit {
+  background: var(--primary-50);
+  color: var(--color-white);
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  flex: 1;
+}
+
+.close-task-button {
+  background: var(--color-background);
+  color: var(--grey-80);
+}

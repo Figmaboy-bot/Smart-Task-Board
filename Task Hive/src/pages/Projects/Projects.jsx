@@ -57,7 +57,7 @@ export default function Projects() {
                         />
                         <IconButton
                             icon={PlusCircleIcon}
-                            text="Add Team"
+                            text="Add Project"
                             className="Add-Task"
                         />
 

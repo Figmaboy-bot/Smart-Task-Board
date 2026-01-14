@@ -6,6 +6,7 @@ import { PlusCircleIcon, EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon }
 import ActivityTaskCard from "../../components/ActivityTaskCard/ActivityTaskCard";
 import EditableTable from "../../components/EditableTable/EditableTable"
 import Dropdown from "../../components/Dropdown/Dropdown"
+import TaskModal from "../../components/TaskModal/TaskModal";
 import './AllTasks.css'
 
 export default function AllTasks() {
@@ -194,6 +195,10 @@ export default function AllTasks() {
             ),
         }))
     );
+
+    const [showTaskModal, setShowTaskModal] = useState(false);
+
+
     return (
         <div className="all-tasks-page">
             <Sidebar />
@@ -225,6 +230,7 @@ export default function AllTasks() {
                                 icon={PlusCircleIcon}
                                 text="Add Task"
                                 className="Add-Task"
+                                onClick={() => setShowTaskModal(true)}
                             />
                         </div>
                     </div>
@@ -303,6 +309,8 @@ export default function AllTasks() {
                     )}
                 </div>
             </div>
+
+            <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)} />
         </div>
     )
 }

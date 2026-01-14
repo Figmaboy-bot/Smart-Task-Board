@@ -1,5 +1,5 @@
-/* Override Dropdown background for Messages page */
-.chat-list-filter-dropdown .custom-dropdown-menu, .custom-dropdown-trigger {
+.chat-list-filter-dropdown .custom-dropdown-menu,
+.custom-dropdown-trigger {
     background: var(--color-white) !important;
 }
 
@@ -7,13 +7,13 @@
     background: var(--grey-10) !important;
 }
 
-/* Chat List Item Content Flex */
+
 .chat-list-item-content {
     flex: 1 1 0%;
     min-width: 0;
 }
 
-/* Chat List Item Name */
+
 .chat-list-item-name {
     font-weight: 500;
     font-size: 15px;
@@ -68,10 +68,17 @@
     gap: 8px;
 }
 
-.chat-list-title {
-    font-weight: 600;
-    font-size: 18px;
+.chat-list-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin-bottom: 12px;
+    border-bottom: 1px solid var(--grey-30);
+}
+
+.chat-list-title {
+    font-weight: 500;
+    font-size: 18px;
     margin-left: 8px;
 }
 
@@ -152,6 +159,11 @@
     margin-left: 6px;
 }
 
+.close-chat-icon {
+    width: 24px;
+    height: 24px;
+}
+
 .chat-header-btn {
     margin-right: 8px;
     background: #f3f4f6;
@@ -166,8 +178,11 @@
 }
 
 .chat-header-btn-close {
-    background: #e74c3c;
-    color: #fff;
+    display: flex;
+    flex-direction: row;
+    background: var(--color-white);
+    color: var(--grey-60);
+    padding: 8px;
     margin-right: 0;
 }
 
@@ -235,23 +250,7 @@
     margin: 8px 0;
 }
 
-.chat-options {
-    display: flex;
-    gap: 12px;
-    margin-top: 4px;
-}
 
-.chat-option-btn {
-    background: #f3f4f6;
-    color: #2563eb;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 18px;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.15s;
-}
 
 .chat-input-bar {
     border-top: 1px solid var(--grey-30);

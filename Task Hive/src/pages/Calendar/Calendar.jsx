@@ -1,10 +1,11 @@
-
+import React, { useState } from "react"
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
 import IconButton, { OutlineButton } from "../../components/Buttons/Buttons";
-import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, FunnelIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import TaskModal from "../../components/TaskModal/TaskModal";
 import "./Calendar.css";
+
 
 
 const allDays = [
@@ -86,6 +87,7 @@ const events = [
 
 
 export default function Calendar() {
+    const [showTaskModal, setShowTaskModal] = useState(false);
     const [startIdx, setStartIdx] = useState(0);
     const visibleDays = allDays.slice(startIdx, startIdx + 5);
 
@@ -106,7 +108,12 @@ export default function Calendar() {
                         <h2>Calendar View</h2>
                         <div className="filter-addtask-container">
                             <OutlineButton icon={FunnelIcon} text="Filter" className="Add-Task" />
-                            <IconButton icon={PlusCircleIcon} text="Add Task" className="Add-Task" />
+                            <IconButton 
+                            icon={PlusCircleIcon} 
+                            text="Add Task" 
+                            className="Add-Task"
+                            onClick={() => setShowTaskModal(true)}
+                            />
                         </div>
                     </div>
                     <div className="calendar-grid">
@@ -171,6 +178,8 @@ export default function Calendar() {
                     </div>
                 </div>
             </div>
+             <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)} />
+
         </div>
     );
 }
