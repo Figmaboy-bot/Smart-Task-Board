@@ -104,6 +104,11 @@
   width: 100%;
 }
 
+
+.full-width-dropdown {
+  width: 100%;
+}
+
 .task-modal-submit {
   background: var(--primary-50);
   color: var(--color-white);

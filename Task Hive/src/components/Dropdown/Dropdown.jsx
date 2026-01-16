@@ -66,7 +66,7 @@ placeholder {
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import "./Dropdown.css";
 
-export default function Dropdown({ options = [], value, onChange, placeholder = "Select", className = "" }) {
+export default function Dropdown({ options = [], value, onChange, placeholder = "Select", className = "", width = "auto" }) {
   // Inject styles once per mount
   useEffect(() => {
     if (!document.getElementById('dropdown-inline-styles')) {
@@ -95,13 +95,20 @@ export default function Dropdown({ options = [], value, onChange, placeholder = 
   const isSelected = selected && selected.value !== options[0]?.value;
 
   return (
-    <div className={`custom-dropdown-wrapper ${className}`} ref={ref}>
+    <div
+      className={`custom-dropdown-wrapper ${className}`}
+      ref={ref}
+      style={{ width }}
+    >
       <button
         className={`custom-dropdown-trigger${open ? " open" : ""}`}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        style={{ color: isSelected ? "var(--color-black)" : "var(--grey-60)" }}
+        style={{
+          color: isSelected ? "var(--color-black)" : "var(--grey-60)",
+          width: "100%"
+        }}
       >
         <span>{selected ? selected.label : placeholder}</span>
         <ChevronDownIcon className="custom-dropdown-arrow" style={{ width: 20, height: 20, color: isSelected ? "var(--color-black)" : "var(--grey-50)" }} />

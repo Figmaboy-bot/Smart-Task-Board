@@ -10,12 +10,13 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 	const [dueDate, setDueDate] = useState(null);
 
 	const priorityOptions = [
-		{ value: "all", label: "All Owners" },
-		{ value: "owner1", label: "Owner 1" },
-		{ value: "owner2", label: "Owner 2" },
+		{ value: "all", label: "All Priorities" },
+		{ value: "high", label: "High" },
+		{ value: "medium", label: "Medium" },
+		{ value: "low", label: "Low" },
 	];
 	const assigneeOptions = [
-		{ value: "all", label: "All Owners" },
+		{ value: "all", label: "All Assignees" },
 		{ value: "owner1", label: "Owner 1" },
 		{ value: "owner2", label: "Owner 2" },
 	];
@@ -56,6 +57,7 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 							<div className="task-modal-field">
 								<label>Priority</label>
 								<Dropdown
+									className="full-width-dropdown"
 									options={priorityOptions}
 									value={priority}
 									onChange={setPriority}
@@ -65,6 +67,7 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 							<div className="task-modal-field">
 								<label>Due Date</label>
 								<Dropdown
+									className="full-width-dropdown"
 									options={dueDateOptions}
 									value={dueDate}
 									onChange={setDueDate}
@@ -75,6 +78,7 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 						<div className="task-modal-field">
 							<label>Assignee</label>
 							<Dropdown
+								className="full-width-dropdown"
 								options={assigneeOptions}
 								value={assignee}
 								onChange={setAssignee}
