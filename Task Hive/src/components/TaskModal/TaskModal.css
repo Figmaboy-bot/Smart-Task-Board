@@ -71,7 +71,7 @@
 .form-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: white;
+  background-color: var(--color-white);
   border: 1px solid var(--grey-30);
   border-radius: 0.5rem;
   font-size: 0.8rem;

@@ -138,12 +138,12 @@ h3 {
     outline: none;
 }
 
-.form-input:focus {
+.form-inputs:focus {
     border-color: transparent;
     box-shadow: 0 0 0 2px var(--primary-50);
 }
 
-.form-input::placeholder {
+.form-inputs::placeholder {
     color: var(--grey-50);
 }
 

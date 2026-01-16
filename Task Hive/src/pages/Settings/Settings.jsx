@@ -7,9 +7,33 @@ import IconButton from "../../components/Buttons/Buttons"
 import { PencilIcon, ShieldCheckIcon, ArrowLeftEndOnRectangleIcon } from "@heroicons/react/24/outline"
 import { MdOutlineSave } from "react-icons/md";
 import Dropdown from "../../components/Dropdown/Dropdown";
+import LogoutModal from "../../components/Logout/LogoutModal.jsx";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Settings() {
+
+    const navigate = useNavigate();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+    const logout = () => {
+        localStorage.removeItem("authToken");
+    }
+
+    const handleLogout = () => {
+        setShowLogoutModal(true);
+    };
+
+    const handleLogoutCancel = () => {
+        setShowLogoutModal(false);
+    };
+
+    const handleLogoutConfirm = () => {
+        setShowLogoutModal(false);
+        logout();
+        navigate("/login");
+    };
+
     // Example connection state for each integration
     const [integrationStatus, setIntegrationStatus] = useState({
         'google-calendar': false,
@@ -138,11 +162,11 @@ export default function Settings() {
                             </div>
                             <label className="label">
                                 <p>Name:</p>
-                                <input type="text" placeholder="Your Name" className="form-input" />
+                                <input type="text" placeholder="Your Name" className="form-inputs" />
                             </label>
                             <label className="label">
                                 <p>Email:</p>
-                                <input type="email" placeholder="Your Email" className="form-input" />
+                                <input type="email" placeholder="Your Email" className="form-inputs" />
                             </label>
                         </form>
                     </div>
@@ -475,10 +499,13 @@ export default function Settings() {
                         <IconButton
                             type="button"
                             className="sessions-btn"
-                            onClick={() => { }}
+                            onClick={handleLogout}
                             text="Log out of all sessions"
                             icon={ArrowLeftEndOnRectangleIcon}
                         />
+
+                        <LogoutModal open={showLogoutModal} onCancel={handleLogoutCancel} onConfirm={handleLogoutConfirm} />
+
                     </div>
                 </div>
             </div>
