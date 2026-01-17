@@ -8,10 +8,15 @@ export default function ProjectCard({
   totalTasks = 12,
   overdueTasks = 3,
   team = [], // Array of avatar URLs
-  due = "Mar 24"
+  due = "Mar 24",
+  onClick
 }) {
   return (
-    <div className="project-card custom-project-card">
+    <div
+      className="project-card custom-project-card"
+      onClick={onClick}
+      style={{ cursor: onClick ? "pointer" : "default" }}
+    >
       <div className="project-card-content">
         <div className="project-card-title">{name}</div>
         <div className="project-card-desc">{description}</div>

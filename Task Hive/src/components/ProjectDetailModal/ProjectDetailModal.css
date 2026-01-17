@@ -1,0 +1,253 @@
+.project-detail-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.project-detail-modal {
+    background: var(--color-white);
+    border-radius: 16px;
+    width: 550px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.project-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    background-color: var(--grey-10);
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.project-detail-title-section {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.project-detail-title-section h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--grey-90);
+}
+
+.project-status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    width: fit-content;
+}
+
+.project-detail-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: var(--grey-10);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.project-detail-close:hover {
+    background: var(--grey-20);
+}
+
+.close-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--grey-60);
+}
+
+.project-detail-body {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.project-detail-section h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--grey-70);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.project-detail-section p {
+    margin: 0;
+    color: var(--grey-80);
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.project-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.2rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--grey-10);
+    border-radius: 10px;
+}
+
+.meta-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--grey-50);
+    flex-shrink: 0;
+}
+
+.meta-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.meta-label {
+    font-size: 0.7rem;
+    color: var(--grey-50);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.meta-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--grey-80);
+}
+
+.project-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.project-member-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: var(--grey-10);
+    border-radius: 8px;
+}
+
+.member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.member-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--grey-80);
+}
+
+.member-role {
+    font-size: 0.75rem;
+    color: var(--grey-50);
+}
+
+.project-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.project-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--grey-20);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.project-progress-fill {
+    height: 100%;
+    background: var(--primary-50);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.project-progress-text {
+    font-size: 0.8rem;
+    color: var(--grey-60);
+    text-align: right;
+}
+
+.project-detail-footer {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.project-detail-btn {
+    background: var(--primary-50);
+    color: var(--color-white);
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    flex: 1;
+}
+
+.project-detail-btn.primary {
+    background: var(--primary-50);
+    color: white;
+}
+
+.project-detail-btn.primary:hover {
+    background: var(--primary-60);
+}
+
+.project-detail-btn.secondary {
+    background: var(--color-white);
+    color: var(--grey-70);
+    border: 1px solid var(--grey-30);
+}
+
+.project-detail-btn.secondary:hover {
+    background: var(--grey-10);
+}
+
+@media (max-width: 500px) {
+    .project-detail-meta {
+        grid-template-columns: 1fr;
+    }
+}

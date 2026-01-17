@@ -7,10 +7,13 @@ import React, { useState } from "react";
 import ActivityTaskCard from "../../components/ActivityTaskCard/ActivityTaskCard"
 import EditableTable from "../../components/EditableTable/EditableTable";
 import TaskModal from "../../components/TaskModal/TaskModal"
+import TaskDetailModal from "../../components/TaskDetailModal/TaskDetailModal"
+import { projectsData } from "../../data/projectsData"
 import './MyTasks.css'
 
 export default function MyTasks() {
     const [showTaskModal, setShowTaskModal] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
 
     const [date, setDate] = useState("All");
     const dates = ["All", "Today", "Upcoming", "Overdue"];
@@ -222,44 +225,68 @@ export default function MyTasks() {
                             <TaskModal
                                 open={showTaskModal}
                                 onClose={() => setShowTaskModal(false)}
+                                projects={projectsData}
                                 onSubmit={(task) => {
-                                    // Add to Kanban (column based on status)
-                                    setMyKanbanColumns((prev) => prev.map(col =>
-                                        col.title === (task.status || "TO-DO")
-                                            ? { ...col, tasks: [...col.tasks, {
-                                                ...task,
-                                                status: task.status || "To-Do",
-                                                statusColor: task.priority === "High" ? "#ef4444" : (task.priority === "Medium" ? "#fbbc05" : "#22c55e"),
-                                                user: { name: task.assignee || "Me", avatar: "/Profile.jpg" },
-                                                desc: task.description,
-                                                title: task.title,
-                                                tag: task.tag,
-                                                date: task.dueDate,
-                                                links: 0,
-                                            }] }
-                                            : col
-                                    ));
-                                    // Add to Table
+                                    console.log('=== MyTasks onSubmit called ===');
+                                    console.log('Task received:', task);
+                                    
+                                    const statusMap = {
+                                        "To-Do": "TO-DO",
+                                        "In Progress": "IN PROGRESS",
+                                        "Done": "DONE",
+                                    };
+                                    const priorityMap = {
+                                        "high": "High",
+                                        "medium": "Medium",
+                                        "low": "Low",
+                                    };
+                                    
+                                    const normalizedStatus = statusMap[task.status] || "TO-DO";
+                                    const normalizedPriority = priorityMap[task.priority] || "Medium";
+                                    
+                                    console.log('Normalized status:', normalizedStatus);
+                                    
+                                    const newTask = {
+                                        status: normalizedPriority,
+                                        statusColor: normalizedPriority === "High" ? "#ef4444" : (normalizedPriority === "Medium" ? "#fbbc05" : "#22c55e"),
+                                        user: { name: task.assignee || "Me", avatar: "/Profile.jpg" },
+                                        desc: task.description || "",
+                                        title: task.title || "",
+                                        tag: task.tag || "General",
+                                        date: task.dueDate || "",
+                                        links: task.linksCount || 0,
+                                    };
+                                    
+                                    console.log('New task:', newTask);
+                                    
+                                    setMyKanbanColumns((prev) => {
+                                        const updated = prev.map(col => {
+                                            if (col.title === normalizedStatus) {
+                                                console.log('Adding to column:', col.title);
+                                                return { ...col, tasks: [...col.tasks, newTask] };
+                                            }
+                                            return col;
+                                        });
+                                        return updated;
+                                    });
+                                    
                                     setTableData(prev => [
                                         ...prev,
                                         {
-                                            ...task,
-                                            section: task.status || "TO-DO",
-                                            id: `${task.status || "TO-DO"}-${prev.length}`,
+                                            ...newTask,
+                                            section: normalizedStatus,
+                                            id: `${normalizedStatus}-${Date.now()}`,
                                             user: (
                                                 <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                                    <img src={"/Profile.jpg"} alt={task.assignee || "Me"} className="task-user-avatar" style={{ width: 22, height: 22 }} />
+                                                    <img src="/Profile.jpg" alt={task.assignee || "Me"} className="task-user-avatar" style={{ width: 22, height: 22 }} />
                                                     {task.assignee || "Me"}
                                                 </span>
                                             ),
-                                            desc: task.description,
-                                            title: task.title,
-                                            tag: task.tag,
-                                            date: task.dueDate,
-                                            links: 0,
-                                            status: task.status || "To-Do",
+                                            links: task.linksCount || 0,
                                         }
                                     ]);
+                                    
+                                    // Close modal after state updates
                                     setShowTaskModal(false);
                                 }}
                             />
@@ -319,21 +346,22 @@ export default function MyTasks() {
                                     <div className="activity-column" key={col.title}>
                                         <div className="column-header">
                                             <div className="column-title-icon">
-                                                <span className="column-icon" style={{ color: col.color }}>
-
-                                                </span>
-                                                <span className="column-title">{col.title}</span>
+                                                <span className="column-icon" style={{ color: col.color }}></span>
+                                                <span className="column-title">{col.title} ({col.tasks.length})</span>
                                             </div>
                                             <div>
-                                                <button
-                                                    className="column-add"
-                                                    onClick={() => setShowTaskModal(true)}
-                                                ><PlusCircleIcon className="plusicon" /></button>
+                                                <button className="column-add" onClick={() => setShowTaskModal(true)}>
+                                                    <PlusCircleIcon className="plusicon" />
+                                                </button>
                                                 <EllipsisVerticalIcon className="plusicon" />
                                             </div>
                                         </div>
                                         {col.tasks.map((task, j) => (
-                                            <ActivityTaskCard key={j} task={task} />
+                                            <ActivityTaskCard 
+                                                key={`${col.title}-${j}-${task.title}`} 
+                                                task={task}
+                                                onClick={() => setSelectedTask(task)}
+                                            />
                                         ))}
                                     </div>
                                 ))}
@@ -346,6 +374,12 @@ export default function MyTasks() {
                     </div>
                 </div>
             </div>
+
+            <TaskDetailModal
+                open={!!selectedTask}
+                onClose={() => setSelectedTask(null)}
+                task={selectedTask}
+            />
         </div>
-    )
+    );
 }

@@ -1,14 +1,25 @@
 import React from "react";
 import { useState } from "react";
 import './TaskModal.css';
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Dropdown from "../Dropdown/Dropdown";
 
-export default function TaskModal({ open, onClose, onSubmit }) {
+export default function TaskModal({ open, onClose, onSubmit, projects = [] }) {
+	const [project, setProject] = useState(null);
 	const [priority, setPriority] = useState(null);
 	const [assignee, setAssignee] = useState(null);
 	const [tag, setTag] = useState(null);
 	const [status, setStatus] = useState(null);
+	const [links, setLinks] = useState(['']);
+
+	// Convert projects prop to dropdown options
+	const projectOptions = projects.length > 0 
+		? projects.map(p => ({ value: p.name || p, label: p.name || p }))
+		: [
+			{ value: "Project A", label: "Project A" },
+			{ value: "Project B", label: "Project B" },
+			{ value: "Project C", label: "Project C" },
+		];
 
 	const statusOptions = [
 		{ value: "To-Do", label: "To-Do" },
@@ -33,6 +44,23 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 		{ value: "Docs", label: "Docs" },
 	];
 
+	const addLinkField = () => {
+		setLinks([...links, '']);
+	};
+
+	const updateLink = (index, value) => {
+		const newLinks = [...links];
+		newLinks[index] = value;
+		setLinks(newLinks);
+	};
+
+	const removeLink = (index) => {
+		if (links.length > 1) {
+			const newLinks = links.filter((_, i) => i !== index);
+			setLinks(newLinks);
+		}
+	};
+
 	if (!open) return null;
 	return (
 		<div className="task-modal-overlay">
@@ -48,16 +76,31 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 						const title = form.title.value;
 						const description = form.description.value;
 						const dueDate = form.dueDate.value;
-						onSubmit && onSubmit({
+						// Filter out empty links
+						const validLinks = links.filter(link => link.trim() !== '');
+						const submittedTask = {
 							title,
 							description,
-							priority,
-							assignee,
-							tag,
+							priority: priority || "medium",
+							assignee: assignee || "Me",
+							tag: tag || "General",
 							dueDate,
-							status
-						});
-						onClose();
+							status: status || "To-Do",
+							links: validLinks,
+							linksCount: validLinks.length
+						};
+						console.log('TaskModal submit values:', submittedTask);
+						// Reset form fields
+						form.reset();
+						setPriority(null);
+						setAssignee(null);
+						setTag(null);
+						setStatus(null);
+						setLinks(['']);
+						// Call onSubmit last - parent will handle closing
+						if (onSubmit) {
+							onSubmit(submittedTask);
+						}
 					}}
 				>
 					<div className="task-modal-body">
@@ -69,9 +112,23 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 							<label>Description</label>
 							<textarea name="description" rows={3} className="form-input" placeholder="Enter Description" />
 						</div>
-						<div className="task-modal-field">
-							<label>Due Date</label>
-							<input name="dueDate" type="date" className="form-input" required placeholder="Enter Due Date" />
+						<div className="priority-due-date-assignee">
+							<div className="task-modal-field">
+								<label>Due Date</label>
+								<input name="dueDate" type="date" className="form-input" required placeholder="Enter Due Date" />
+							</div>
+							<div className="task-modal-field">
+								<label>Project</label>
+								<Dropdown
+									className="full-width-dropdown"
+									options={projectOptions}
+									value={project}
+									onChange={setProject}
+									placeholder="Select Project"
+									fontSize="0.8rem"
+									padding="12px 16px"
+								/>
+							</div>
 						</div>
 						<div className="priority-due-date-assignee">
 							<div className="task-modal-field">
@@ -124,6 +181,33 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 									padding="12px 16px"
 								/>
 							</div>
+						</div>
+						<div className="task-modal-field">
+							<div className="add-links-header">
+								<label>Links ({links.filter(l => l.trim() !== '').length})</label>
+								<button type="button" className="add-link-btn" onClick={addLinkField}>
+									<PlusCircleIcon className="add-link-icon" /> Add link
+								</button>
+							</div>
+							{links.map((link, index) => (
+								<div key={index} className="link-input-row">
+									<input
+										className="form-input"
+										placeholder="Add Link"
+										value={link}
+										onChange={(e) => updateLink(index, e.target.value)}
+									/>
+									{links.length > 1 && (
+										<button
+											type="button"
+											className="remove-link-btn"
+											onClick={() => removeLink(index)}
+										>
+											<XMarkIcon className="remove-link-icon" />
+										</button>
+									)}
+								</div>
+							))}
 						</div>
 						<div className="create-task-button">
 							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>

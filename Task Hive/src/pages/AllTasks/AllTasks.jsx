@@ -46,9 +46,10 @@ export default function AllTasks() {
     ];
 
     const [view, setView] = useState("kanban");
+    const [showTaskModal, setShowTaskModal] = useState(false);
 
-    // Example Kanban columns for MyTasks
-    const myKanbanColumns = [
+    // Convert to state so we can add tasks
+    const [kanbanColumns, setKanbanColumns] = useState([
         {
             title: "TO-DO",
             color: "#2563eb",
@@ -157,7 +158,7 @@ export default function AllTasks() {
                 },
             ],
         },
-    ];
+    ]);
 
     // Example table columns and data for EditableTable
     const tableColumns = [
@@ -169,22 +170,76 @@ export default function AllTasks() {
         { key: "links", label: "Links", headerClassName: "table-header-cell Links", cellClassName: "table-cell table-links", width: "9%" },
         { key: "section", label: "Priority", headerClassName: "table-header-cell Action", cellClassName: "table-cell table-actions", width: "10%" },
     ];
-    const tableData = myKanbanColumns.flatMap((col) =>
-        col.tasks.map((task, j) => ({
-            ...task,
-            section: col.title,
-            id: `${col.title}-${j}`,
-            user: (
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
-                    {task.user.name}
-                </span>
-            ),
-        }))
+
+    const [tableData, setTableData] = useState(
+        kanbanColumns.flatMap((col) =>
+            col.tasks.map((task, j) => ({
+                ...task,
+                section: col.title,
+                id: `${col.title}-${j}`,
+                user: (
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
+                        {task.user.name}
+                    </span>
+                ),
+            }))
+        )
     );
 
-    const [showTaskModal, setShowTaskModal] = useState(false);
-
+    const handleAddTask = (task) => {
+        console.log('=== AllTasks onSubmit called ===');
+        console.log('Task received:', task);
+        
+        const statusMap = {
+            "To-Do": "TO-DO",
+            "In Progress": "IN PROGRESS",
+            "Done": "DONE",
+        };
+        const priorityMap = {
+            "high": "High",
+            "medium": "Medium",
+            "low": "Low",
+        };
+        
+        const normalizedStatus = statusMap[task.status] || "TO-DO";
+        const normalizedPriority = priorityMap[task.priority] || "Medium";
+        
+        const newTask = {
+            status: normalizedPriority,
+            statusColor: normalizedPriority === "High" ? "#ef4444" : (normalizedPriority === "Medium" ? "#fbbc05" : "#22c55e"),
+            user: { name: task.assignee || "Me", avatar: "/Profile.jpg" },
+            desc: task.description || "",
+            title: task.title || "",
+            tag: task.tag || "General",
+            date: task.dueDate || "",
+            links: task.linksCount || 0,
+        };
+        
+        setKanbanColumns((prev) => prev.map(col => {
+            if (col.title === normalizedStatus) {
+                return { ...col, tasks: [...col.tasks, newTask] };
+            }
+            return col;
+        }));
+        
+        setTableData(prev => [
+            ...prev,
+            {
+                ...newTask,
+                section: normalizedStatus,
+                id: `${normalizedStatus}-${Date.now()}`,
+                user: (
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <img src="/Profile.jpg" alt={task.assignee || "Me"} className="task-user-avatar" style={{ width: 22, height: 22 }} />
+                        {task.assignee || "Me"}
+                    </span>
+                ),
+            }
+        ]);
+        
+        setShowTaskModal(false);
+    };
 
     return (
         <div className="all-tasks-page">
@@ -255,14 +310,12 @@ export default function AllTasks() {
                 <div className="Tasks-main-contents">
                     {view === "kanban" ? (
                         <div className="team-activity-board">
-                            {myKanbanColumns.map((col) => (
+                            {kanbanColumns.map((col) => (
                                 <div className="activity-column" key={col.title}>
                                     <div className="column-header">
                                         <div className="column-title-icon">
-                                            <span className="column-icon" style={{ color: col.color }}>
-
-                                            </span>
-                                            <span className="column-title">{col.title}</span>
+                                            <span className="column-icon" style={{ color: col.color }}></span>
+                                            <span className="column-title">{col.title} ({col.tasks.length})</span>
                                         </div>
                                         <div>
                                             <button
@@ -273,7 +326,7 @@ export default function AllTasks() {
                                         </div>
                                     </div>
                                     {col.tasks.map((task, j) => (
-                                        <ActivityTaskCard key={j} task={task} />
+                                        <ActivityTaskCard key={`${col.title}-${j}-${task.title}`} task={task} />
                                     ))}
                                 </div>
                             ))}
@@ -286,7 +339,11 @@ export default function AllTasks() {
                 </div>
             </div>
 
-            <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)} />
+            <TaskModal 
+                open={showTaskModal} 
+                onClose={() => setShowTaskModal(false)} 
+                onSubmit={handleAddTask}
+            />
         </div>
     )
 }

@@ -109,6 +109,32 @@
   width: 100%;
 }
 
+.add-links-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.add-link-icon {
+  width: 20px;
+  height: 20px;
+  stroke: var(--color-white);
+}
+
+.add-link-btn {
+  background: var(--primary-50);
+  color: var(--color-white);
+  border: none;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
 .task-modal-submit {
   background: var(--primary-50);
   color: var(--color-white);
@@ -125,4 +151,35 @@
 .close-task-button {
   background: var(--color-background);
   color: var(--grey-80);
+}
+
+.link-input-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.link-input-row .form-input {
+	flex: 1;
+}
+
+.remove-link-btn {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #ef4444;
+}
+
+.remove-link-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.remove-link-btn:hover {
+	color: #dc2626;
 }

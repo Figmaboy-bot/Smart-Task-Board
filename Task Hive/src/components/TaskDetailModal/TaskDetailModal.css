@@ -1,0 +1,239 @@
+.task-detail-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.task-detail-modal {
+    background: var(--color-white);
+    border-radius: 16px;
+    width: 500px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.task-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--grey-20);
+    position: sticky;
+    top: 0;
+    background: var(--color-white);
+    border-radius: 16px 16px 0 0;
+}
+
+.task-detail-header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.task-tag-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--primary-10);
+    color: var(--primary-50);
+    width: fit-content;
+}
+
+.task-detail-header-content h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--grey-90);
+}
+
+.task-detail-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: var(--grey-10);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.task-detail-close:hover {
+    background: var(--grey-20);
+}
+
+.close-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--grey-60);
+}
+
+.task-detail-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.task-detail-section h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--grey-70);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.task-detail-section p {
+    margin: 0;
+    color: var(--grey-80);
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.task-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--grey-10);
+    border-radius: 10px;
+}
+
+.meta-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--grey-50);
+    flex-shrink: 0;
+}
+
+.meta-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.meta-label {
+    font-size: 0.7rem;
+    color: var(--grey-50);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.meta-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--grey-80);
+}
+
+.meta-value.priority-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    width: fit-content;
+}
+
+.assignee-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.assignee-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.task-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.task-link-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--grey-10);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--primary-50);
+    font-size: 0.875rem;
+    transition: background 0.2s;
+}
+
+.task-link-item:hover {
+    background: var(--grey-20);
+}
+
+.link-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.task-detail-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--grey-20);
+    background: var(--grey-10);
+    border-radius: 0 0 16px 16px;
+}
+
+.task-detail-btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.task-detail-btn.primary {
+    background: var(--primary-50);
+    color: white;
+}
+
+.task-detail-btn.primary:hover {
+    background: var(--primary-60);
+}
+
+.task-detail-btn.secondary {
+    background: var(--color-white);
+    color: var(--grey-70);
+    border: 1px solid var(--grey-30);
+}
+
+.task-detail-btn.secondary:hover {
+    background: var(--grey-10);
+}
+
+@media (max-width: 500px) {
+    .task-detail-meta {
+        grid-template-columns: 1fr;
+    }
+}
