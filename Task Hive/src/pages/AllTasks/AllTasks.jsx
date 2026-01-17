@@ -11,11 +11,13 @@ import './AllTasks.css'
 
 export default function AllTasks() {
 
-    const [project, setProject] = useState("all");
-    const projectOptions = [
-        { value: "all", label: "All Projects" },
-        { value: "project1", label: "Project 1" },
-        { value: "project2", label: "Project 2" },
+    const [tag, setTag] = useState("all");
+    const tagOptions = [
+        { value: "all", label: "All Tags" },
+        { value: "tag1", label: "Frontend" },
+        { value: "tag2", label: "API" },
+        { value: "tag3", label: "Backend" },
+        { value: "tag4", label: "Docs" },
     ];
 
     const [priority, setPriority] = useState("all");
@@ -24,22 +26,6 @@ export default function AllTasks() {
         { value: "high", label: "High" },
         { value: "medium", label: "Medium" },
         { value: "low", label: "Low" },
-    ];
-
-    const [status, setStatus] = useState("all");
-    const statusOptions = [
-        { value: "all", label: "All Statuses" },
-        { value: "open", label: "Open" },
-        { value: "in_progress", label: "In Progress" },
-        { value: "completed", label: "Completed" },
-    ];
-
-    const [assignees, setAssignees] = useState("all");
-    const assigneesOptions = [
-        { value: "all", label: "All Assignees" },
-        { value: "user1", label: "User 1" },
-        { value: "user2", label: "User 2" },
-        { value: "user3", label: "User 3" },
     ];
 
     const [dueDate, setDueDate] = useState("all");
@@ -52,10 +38,11 @@ export default function AllTasks() {
 
     const [createdBy, setCreatedBy] = useState("all");
     const createdByOptions = [
-        { value: "all", label: "All Created By" },
-        { value: "user1", label: "User 1" },
-        { value: "user2", label: "User 2" },
-        { value: "user3", label: "User 3" },
+        { value: "all", label: "All Assignees" },
+        { value: "user1", label: "Linda" },
+        { value: "user2", label: "Jake" },
+        { value: "user3", label: "Mathew" },
+        { value: "user4", label: "Me" },
     ];
 
     const [view, setView] = useState("kanban");
@@ -67,7 +54,17 @@ export default function AllTasks() {
             color: "#2563eb",
             tasks: [
                 {
-                    tag: "Frontend",
+                    tag: "Backend",
+                    status: "Medium",
+                    statusColor: "#fbbc05",
+                    title: "Implement login UI",
+                    desc: "Create a responsive login form for the app.",
+                    user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
+                    date: "Jan 10",
+                    links: 1,
+                },
+                {
+                    tag: "API",
                     status: "Medium",
                     statusColor: "#fbbc05",
                     title: "Implement login UI",
@@ -78,18 +75,8 @@ export default function AllTasks() {
                 },
                 {
                     tag: "Frontend",
-                    status: "Medium",
-                    statusColor: "#fbbc05",
-                    title: "Implement login UI",
-                    desc: "Create a responsive login form for the app.",
-                    user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-                    date: "Jan 10",
-                    links: 1,
-                },
-                {
-                    tag: "Frontend",
-                    status: "Medium",
-                    statusColor: "#fbbc05",
+                    status: "High",
+                    statusColor: "#ef4444",
                     title: "Implement login UI",
                     desc: "Create a responsive login form for the app.",
                     user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
@@ -104,8 +91,8 @@ export default function AllTasks() {
             tasks: [
                 {
                     tag: "API",
-                    status: "High",
-                    statusColor: "#ef4444",
+                    status: "Medium",
+                    statusColor: "#fbbc05",
                     title: "Integrate Auth API",
                     desc: "Connect frontend login to backend authentication API.",
                     user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
@@ -113,9 +100,9 @@ export default function AllTasks() {
                     links: 2,
                 },
                 {
-                    tag: "API",
-                    status: "High",
-                    statusColor: "#ef4444",
+                    tag: "Frontend",
+                    status: "Low",
+                    statusColor: "#22c55e",
                     title: "Integrate Auth API",
                     desc: "Connect frontend login to backend authentication API.",
                     user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
@@ -123,12 +110,12 @@ export default function AllTasks() {
                     links: 2,
                 },
                 {
-                    tag: "API",
+                    tag: "Docs",
                     status: "High",
                     statusColor: "#ef4444",
                     title: "Integrate Auth API",
                     desc: "Connect frontend login to backend authentication API.",
-                    user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
+                    user: { name: "Me", avatar: "/Profile.jpg" },
                     date: "Jan 11",
                     links: 2,
                 },
@@ -140,8 +127,8 @@ export default function AllTasks() {
             tasks: [
                 {
                     tag: "Docs",
-                    status: "Low",
-                    statusColor: "#22c55e",
+                    status: "High",
+                    statusColor: "#ef4444",
                     title: "Write onboarding guide",
                     desc: "Document onboarding steps for new users.",
                     user: { name: "Mathew", avatar: "https://randomuser.me/api/portraits/men/45.jpg" },
@@ -149,17 +136,17 @@ export default function AllTasks() {
                     links: 0,
                 },
                 {
-                    tag: "Docs",
+                    tag: "Backend",
                     status: "Low",
                     statusColor: "#22c55e",
                     title: "Write onboarding guide",
                     desc: "Document onboarding steps for new users.",
-                    user: { name: "Mathew", avatar: "https://randomuser.me/api/portraits/men/45.jpg" },
+                    user: { name: "Me", avatar: "/Profile.jpg" },
                     date: "Jan 9",
                     links: 0,
                 },
                 {
-                    tag: "Docs",
+                    tag: "API",
                     status: "Low",
                     statusColor: "#22c55e",
                     title: "Write onboarding guide",
@@ -236,13 +223,6 @@ export default function AllTasks() {
                     </div>
                     <div className="tasks-filter-options">
                         <Dropdown
-                            options={projectOptions}
-                            value={project}
-                            onChange={setProject}
-                            placeholder="All Projects"
-                            className="custom-select"
-                        />
-                        <Dropdown
                             options={priorityOptions}
                             value={priority}
                             onChange={setPriority}
@@ -250,17 +230,10 @@ export default function AllTasks() {
                             className="custom-select"
                         />
                         <Dropdown
-                            options={statusOptions}
-                            value={status}
-                            onChange={setStatus}
-                            placeholder="All Statuses"
-                            className="custom-select"
-                        />
-                        <Dropdown
-                            options={assigneesOptions}
-                            value={assignees}
-                            onChange={setAssignees}
-                            placeholder="All Assignees"
+                            options={tagOptions}
+                            value={tag}
+                            onChange={setTag}
+                            placeholder="All Tags"
                             className="custom-select"
                         />
                         <Dropdown

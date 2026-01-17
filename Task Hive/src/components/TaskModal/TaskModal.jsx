@@ -7,23 +7,30 @@ import Dropdown from "../Dropdown/Dropdown";
 export default function TaskModal({ open, onClose, onSubmit }) {
 	const [priority, setPriority] = useState(null);
 	const [assignee, setAssignee] = useState(null);
-	const [dueDate, setDueDate] = useState(null);
+	const [tag, setTag] = useState(null);
+	const [status, setStatus] = useState(null);
 
+	const statusOptions = [
+		{ value: "To-Do", label: "To-Do" },
+		{ value: "In Progress", label: "In Progress" },
+		{ value: "Done", label: "Done" },
+	];
 	const priorityOptions = [
-		{ value: "all", label: "All Priorities" },
 		{ value: "high", label: "High" },
 		{ value: "medium", label: "Medium" },
 		{ value: "low", label: "Low" },
 	];
 	const assigneeOptions = [
-		{ value: "all", label: "All Assignees" },
-		{ value: "owner1", label: "Owner 1" },
-		{ value: "owner2", label: "Owner 2" },
+		{ value: "Me", label: "Me" },
+		{ value: "Linda", label: "Linda" },
+		{ value: "Jake", label: "Jake" },
+		{ value: "Mathew", label: "Mathew" },
 	];
-	const dueDateOptions = [
-		{ value: "all", label: "All Owners" },
-		{ value: "owner1", label: "Owner 1" },
-		{ value: "owner2", label: "Owner 2" },
+	const tagOptions = [
+		{ value: "Frontend", label: "Frontend" },
+		{ value: "API", label: "API" },
+		{ value: "Backend", label: "Backend" },
+		{ value: "Docs", label: "Docs" },
 	];
 
 	if (!open) return null;
@@ -40,7 +47,16 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 						const form = e.target;
 						const title = form.title.value;
 						const description = form.description.value;
-						onSubmit && onSubmit({ title, description });
+						const dueDate = form.dueDate.value;
+						onSubmit && onSubmit({
+							title,
+							description,
+							priority,
+							assignee,
+							tag,
+							dueDate,
+							status
+						});
 						onClose();
 					}}
 				>
@@ -53,6 +69,10 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 							<label>Description</label>
 							<textarea name="description" rows={3} className="form-input" placeholder="Enter Description" />
 						</div>
+						<div className="task-modal-field">
+							<label>Due Date</label>
+							<input name="dueDate" type="date" className="form-input" required placeholder="Enter Due Date" />
+						</div>
 						<div className="priority-due-date-assignee">
 							<div className="task-modal-field">
 								<label>Priority</label>
@@ -61,29 +81,49 @@ export default function TaskModal({ open, onClose, onSubmit }) {
 									options={priorityOptions}
 									value={priority}
 									onChange={setPriority}
-									placeholder="All Priorities"
+									placeholder="Select Priority"
+									fontSize="0.8rem"
+									padding="12px 16px"
 								/>
 							</div>
 							<div className="task-modal-field">
-								<label>Due Date</label>
+								<label>Status</label>
 								<Dropdown
 									className="full-width-dropdown"
-									options={dueDateOptions}
-									value={dueDate}
-									onChange={setDueDate}
-									placeholder="All Due Dates"
+									options={statusOptions}
+									value={status}
+									onChange={setStatus}
+									placeholder="Select Status"
+									fontSize="0.8rem"
+									padding="12px 16px"
 								/>
 							</div>
 						</div>
-						<div className="task-modal-field">
-							<label>Assignee</label>
-							<Dropdown
-								className="full-width-dropdown"
-								options={assigneeOptions}
-								value={assignee}
-								onChange={setAssignee}
-								placeholder="All Assignees"
-							/>
+						<div className="priority-due-date-assignee">
+							<div className="task-modal-field">
+								<label>Assignee</label>
+								<Dropdown
+									className="full-width-dropdown"
+									options={assigneeOptions}
+									value={assignee}
+									onChange={setAssignee}
+									placeholder="Select Assignee"
+									fontSize="0.8rem"
+									padding="12px 16px"
+								/>
+							</div>
+							<div className="task-modal-field">
+								<label>Tag</label>
+								<Dropdown
+									className="full-width-dropdown"
+									options={tagOptions}
+									value={tag}
+									onChange={setTag}
+									placeholder="Select Tag"
+									fontSize="0.8rem"
+									padding="12px 16px"
+								/>
+							</div>
 						</div>
 						<div className="create-task-button">
 							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>

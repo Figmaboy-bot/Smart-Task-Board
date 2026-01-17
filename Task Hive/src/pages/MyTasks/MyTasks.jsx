@@ -48,8 +48,8 @@ export default function MyTasks() {
 
     const [view, setView] = useState("kanban");
 
-    // Example Kanban columns for MyTasks
-    const myKanbanColumns = [
+    // Kanban columns state
+    const [myKanbanColumns, setMyKanbanColumns] = useState([
         {
             title: "TO-DO",
             color: "#2563eb",
@@ -158,7 +158,7 @@ export default function MyTasks() {
                 },
             ],
         },
-    ];
+    ]);
 
     // Example table columns and data for EditableTable
     const tableColumns = [
@@ -170,18 +170,20 @@ export default function MyTasks() {
         { key: "links", label: "Links", headerClassName: "table-header-cell Links", cellClassName: "table-cell table-links", width: "9%" },
         { key: "section", label: "Priority", headerClassName: "table-header-cell Action", cellClassName: "table-cell table-actions", width: "10%" },
     ];
-    const tableData = myKanbanColumns.flatMap((col) =>
-        col.tasks.map((task, j) => ({
-            ...task,
-            section: col.title,
-            id: `${col.title}-${j}`,
-            user: (
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
-                    {task.user.name}
-                </span>
-            ),
-        }))
+    const [tableData, setTableData] = useState(
+        myKanbanColumns.flatMap((col) =>
+            col.tasks.map((task, j) => ({
+                ...task,
+                section: col.title,
+                id: `${col.title}-${j}`,
+                user: (
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
+                        {task.user.name}
+                    </span>
+                ),
+            }))
+        )
     );
 
     return (
@@ -217,7 +219,49 @@ export default function MyTasks() {
                                 className="Add-Task"
                                 onClick={() => setShowTaskModal(true)}
                             />
-                            <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)}
+                            <TaskModal
+                                open={showTaskModal}
+                                onClose={() => setShowTaskModal(false)}
+                                onSubmit={(task) => {
+                                    // Add to Kanban (column based on status)
+                                    setMyKanbanColumns((prev) => prev.map(col =>
+                                        col.title === (task.status || "TO-DO")
+                                            ? { ...col, tasks: [...col.tasks, {
+                                                ...task,
+                                                status: task.status || "To-Do",
+                                                statusColor: task.priority === "High" ? "#ef4444" : (task.priority === "Medium" ? "#fbbc05" : "#22c55e"),
+                                                user: { name: task.assignee || "Me", avatar: "/Profile.jpg" },
+                                                desc: task.description,
+                                                title: task.title,
+                                                tag: task.tag,
+                                                date: task.dueDate,
+                                                links: 0,
+                                            }] }
+                                            : col
+                                    ));
+                                    // Add to Table
+                                    setTableData(prev => [
+                                        ...prev,
+                                        {
+                                            ...task,
+                                            section: task.status || "TO-DO",
+                                            id: `${task.status || "TO-DO"}-${prev.length}`,
+                                            user: (
+                                                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                                    <img src={"/Profile.jpg"} alt={task.assignee || "Me"} className="task-user-avatar" style={{ width: 22, height: 22 }} />
+                                                    {task.assignee || "Me"}
+                                                </span>
+                                            ),
+                                            desc: task.description,
+                                            title: task.title,
+                                            tag: task.tag,
+                                            date: task.dueDate,
+                                            links: 0,
+                                            status: task.status || "To-Do",
+                                        }
+                                    ]);
+                                    setShowTaskModal(false);
+                                }}
                             />
                         </div>
                     </div>
