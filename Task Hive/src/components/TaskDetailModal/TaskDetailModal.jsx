@@ -7,27 +7,20 @@ import {
     FlagIcon,
     LinkIcon,
     ClockIcon,
-    FolderIcon
+    RectangleStackIcon
 } from "@heroicons/react/24/outline";
 import "./TaskDetailModal.css";
 
 export default function TaskDetailModal({ open, onClose, task }) {
     if (!open || !task) return null;
 
-    const getPriorityColor = (priority) => {
-        switch (priority?.toLowerCase()) {
-            case "high": return "#ef4444";
-            case "medium": return "#fbbc05";
-            case "low": return "#22c55e";
-            default: return "#6b7280";
-        }
-    };
 
-    const getStatusColor = (status) => {
+
+    const getPriorityColor = (status) => {
         switch (status?.toLowerCase()) {
-            case "high": return "#ef4444";
-            case "medium": return "#fbbc05";
-            case "low": return "#22c55e";
+            case "high": return "#dc2626";
+            case "medium": return "#eab308";
+            case "low": return "#16a34a";
             default: return "#6b7280";
         }
     };
@@ -44,15 +37,13 @@ export default function TaskDetailModal({ open, onClose, task }) {
                     </button>
                 </div>
 
-
-
                 <div className="task-detail-body">
                     <div className="task-detail-section">
                         <h4>Title</h4>
                         <div className="title-tag">
-                        <p>{task.title || "No title provided."}</p>
-                         <span className="task-tag-badge">{task.tag || "General"}</span>
-                         </div>
+                            <p>{task.title || "No title provided."}</p>
+                            <span className="task-tag-badge">{task.tag || "General"}</span>
+                        </div>
                     </div>
                     <div className="task-detail-section">
                         <h4>Description</h4>
@@ -61,7 +52,7 @@ export default function TaskDetailModal({ open, onClose, task }) {
 
                     <div className="task-detail-meta">
                         <div className="meta-item">
-                            <FolderIcon className="meta-icon" />
+                            <RectangleStackIcon className="meta-icon" />
                             <div className="meta-content">
                                 <span className="meta-label">Project</span>
                                 <span className="meta-value project-badge">
@@ -71,14 +62,14 @@ export default function TaskDetailModal({ open, onClose, task }) {
                         </div>
 
                         <div className="meta-item">
-                            <FlagIcon className="meta-icon" style={{ color: getStatusColor(task.status) }} />
+                            <FlagIcon className="meta-icon" style={{ color: getPriorityColor(task.status) }} />
                             <div className="meta-content">
                                 <span className="meta-label">Priority</span>
                                 <span
                                     className="meta-value priority-badge"
                                     style={{
-                                        color: getStatusColor(task.status),
-                                        backgroundColor: `${getStatusColor(task.status)}15`
+                                        color: getPriorityColor(task.status),
+                                        backgroundColor: `${getPriorityColor(task.status)}15`
                                     }}
                                 >
                                     {task.status || "Medium"}
