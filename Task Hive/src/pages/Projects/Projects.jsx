@@ -16,9 +16,8 @@ export default function Projects() {
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
     const [owner, setOwner] = useState(null);
-    const [team, setTeam] = useState(null);
+    const [dueDate, setDueDate] = useState(null);
     const [status, setStatus] = useState(null);
-    const [tags, setTags] = useState(null);
     const [view, setView] = useState("grid");
 
     const ownerOptions = [
@@ -27,10 +26,15 @@ export default function Projects() {
         { value: "owner2", label: "Owner 2" },
     ];
 
-    const teamOptions = [
-        { value: "all", label: "All Teams" },
-        { value: "team1", label: "Team 1" },
-        { value: "team2", label: "Team 2" },
+    const dueDateOptions = [
+        { value: "all", label: "All Due date" },
+        { value: "today", label: "Today" },
+        { value: "Tomorrow", label: "Tomorrow" },
+        { value: "This week", label: "This week" },
+        { value: "Next week", label: "Next week" },
+        { value: "This Month", label: "This Month" },
+        { value: "Next Month", label: "Next Month" },
+        { value: "This Month", label: "This Month" },
     ];
 
     const statusOptions = [
@@ -40,11 +44,6 @@ export default function Projects() {
         { value: "completed", label: "Completed" },
     ];
 
-    const tagsOptions = [
-        { value: "all", label: "All Tags" },
-        { value: "tag1", label: "Tag 1" },
-        { value: "tag2", label: "Tag 2" },
-    ];
 
     return (
         <div className="projects-page">
@@ -96,10 +95,10 @@ export default function Projects() {
                             className="custom-select"
                         />
                         <Dropdown
-                            options={teamOptions}
-                            value={team}
-                            onChange={setTeam}
-                            placeholder="All Teams"
+                            options={dueDateOptions}
+                            value={dueDate}
+                            onChange={setDueDate}
+                            placeholder="All Dates"
                             className="custom-select"
                         />
                         <Dropdown
@@ -107,13 +106,6 @@ export default function Projects() {
                             value={status}
                             onChange={setStatus}
                             placeholder="All Statuses"
-                            className="custom-select"
-                        />
-                        <Dropdown
-                            options={tagsOptions}
-                            value={tags}
-                            onChange={setTags}
-                            placeholder="All Tags"
                             className="custom-select"
                         />
                     </div>

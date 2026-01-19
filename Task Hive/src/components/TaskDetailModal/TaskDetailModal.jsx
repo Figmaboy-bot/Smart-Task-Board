@@ -1,12 +1,12 @@
 import React from "react";
-import { 
-    XMarkIcon, 
-    CalendarIcon, 
-    UserIcon, 
-    TagIcon, 
-    FlagIcon, 
+import {
+    XMarkIcon,
+    CalendarIcon,
+    UserIcon,
+    TagIcon,
+    FlagIcon,
     LinkIcon,
-    ClockIcon 
+    ClockIcon
 } from "@heroicons/react/24/outline";
 import "./TaskDetailModal.css";
 
@@ -36,15 +36,21 @@ export default function TaskDetailModal({ open, onClose, task }) {
             <div className="task-detail-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="task-detail-header">
                     <div className="task-detail-header-content">
-                        <span className="task-tag-badge">{task.tag || "General"}</span>
-                        <h2>{task.title || "Task Details"}</h2>
+                        <h2>About {task.title || "Task Details"} </h2>
                     </div>
                     <button className="task-detail-close" onClick={onClose}>
                         <XMarkIcon className="close-icon" />
                     </button>
                 </div>
 
+
+
                 <div className="task-detail-body">
+                    <div className="task-detail-section">
+                        <h4>Title</h4>
+                        <p>{task.title || "No title provided."}</p>
+                         <span className="task-tag-badge">{task.tag || "General"}</span>
+                    </div>
                     <div className="task-detail-section">
                         <h4>Description</h4>
                         <p>{task.desc || task.description || "No description provided."}</p>
@@ -55,9 +61,9 @@ export default function TaskDetailModal({ open, onClose, task }) {
                             <FlagIcon className="meta-icon" style={{ color: getStatusColor(task.status) }} />
                             <div className="meta-content">
                                 <span className="meta-label">Priority</span>
-                                <span 
+                                <span
                                     className="meta-value priority-badge"
-                                    style={{ 
+                                    style={{
                                         color: getStatusColor(task.status),
                                         backgroundColor: `${getStatusColor(task.status)}15`
                                     }}
@@ -82,9 +88,9 @@ export default function TaskDetailModal({ open, onClose, task }) {
                                 <div className="meta-value assignee-value">
                                     {task.user && (
                                         <>
-                                            <img 
-                                                src={task.user.avatar || "/Profile.jpg"} 
-                                                alt={task.user.name} 
+                                            <img
+                                                src={task.user.avatar || "/Profile.jpg"}
+                                                alt={task.user.name}
                                                 className="assignee-avatar"
                                             />
                                             <span>{task.user.name || "Unassigned"}</span>
