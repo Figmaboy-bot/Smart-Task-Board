@@ -6,7 +6,8 @@ import {
     TagIcon,
     FlagIcon,
     LinkIcon,
-    ClockIcon
+    ClockIcon,
+    FolderIcon
 } from "@heroicons/react/24/outline";
 import "./TaskDetailModal.css";
 
@@ -48,8 +49,10 @@ export default function TaskDetailModal({ open, onClose, task }) {
                 <div className="task-detail-body">
                     <div className="task-detail-section">
                         <h4>Title</h4>
+                        <div className="title-tag">
                         <p>{task.title || "No title provided."}</p>
                          <span className="task-tag-badge">{task.tag || "General"}</span>
+                         </div>
                     </div>
                     <div className="task-detail-section">
                         <h4>Description</h4>
@@ -57,6 +60,16 @@ export default function TaskDetailModal({ open, onClose, task }) {
                     </div>
 
                     <div className="task-detail-meta">
+                        <div className="meta-item">
+                            <FolderIcon className="meta-icon" />
+                            <div className="meta-content">
+                                <span className="meta-label">Project</span>
+                                <span className="meta-value project-badge">
+                                    {task.project || task.projectName || "No Project"}
+                                </span>
+                            </div>
+                        </div>
+
                         <div className="meta-item">
                             <FlagIcon className="meta-icon" style={{ color: getStatusColor(task.status) }} />
                             <div className="meta-content">
