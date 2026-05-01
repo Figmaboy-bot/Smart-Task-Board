@@ -17,7 +17,7 @@ export default function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, loginAsGuest } = useAuth()
 
   const handleChange = (e) => {
     setFormData({
@@ -146,6 +146,14 @@ export default function LoginForm() {
               <span className="social-text">Apple</span>
             </button>
           </div>
+
+          <button
+            type="button"
+            className="guest-button"
+            onClick={() => { loginAsGuest(); navigate("/"); }}
+          >
+            Continue as Guest
+          </button>
 
           {/* Login Link */}
           <p className="login-link">

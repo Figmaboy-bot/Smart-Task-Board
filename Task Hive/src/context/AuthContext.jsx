@@ -7,7 +7,16 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [isInitialized, setIsInitialized] = useState(false)
 
+  const GUEST_USER = { id: "guest", email: "guest@taskhive.com", isGuest: true }
+
   useEffect(() => {
+    // Restore guest session across refreshes
+    if (localStorage.getItem("guestSession")) {
+      setUser(GUEST_USER)
+      setIsInitialized(true)
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setIsInitialized(true)
@@ -38,12 +47,19 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  const loginAsGuest = () => {
+    localStorage.setItem("guestSession", "true")
+    setUser(GUEST_USER)
+  }
+
   const logout = async () => {
+    localStorage.removeItem("guestSession")
     await supabase.auth.signOut()
+    setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, isInitialized, signup, completeSignup, login, logout }}>
+    <AuthContext.Provider value={{ user, isInitialized, signup, completeSignup, login, loginAsGuest, logout }}>
       {children}
     </AuthContext.Provider>
   )

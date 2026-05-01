@@ -58,3 +58,8 @@
     justify-content: space-between;
     align-items: center;
 }
+
+.activity-column.drag-over {
+    background: var(--primary-10, #ede9fe);
+    outline: 2px dashed var(--primary-50, #7c3aed);
+}

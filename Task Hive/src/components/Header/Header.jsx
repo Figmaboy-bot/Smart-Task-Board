@@ -2,10 +2,12 @@ import { useState } from "react"
 import { MagnifyingGlassIcon, BellIcon, CheckBadgeIcon, ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/outline"
 import Notifications from "../../pages/Notifications/Notifications"
 import { useLocation } from "react-router-dom";
+import { useProfile } from "../../context/ProfileContext";
 import './Header.css'
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { profilePic } = useProfile();
   const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
 
@@ -102,7 +104,7 @@ function Header() {
 
         <div className="header-profile">
           <img
-            src="/Profile.jpg"
+            src={profilePic}
             alt="Profile"
             className="profile-image"
           />

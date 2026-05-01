@@ -3,12 +3,14 @@ import CalendarIcon from "@heroicons/react/24/outline/CalendarIcon";
 import LinkIcon from "@heroicons/react/24/outline/LinkIcon";
 import "./ActivityTaskCard.css";
 
-export default function ActivityTaskCard({ task, onClick }) {
+export default function ActivityTaskCard({ task, onClick, onDragStart }) {
   return (
     <div
       className="activity-task-card"
       onClick={onClick}
-      style={{ cursor: onClick ? "pointer" : "default" }}
+      draggable
+      onDragStart={onDragStart}
+      style={{ cursor: "grab" }}
     >
       <div className="task-card-top">
         <div className="task-tags-row">

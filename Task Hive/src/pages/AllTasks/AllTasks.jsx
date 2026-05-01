@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react"
+import React, { useState, useMemo, useCallback, useRef } from "react"
 import Sidebar from "../../components/Sidebar/Sidebar"
 import Header from "../../components/Header/Header"
 import IconButton from "../../components/Buttons/Buttons"
@@ -45,6 +45,8 @@ export default function AllTasks() {
 
     const [view, setView] = useState("kanban");
     const [showTaskModal, setShowTaskModal] = useState(false);
+    const [dragOverCol, setDragOverCol] = useState(null);
+    const dragInfo = useRef(null);
 
     // Convert to state so we can add tasks
     const [kanbanColumns, setKanbanColumns] = useState([
@@ -296,6 +298,28 @@ export default function AllTasks() {
         });
     }, [tableData, filterTask]);
 
+    const handleDragStart = (colTitle, taskIndex) => {
+        dragInfo.current = { colTitle, taskIndex };
+    };
+
+    const handleDrop = (targetColTitle) => {
+        if (!dragInfo.current) return;
+        const { colTitle: srcCol, taskIndex } = dragInfo.current;
+        if (srcCol === targetColTitle) return;
+
+        setKanbanColumns(prev => {
+            const next = prev.map(col => ({ ...col, tasks: [...col.tasks] }));
+            const src = next.find(c => c.title === srcCol);
+            const tgt = next.find(c => c.title === targetColTitle);
+            const [task] = src.tasks.splice(taskIndex, 1);
+            tgt.tasks.push(task);
+            return next;
+        });
+
+        dragInfo.current = null;
+        setDragOverCol(null);
+    };
+
     const handleAddTask = (task) => {
         console.log('=== AllTasks onSubmit called ===');
         console.log('Task received:', task);
@@ -419,7 +443,13 @@ export default function AllTasks() {
                     {view === "kanban" ? (
                         <div className="team-activity-board">
                             {filteredKanbanColumns.map((col) => (
-                                <div className="activity-column" key={col.title}>
+                                <div
+                                    className={`activity-column${dragOverCol === col.title ? " drag-over" : ""}`}
+                                    key={col.title}
+                                    onDragOver={(e) => { e.preventDefault(); setDragOverCol(col.title); }}
+                                    onDragLeave={() => setDragOverCol(null)}
+                                    onDrop={() => handleDrop(col.title)}
+                                >
                                     <div className="column-header">
                                         <div className="column-title-icon">
                                             <span className="column-icon" style={{ color: col.color }}></span>
@@ -434,7 +464,11 @@ export default function AllTasks() {
                                         </div>
                                     </div>
                                     {col.tasks.map((task, j) => (
-                                        <ActivityTaskCard key={`${col.title}-${j}-${task.title}`} task={task} />
+                                        <ActivityTaskCard
+                                            key={`${col.title}-${j}-${task.title}`}
+                                            task={task}
+                                            onDragStart={() => handleDragStart(col.title, j)}
+                                        />
                                     ))}
                                 </div>
                             ))}

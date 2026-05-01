@@ -1,17 +1,15 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import "./TeamActivity.css";
-import CalendarIcon from "@heroicons/react/24/outline/CalendarIcon";
-import LinkIcon from "@heroicons/react/24/outline/LinkIcon";
 import ClipboardDocumentCheckIcon from "@heroicons/react/24/outline/ClipboardDocumentCheckIcon";
 import ClockIcon from "@heroicons/react/24/outline/ClockIcon";
 import CheckBadgeIcon from "@heroicons/react/24/outline/CheckBadgeIcon";
 import PlusCircleIcon from "@heroicons/react/24/outline/PlusCircleIcon";
-import { EllipsisVerticalIcon,ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline";
 import EditableTable from "../EditableTable/EditableTable";
 import ActivityTaskCard from "../ActivityTaskCard/ActivityTaskCard";
 import TaskModal from "../TaskModal/TaskModal";
 
-const kanbanColumns = [
+const initialColumns = [
 	{
 		title: "TO-DO",
 		icon: ClipboardDocumentCheckIcon,
@@ -95,14 +93,36 @@ const kanbanColumns = [
 	},
 ];
 
-
 export function TeamActivity() {
+	const [columns, setColumns] = useState(initialColumns);
+	const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+	const [view, setView] = useState("kanban");
+	const [dragOverCol, setDragOverCol] = useState(null);
+	const dragInfo = useRef(null);
 
-	const [isTaskModalOpen, setIsTaskModalOpen] = React.useState(false);
+	const handleDragStart = (colTitle, taskIndex) => {
+		dragInfo.current = { colTitle, taskIndex };
+	};
 
-	const [view, setView] = React.useState("kanban");
-	// Flatten all tasks for the table view
-	const tableData = kanbanColumns.flatMap((col) =>
+	const handleDrop = (targetColTitle) => {
+		if (!dragInfo.current) return;
+		const { colTitle: srcCol, taskIndex } = dragInfo.current;
+		if (srcCol === targetColTitle) return;
+
+		setColumns(prev => {
+			const next = prev.map(col => ({ ...col, tasks: [...col.tasks] }));
+			const src = next.find(c => c.title === srcCol);
+			const tgt = next.find(c => c.title === targetColTitle);
+			const [task] = src.tasks.splice(taskIndex, 1);
+			tgt.tasks.push(task);
+			return next;
+		});
+
+		dragInfo.current = null;
+		setDragOverCol(null);
+	};
+
+	const tableData = columns.flatMap((col) =>
 		col.tasks.map((task, j) => ({
 			...task,
 			section: col.title,
@@ -110,7 +130,6 @@ export function TeamActivity() {
 		}))
 	);
 
-	// Define columns for EditableTable
 	const tableColumns = [
 		{ key: "title", label: "Task", headerClassName: "table-header-cell Task", cellClassName: "table-cell table-title", width: "20%" },
 		{ key: "status", label: "Status", headerClassName: "table-header-cell Status", cellClassName: "table-cell table-status", width: "10%" },
@@ -121,7 +140,6 @@ export function TeamActivity() {
 		{ key: "section", label: "Priority", headerClassName: "table-header-cell Action", cellClassName: "table-cell table-actions", width: "10%" },
 	];
 
-	// Map user cell to show avatar and name
 	const processedTableData = tableData.map((row) => ({
 		...row,
 		user: (
@@ -142,7 +160,7 @@ export function TeamActivity() {
 						onClick={() => setView("kanban")}
 						aria-pressed={view === "kanban"}
 					>
-                        <ViewColumnsIcon className="view-icon" />
+						<ViewColumnsIcon className="view-icon" />
 						Kanban
 					</button>
 					<button
@@ -150,15 +168,21 @@ export function TeamActivity() {
 						onClick={() => setView("list")}
 						aria-pressed={view === "list"}
 					>
-                        <TableCellsIcon className="view-icon" />
+						<TableCellsIcon className="view-icon" />
 						List
 					</button>
 				</div>
 			</div>
 			<div className="team-activity-board">
 				{view === "kanban" ? (
-					kanbanColumns.map((col) => (
-						<div className="activity-column" key={col.title}>
+					columns.map((col) => (
+						<div
+							className={`activity-column${dragOverCol === col.title ? " drag-over" : ""}`}
+							key={col.title}
+							onDragOver={(e) => { e.preventDefault(); setDragOverCol(col.title); }}
+							onDragLeave={() => setDragOverCol(null)}
+							onDrop={() => handleDrop(col.title)}
+						>
 							<div className="column-header">
 								<div className="column-title-icon">
 									<span className="column-icon" style={{ color: col.color }}>
@@ -167,17 +191,18 @@ export function TeamActivity() {
 									<span className="column-title">{col.title}</span>
 								</div>
 								<div className="column-header-buttons">
-									<button
-										className="column-add"
-										onClick={() => setIsTaskModalOpen(true)}
-									>
+									<button className="column-add" onClick={() => setIsTaskModalOpen(true)}>
 										<PlusCircleIcon className="plusicon" />
 									</button>
 									<button className="column-add"><EllipsisVerticalIcon className="plusicon" /></button>
 								</div>
 							</div>
 							{col.tasks.map((task, j) => (
-								<ActivityTaskCard key={j} task={task} />
+								<ActivityTaskCard
+									key={`${col.title}-${j}`}
+									task={task}
+									onDragStart={() => handleDragStart(col.title, j)}
+								/>
 							))}
 						</div>
 					))
@@ -187,8 +212,7 @@ export function TeamActivity() {
 					</div>
 				)}
 			</div>
-				{/* Render TaskModal only once, always, and control with open prop */}
-				<TaskModal open={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} />
+			<TaskModal open={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} />
 		</div>
 	);
 }

@@ -3,7 +3,7 @@ import Header from "../../components/Header/Header"
 import IconButton from "../../components/Buttons/Buttons"
 import { PlusCircleIcon, EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline"
 import Dropdown from "../../components/Dropdown/Dropdown"
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import ActivityTaskCard from "../../components/ActivityTaskCard/ActivityTaskCard"
 import EditableTable from "../../components/EditableTable/EditableTable";
 import TaskModal from "../../components/TaskModal/TaskModal"
@@ -14,6 +14,8 @@ import './MyTasks.css'
 export default function MyTasks() {
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [dragOverCol, setDragOverCol] = useState(null);
+    const dragInfo = useRef(null); // { colTitle, taskIndex }
 
     const [date, setDate] = useState("All");
     const dates = ["All", "Today", "Upcoming", "Overdue"];
@@ -294,6 +296,28 @@ export default function MyTasks() {
         return tableData.filter(task => filterTask(task, task.section));
     }, [tableData, filterTask]);
 
+    const handleDragStart = (colTitle, taskIndex) => {
+        dragInfo.current = { colTitle, taskIndex };
+    };
+
+    const handleDrop = (targetColTitle) => {
+        if (!dragInfo.current) return;
+        const { colTitle: srcCol, taskIndex } = dragInfo.current;
+        if (srcCol === targetColTitle) return;
+
+        setMyKanbanColumns(prev => {
+            const next = prev.map(col => ({ ...col, tasks: [...col.tasks] }));
+            const src = next.find(c => c.title === srcCol);
+            const tgt = next.find(c => c.title === targetColTitle);
+            const [task] = src.tasks.splice(taskIndex, 1);
+            tgt.tasks.push(task);
+            return next;
+        });
+
+        dragInfo.current = null;
+        setDragOverCol(null);
+    };
+
     return (
         <div className="my-tasks-page">
             <Sidebar />
@@ -414,7 +438,13 @@ export default function MyTasks() {
                         {view === "kanban" ? (
                             <div className="team-activity-board">
                                 {filteredKanbanColumns.map((col) => (
-                                    <div className="activity-column" key={col.title}>
+                                    <div
+                                        className={`activity-column${dragOverCol === col.title ? " drag-over" : ""}`}
+                                        key={col.title}
+                                        onDragOver={(e) => { e.preventDefault(); setDragOverCol(col.title); }}
+                                        onDragLeave={() => setDragOverCol(null)}
+                                        onDrop={() => handleDrop(col.title)}
+                                    >
                                         <div className="column-header">
                                             <div className="column-title-icon">
                                                 <span className="column-icon" style={{ color: col.color }}></span>
@@ -428,10 +458,11 @@ export default function MyTasks() {
                                             </div>
                                         </div>
                                         {col.tasks.map((task, j) => (
-                                            <ActivityTaskCard 
-                                                key={`${col.title}-${j}-${task.title}`} 
+                                            <ActivityTaskCard
+                                                key={`${col.title}-${j}-${task.title}`}
                                                 task={task}
                                                 onClick={() => setSelectedTask(task)}
+                                                onDragStart={() => handleDragStart(col.title, j)}
                                             />
                                         ))}
                                     </div>

@@ -9,6 +9,7 @@ import { MdOutlineSave } from "react-icons/md";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import LogoutModal from "../../components/Logout/LogoutModal.jsx";
 import { useNavigate } from "react-router-dom";
+import { useProfile } from "../../context/ProfileContext";
 
 
 export default function Settings() {
@@ -45,9 +46,8 @@ export default function Settings() {
     const handleConnect = (key) => {
         setIntegrationStatus((prev) => ({ ...prev, [key]: true }));
     };
+    const { profilePic, updateProfilePic } = useProfile();
     const [setting, setSetting] = useState("Profile");
-    const defaultProfileImg = "/Profile.jpg";
-    const [profilePic, setProfilePic] = useState(defaultProfileImg);
     const settings = ["Profile", "Notifications", "Productivity", "Integrations", "Security", "Preferences"];
     const [taskView, setTaskView] = useState("Today");
     const taskViewOptions = [
@@ -146,7 +146,7 @@ export default function Settings() {
                                         onChange={e => {
                                             if (e.target.files && e.target.files[0]) {
                                                 const reader = new FileReader();
-                                                reader.onload = ev => setProfilePic(ev.target.result);
+                                                reader.onload = ev => updateProfilePic(ev.target.result);
                                                 reader.readAsDataURL(e.target.files[0]);
                                             }
                                         }}
