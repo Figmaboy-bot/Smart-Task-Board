@@ -7,6 +7,7 @@ import './VerifyOtp.css'
 function VerifyOtp() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const inputsRef = useRef([])
   const navigate = useNavigate()
   const { completeSignup } = useAuth()
@@ -23,33 +24,30 @@ function VerifyOtp() {
     }
   }
 
-  const verifyOtp = () => {
-    const saved = JSON.parse(localStorage.getItem("otp"))
-    const enteredOtp = otp.join("")
+  const verifyOtp = async () => {
+    const email = localStorage.getItem("pendingEmail")
+    const token = otp.join("")
 
-    if (!saved) {
-      setError("OTP expired")
+    if (!email) {
+      setError("Session expired. Please sign up again.")
       return
     }
 
-    if (Date.now() > saved.expiresAt) {
-      setError("OTP expired")
-      localStorage.removeItem("otp")
+    if (token.length < 6) {
+      setError("Please enter the full 6-digit code.")
       return
     }
 
-    if (enteredOtp !== saved.otp) {
-      setError("Invalid OTP")
-      return
-    }
+    setLoading(true)
+    setError("")
 
-    // OTP valid → create user account with email and password
-    if (saved.email && saved.password) {
-      completeSignup(saved.email, saved.password)
-      localStorage.removeItem("otp")
+    try {
+      await completeSignup(email, token)
       navigate("/")
-    } else {
-      setError("Missing user data. Please sign up again.")
+    } catch (err) {
+      setError(err.message || "Invalid or expired OTP. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -79,7 +77,9 @@ function VerifyOtp() {
 
         {error && <p className="error">{error}</p>}
 
-        <button onClick={verifyOtp} className="Verify-Button">Verify</button>
+        <button onClick={verifyOtp} className="Verify-Button" disabled={loading}>
+          {loading ? "Verifying…" : "Verify"}
+        </button>
       </div>
     </div>
   )

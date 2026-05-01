@@ -14,10 +14,10 @@ export default function LoginForm() {
   });
   
   const [showPassword, setShowPassword] = useState(false);
-
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { login, loginWithGoogle } = useAuth()
+  const { login } = useAuth()
 
   const handleChange = (e) => {
     setFormData({
@@ -28,33 +28,22 @@ export default function LoginForm() {
     if (error) setError('')
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Clear previous error
     setError('')
-    
-    console.log("🔐 Attempting login with:", { 
-      email: formData.email, 
-      password: formData.password ? "***" : "(empty)",
-      passwordLength: formData.password?.length 
-    });
-    
-    // Check localStorage before login
-    const checkUser = localStorage.getItem("user")
-    console.log("🔍 localStorage check before login:", checkUser)
-    
-    const success = login(formData.email, formData.password);
-
-    if (success) {
+    setLoading(true)
+    try {
+      await login(formData.email, formData.password)
       navigate("/")
-    } else {
-      setError("Invalid email or password")
+    } catch (err) {
+      setError(err.message || "Invalid email or password")
+    } finally {
+      setLoading(false)
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    await loginWithGoogle();
+  const handleGoogleSignUp = () => {
+    alert('Google sign-in coming soon');
   };
 
   const handleAppleSignUp = () => {
@@ -135,8 +124,8 @@ export default function LoginForm() {
             {error && <p className="error" style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.5rem' }}>{error}</p>}
 
             {/* Login Button */}
-            <button type="submit" className="submit-button">
-              Login
+            <button type="submit" className="submit-button" disabled={loading}>
+              {loading ? "Logging in…" : "Login"}
             </button>
           </form>
 

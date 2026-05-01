@@ -17,6 +17,8 @@ export default function SignUpForm() {
   const { signup } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -25,14 +27,23 @@ export default function SignUpForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      setEmailError('Passwords do not match.');
       return;
     }
-    signup(formData.email, formData.password);
-    navigate("/verify-otp");
+    setEmailError("");
+    setLoading(true);
+    try {
+      await signup(formData.email, formData.password);
+      navigate("/verify-otp");
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      setEmailError(`Failed to send OTP: ${err?.text || err?.message || JSON.stringify(err)}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignUp = () => {
@@ -130,9 +141,11 @@ export default function SignUpForm() {
               </div>
             </div>
 
+            {emailError && <p style={{ color: "#ef4444", fontSize: "0.875rem", marginTop: "-8px" }}>{emailError}</p>}
+
             {/* Sign Up Button */}
-            <button type="submit" className="submit-button">
-              Sign Up
+            <button type="submit" className="submit-button" disabled={loading}>
+              {loading ? "Sending OTP…" : "Sign Up"}
             </button>
           </form>
 
