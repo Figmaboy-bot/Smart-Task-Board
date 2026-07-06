@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import "./TaskDetailModal.css";
 
-export default function TaskDetailModal({ open, onClose, task }) {
+export default function TaskDetailModal({ open, onClose, task, onEdit }) {
     if (!open || !task) return null;
 
 
@@ -131,7 +131,7 @@ export default function TaskDetailModal({ open, onClose, task }) {
 
                 <div className="task-detail-footer">
                     <button className="task-detail-btn secondary" onClick={onClose}>Close</button>
-                    <button className="task-detail-btn primary">Edit Task</button>
+                    <button className="task-detail-btn primary" onClick={() => onEdit && onEdit(task)}>Edit Task</button>
                 </div>
             </div>
         </div>

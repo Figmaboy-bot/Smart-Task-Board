@@ -3,14 +3,16 @@ import { useState } from "react";
 import './TaskModal.css';
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Dropdown from "../Dropdown/Dropdown";
+import { COLUMN_TO_STATUS } from "../../hooks/useTasks";
 
-export default function TaskModal({ open, onClose, onSubmit, projects = [], teamMembers = [] }) {
-	const [project, setProject] = useState(null);
-	const [priority, setPriority] = useState(null);
-	const [assignee, setAssignee] = useState(null);
-	const [tag, setTag] = useState(null);
-	const [status, setStatus] = useState(null);
-	const [links, setLinks] = useState(['']);
+export default function TaskModal({ open, onClose, onSubmit, projects = [], teamMembers = [], initialTask = null }) {
+	const isEditing = !!initialTask;
+	const [project, setProject] = useState(initialTask?.project || null);
+	const [priority, setPriority] = useState(initialTask?.status?.toLowerCase() || null);
+	const [assignee, setAssignee] = useState(initialTask?.user?.name || null);
+	const [tag, setTag] = useState(initialTask?.tag || null);
+	const [status, setStatus] = useState(initialTask ? (COLUMN_TO_STATUS[initialTask.columnTitle] || null) : null);
+	const [links, setLinks] = useState(initialTask?.rawLinks?.length ? initialTask.rawLinks : ['']);
 
 	// Convert projects prop to dropdown options
 	const projectOptions = projects.length > 0
@@ -64,7 +66,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 		<div className="task-modal-overlay">
 			<div className="task-modal">
 				<div className="task-modal-header">
-					<h3>Add New Task</h3>
+					<h3>{isEditing ? "Edit Task" : "Add New Task"}</h3>
 					<button className="task-modal-close" onClick={onClose}><XMarkIcon className="task-modal-close-icon" /></button>
 				</div>
 				<form
@@ -104,16 +106,16 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 					<div className="task-modal-body">
 						<div className="task-modal-field">
 							<label>Task Title</label>
-							<input name="title" className="form-input" required placeholder="Enter Title" />
+							<input name="title" className="form-input" required placeholder="Enter Title" defaultValue={initialTask?.title || ""} />
 						</div>
 						<div className="task-modal-field">
 							<label>Description</label>
-							<textarea name="description" rows={3} className="form-input" placeholder="Enter Description" />
+							<textarea name="description" rows={3} className="form-input" placeholder="Enter Description" defaultValue={initialTask?.desc || ""} />
 						</div>
 						<div className="priority-due-date-assignee">
 							<div className="task-modal-field">
 								<label>Due Date</label>
-								<input name="dueDate" type="date" className="form-input" required placeholder="Enter Due Date" />
+								<input name="dueDate" type="date" className="form-input" required placeholder="Enter Due Date" defaultValue={initialTask?.due_date || ""} />
 							</div>
 							<div className="task-modal-field">
 								<label>Project</label>
@@ -209,7 +211,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 						</div>
 						<div className="create-task-button">
 							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>
-							<button type="submit" className="task-modal-submit">Add Task</button>
+							<button type="submit" className="task-modal-submit">{isEditing ? "Save Changes" : "Add Task"}</button>
 						</div>
 					</div>
 				</form>

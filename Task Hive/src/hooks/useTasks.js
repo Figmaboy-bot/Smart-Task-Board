@@ -50,8 +50,31 @@ function mapRowToTask(row) {
         desc: row.description || "",
         user: { name: row.assignee_name || "Unassigned", avatar: "/Profile.jpg" },
         date: formatDisplayDate(row.due_date),
+        due_date: row.due_date || null,
         links: Array.isArray(row.links) ? row.links.length : 0,
+        rawLinks: Array.isArray(row.links) ? row.links : [],
         columnTitle: STATUS_TO_COLUMN[row.status] || "TO-DO",
+    };
+}
+
+function buildLocalTask(input, id) {
+    const priorityLabel = PRIORITY_LABEL[(input.priority || "medium").toLowerCase()] || "Medium";
+    const rawLinks = Array.isArray(input.links) ? input.links : [];
+    return {
+        id,
+        project_id: input.project_id || null,
+        project: input.project || "",
+        tag: input.tag || "General",
+        status: priorityLabel,
+        statusColor: PRIORITY_COLOR[priorityLabel],
+        title: input.title || "",
+        desc: input.description || "",
+        user: { name: input.assignee || "Me", avatar: "/Profile.jpg" },
+        date: formatDisplayDate(input.dueDate),
+        due_date: input.dueDate || null,
+        links: rawLinks.length,
+        rawLinks,
+        columnTitle: STATUS_TO_COLUMN[input.status] || "TO-DO",
     };
 }
 
@@ -88,21 +111,7 @@ export function useTasks() {
 
     const createTask = useCallback(async (input) => {
         if (isGuest) {
-            const priorityLabel = PRIORITY_LABEL[(input.priority || "medium").toLowerCase()] || "Medium";
-            const localTask = {
-                id: `guest-task-${Date.now()}`,
-                project_id: input.project_id || null,
-                project: input.project || "",
-                tag: input.tag || "General",
-                status: priorityLabel,
-                statusColor: PRIORITY_COLOR[priorityLabel],
-                title: input.title || "",
-                desc: input.description || "",
-                user: { name: input.assignee || "Me", avatar: "/Profile.jpg" },
-                date: formatDisplayDate(input.dueDate),
-                links: Array.isArray(input.links) ? input.links.length : 0,
-                columnTitle: STATUS_TO_COLUMN[input.status] || "TO-DO",
-            };
+            const localTask = buildLocalTask(input, `guest-task-${Date.now()}`);
             setTasks((prev) => [...prev, localTask]);
             return localTask;
         }
@@ -130,6 +139,37 @@ export function useTasks() {
         return mapped;
     }, [user, isGuest]);
 
+    const updateTask = useCallback(async (taskId, input) => {
+        if (isGuest) {
+            const updated = buildLocalTask(input, taskId);
+            setTasks((prev) => prev.map((t) => (t.id === taskId ? updated : t)));
+            return updated;
+        }
+
+        const { data, error } = await supabase
+            .from("tasks")
+            .update({
+                project_id: input.project_id || null,
+                title: input.title,
+                description: input.description || "",
+                status: input.status || "To-Do",
+                priority: PRIORITY_LABEL[(input.priority || "medium").toLowerCase()] || "Medium",
+                tag: input.tag || "General",
+                assignee_name: input.assignee || "Me",
+                due_date: input.dueDate || null,
+                links: input.links || [],
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", taskId)
+            .select("*, projects(name)")
+            .single();
+
+        if (error) throw error;
+        const mapped = mapRowToTask(data);
+        setTasks((prev) => prev.map((t) => (t.id === taskId ? mapped : t)));
+        return mapped;
+    }, [isGuest]);
+
     const updateTaskStatus = useCallback(async (taskId, columnTitle) => {
         setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, columnTitle } : t)));
 
@@ -143,5 +183,5 @@ export function useTasks() {
         if (error) console.error("Failed to update task status:", error);
     }, [isGuest]);
 
-    return { tasks, loading, createTask, updateTaskStatus };
+    return { tasks, loading, createTask, updateTask, updateTaskStatus };
 }

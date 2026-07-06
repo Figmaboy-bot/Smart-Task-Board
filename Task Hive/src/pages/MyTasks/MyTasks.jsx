@@ -20,12 +20,16 @@ const COLUMN_META = [
 ];
 
 export default function MyTasks() {
-    const { tasks, loading, createTask, updateTaskStatus } = useTasks();
+    const { tasks, loading, createTask, updateTask, updateTaskStatus } = useTasks();
     const { projects } = useProjects();
     const { teamMembers } = useTeamMembers();
 
     const [showTaskModal, setShowTaskModal] = useState(false);
+    const [editingTask, setEditingTask] = useState(null);
     const [selectedTask, setSelectedTask] = useState(null);
+
+    const openCreateModal = () => { setEditingTask(null); setShowTaskModal(true); };
+    const openEditModal = (task) => { setEditingTask(task); setSelectedTask(null); setShowTaskModal(true); };
     const [dragOverCol, setDragOverCol] = useState(null);
     const dragInfo = useRef(null); // { colTitle, task }
 
@@ -225,16 +229,18 @@ export default function MyTasks() {
                                 icon={PlusCircleIcon}
                                 text="Add Task"
                                 className="Add-Task"
-                                onClick={() => setShowTaskModal(true)}
+                                onClick={openCreateModal}
                             />
                             <TaskModal
+                                key={editingTask?.id ?? "create"}
                                 open={showTaskModal}
                                 onClose={() => setShowTaskModal(false)}
                                 projects={projects}
                                 teamMembers={teamMembers}
+                                initialTask={editingTask}
                                 onSubmit={(task) => {
                                     const matchedProject = projects.find(p => p.name === task.project);
-                                    createTask({
+                                    const payload = {
                                         title: task.title,
                                         description: task.description,
                                         priority: task.priority,
@@ -245,7 +251,12 @@ export default function MyTasks() {
                                         links: task.links,
                                         project_id: matchedProject?.id || null,
                                         project: matchedProject?.name || task.project || "",
-                                    });
+                                    };
+                                    if (editingTask) {
+                                        updateTask(editingTask.id, payload);
+                                    } else {
+                                        createTask(payload);
+                                    }
                                     setShowTaskModal(false);
                                 }}
                             />

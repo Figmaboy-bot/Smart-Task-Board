@@ -19,7 +19,7 @@ function Dashboard() {
       <Sidebar />
       <div className="dashboard-content">
         <Header />
-        <Greetings />
+        <Greetings projects={projects} teamMembers={teamMembers} createTask={createTask} />
         <StatsDashboard tasks={tasks} />
         <div className="upcoming-deadline-container">
           <UpcomingDeadlines tasks={tasks} />
