@@ -14,7 +14,7 @@ export default function SignUpForm() {
   });
 
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { signup, loginWithGoogle, loginWithApple } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,14 +46,22 @@ export default function SignUpForm() {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    console.log('Sign up with Google');
-    alert('Google sign-up clicked');
+  const handleGoogleSignUp = async () => {
+    setEmailError("");
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setEmailError(err.message || "Google sign-in failed. Please try again.");
+    }
   };
 
-  const handleAppleSignUp = () => {
-    console.log('Sign up with Apple');
-    alert('Apple sign-up clicked');
+  const handleAppleSignUp = async () => {
+    setEmailError("");
+    try {
+      await loginWithApple();
+    } catch (err) {
+      setEmailError(err.message || "Apple sign-in failed. Please try again.");
+    }
   };
 
   return (

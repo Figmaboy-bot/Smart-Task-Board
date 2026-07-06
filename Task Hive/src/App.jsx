@@ -11,6 +11,8 @@ import ReportsInsights from "./pages/ReportsInsights/ReportsInsights"
 import Messages from "./pages/Messages/Messages"
 import Settings from "./pages/Settings/Settings"
 import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword/ResetPassword"
 import { useAuth } from "./context/AuthContext"
 
 function ProtectedRoute({ children }) {
@@ -25,6 +27,8 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
       <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/my-tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
       <Route path="/all-tasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />

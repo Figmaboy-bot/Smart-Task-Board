@@ -47,6 +47,39 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  const requestPasswordReset = async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    if (error) throw error
+    localStorage.setItem("pendingResetEmail", email)
+  }
+
+  const confirmPasswordReset = async (token, newPassword) => {
+    const email = localStorage.getItem("pendingResetEmail")
+    const { error: verifyError } = await supabase.auth.verifyOtp({ email, token, type: "recovery" })
+    if (verifyError) throw verifyError
+
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
+    if (updateError) throw updateError
+
+    localStorage.removeItem("pendingResetEmail")
+  }
+
+  const loginWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    })
+    if (error) throw error
+  }
+
+  const loginWithApple = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: { redirectTo: window.location.origin },
+    })
+    if (error) throw error
+  }
+
   const loginAsGuest = () => {
     localStorage.setItem("guestSession", "true")
     setUser(GUEST_USER)
@@ -59,7 +92,19 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isInitialized, signup, completeSignup, login, loginAsGuest, logout }}>
+    <AuthContext.Provider value={{
+      user,
+      isInitialized,
+      signup,
+      completeSignup,
+      login,
+      loginAsGuest,
+      logout,
+      requestPasswordReset,
+      confirmPasswordReset,
+      loginWithGoogle,
+      loginWithApple,
+    }}>
       {children}
     </AuthContext.Provider>
   )

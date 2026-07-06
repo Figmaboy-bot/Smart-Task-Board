@@ -17,7 +17,7 @@ export default function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { login, loginAsGuest } = useAuth()
+  const { login, loginAsGuest, loginWithGoogle, loginWithApple } = useAuth()
 
   const handleChange = (e) => {
     setFormData({
@@ -42,13 +42,22 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    alert('Google sign-in coming soon');
+  const handleGoogleSignUp = async () => {
+    setError('')
+    try {
+      await loginWithGoogle()
+    } catch (err) {
+      setError(err.message || "Google sign-in failed. Please try again.")
+    }
   };
 
-  const handleAppleSignUp = () => {
-    console.log('Sign up with Apple');
-    alert('Apple sign-up clicked');
+  const handleAppleSignUp = async () => {
+    setError('')
+    try {
+      await loginWithApple()
+    } catch (err) {
+      setError(err.message || "Apple sign-in failed. Please try again.")
+    }
   };
 
   return (
@@ -119,6 +128,9 @@ export default function LoginForm() {
                   {showPassword ? <EyeSlashIcon className="Password-icon"/> : <EyeIcon className="Password-icon" />}
                 </button>
               </div>
+              <Link to="/forgot-password" style={{ display: 'block', textAlign: 'right', marginTop: '0.5rem', fontSize: '0.875rem', color: 'var(--primary-50)', textDecoration: 'none' }}>
+                Forgot Password?
+              </Link>
             </div>
 
             {error && <p className="error" style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.5rem' }}>{error}</p>}
