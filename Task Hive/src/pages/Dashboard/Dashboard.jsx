@@ -1,4 +1,3 @@
-import { useAuth } from "../../context/AuthContext";
 import TeamActivity from "../../components/TeamActivity/TeamActivity";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
@@ -10,9 +9,6 @@ import { CheckBadgeIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/
 
 
 function Dashboard() {
-  const { user } = useAuth();
-  
-
   return (
     <div className="dashboard-container">
       <Sidebar />

@@ -142,7 +142,7 @@ export default function Messages() {
                             </div>
                             {/* Chat Messages */}
                             <div className="chat-messages">
-                                {messages.map((msg, idx) => {
+                                {messages.map((msg) => {
                                     if (msg.from === 'me') {
                                         if (msg.isButton) {
                                             return null; // Render buttons below

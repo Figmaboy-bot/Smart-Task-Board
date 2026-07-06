@@ -7,7 +7,7 @@ export default function ReportsInsights() {
         <div className="reports-insights-page">
             <Sidebar />
               <div className="reports-insights-content">
-                <Header onNotificationClick={() => setNotifOpen(true)} />
+                <Header onNotificationClick={() => {}} />
             </div>
         </div>
     )

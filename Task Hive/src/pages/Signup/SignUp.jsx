@@ -39,8 +39,8 @@ export default function SignUpForm() {
       await signup(formData.email, formData.password);
       navigate("/verify-otp");
     } catch (err) {
-      console.error("EmailJS error:", err);
-      setEmailError(`Failed to send OTP: ${err?.text || err?.message || JSON.stringify(err)}`);
+      console.error("Signup error:", err);
+      setEmailError(err?.message || "Failed to sign up. Please try again.");
     } finally {
       setLoading(false);
     }
