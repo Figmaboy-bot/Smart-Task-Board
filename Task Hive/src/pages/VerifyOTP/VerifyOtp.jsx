@@ -4,8 +4,10 @@ import { useAuth } from "../../context/AuthContext"
 import { Link } from "react-router-dom";
 import './VerifyOtp.css'
 
+const OTP_LENGTH = 8
+
 function VerifyOtp() {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""])
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""))
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const inputsRef = useRef([])
@@ -19,7 +21,7 @@ function VerifyOtp() {
     newOtp[index] = value
     setOtp(newOtp)
 
-    if (value && index < 5) {
+    if (value && index < OTP_LENGTH - 1) {
       inputsRef.current[index + 1].focus()
     }
   }
@@ -33,8 +35,8 @@ function VerifyOtp() {
       return
     }
 
-    if (token.length < 6) {
-      setError("Please enter the full 6-digit code.")
+    if (token.length < OTP_LENGTH) {
+      setError(`Please enter the full ${OTP_LENGTH}-digit code.`)
       return
     }
 
@@ -60,7 +62,7 @@ function VerifyOtp() {
       </div>
       <div className="otp-container">
         <h2>Verify OTP</h2>
-        <p>Enter the 6-digit code sent to your email</p>
+        <p>Enter the {OTP_LENGTH}-digit code sent to your email</p>
 
         <div className="otp-inputs">
           {otp.map((digit, i) => (

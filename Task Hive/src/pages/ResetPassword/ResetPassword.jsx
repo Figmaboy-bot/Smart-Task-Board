@@ -4,8 +4,10 @@ import { useAuth } from "../../context/AuthContext"
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import './ResetPassword.css'
 
+const OTP_LENGTH = 8
+
 export default function ResetPassword() {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""])
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""))
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -23,7 +25,7 @@ export default function ResetPassword() {
     newOtp[index] = value
     setOtp(newOtp)
 
-    if (value && index < 5) {
+    if (value && index < OTP_LENGTH - 1) {
       inputsRef.current[index + 1].focus()
     }
   }
@@ -49,8 +51,8 @@ export default function ResetPassword() {
     setResent(false)
 
     const token = otp.join("")
-    if (token.length < 6) {
-      setError("Please enter the full 6-digit code.")
+    if (token.length < OTP_LENGTH) {
+      setError(`Please enter the full ${OTP_LENGTH}-digit code.`)
       return
     }
     if (newPassword.length < 6) {
@@ -82,7 +84,7 @@ export default function ResetPassword() {
       </div>
       <div className="otp-container">
         <h2>Reset Password</h2>
-        <p>Enter the 6-digit code sent to your email, then choose a new password.</p>
+        <p>Enter the {OTP_LENGTH}-digit code sent to your email, then choose a new password.</p>
 
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <div className="otp-inputs">

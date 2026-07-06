@@ -5,12 +5,12 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Geist', sans-serif;
-  background-color: var(--color-white);
 }
 
 .signup-container {
   min-height: 100vh;
   display: flex;
+  background-color: var(--color-white);
 }
 
 .left-panel {

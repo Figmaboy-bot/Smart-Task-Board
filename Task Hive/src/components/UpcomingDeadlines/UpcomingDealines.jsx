@@ -1,6 +1,5 @@
-import React, { useRef } from 'react'; // Add useRef here
+import React, { useMemo, useRef } from 'react';
 import "./UpcomingDeadlines.css"
-import ReportImage from "../../../public/upcoming deadlines/ReportImage.jpg"
 import {
     CalendarIcon,
     LinkIcon,
@@ -8,10 +7,9 @@ import {
     ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
-export function UpcomingDeadlines() {
-    const trackRef = useRef(null); // Add this
+export function UpcomingDeadlines({ tasks = [] }) {
+    const trackRef = useRef(null);
 
-    // Add scroll function
     const scroll = (direction) => {
         if (trackRef.current) {
             const scrollAmount = 370; // card width + gap
@@ -22,132 +20,107 @@ export function UpcomingDeadlines() {
         }
     };
 
-    const tasks = [
-        {
-            tag: 'Report',
-            title: 'Prepare Q2 Report',
-            status: 'Overdue alert',
-            subtitle: 'Gather and compile key financial and performance data for the Q2 report',
-            img: ReportImage,
-            name: 'Sulaimon',
-            who: 'Me',
-            datetime: 'Today, 3 PM',
-            link: 8,
-            trend: 'up',
-            featured: false,
-        },
-        {
-            tag: 'Clients Proposal',
-            title: 'Review Client Proposal',
-            status: 'High Priority',
-            subtitle: 'Carefully assess the project proposal for an upcoming client deal. Double-check to ensure accuracy.',
-            img: ReportImage,
-            name: 'Sulaimon',
-            who: 'Me',
-            datetime: 'Today, 3 PM',
-            link: 20,
-            trend: 'up',
-            featured: true,
-        },
-        {
-            tag: 'UX Mockups',
-            title: 'Finalize UX Mockups',
-            status: 'On Track',
-            subtitle: 'Complete the UI/UX mockups for the new dashboard redesign.',
-            img: ReportImage,
-            name: 'Sulaimon',
-            who: 'Me',
-            datetime: 'Today, 3 PM',
-            link: 12,
-            trend: 'down',
-            featured: true,
-        },
-        {
-            tag: 'UX Mockups',
-            title: 'Finalize UX Mockups',
-            status: 'On Track',
-            subtitle: 'Complete the UI/UX mockups for the new dashboard redesign.',
-            img: ReportImage,
-            name: 'Sulaimon',
-            who: 'Me',
-            datetime: 'Today, 3 PM',
-            link: 12,
-            trend: 'down',
-            featured: true,
-        }
-    ];
+    const upcoming = useMemo(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return tasks
+            .filter(t => t.columnTitle !== "DONE" && t.date)
+            .map(t => ({ ...t, _parsedDate: new Date(`${t.date}, ${today.getFullYear()}`) }))
+            .filter(t => !isNaN(t._parsedDate.getTime()))
+            .sort((a, b) => a._parsedDate - b._parsedDate)
+            .slice(0, 8)
+            .map(t => {
+                const isOverdue = t._parsedDate < today;
+                const statusLabel = isOverdue ? 'Overdue alert' : (t.status === 'High' ? 'High Priority' : 'On Track');
+                return {
+                    tag: t.tag,
+                    title: t.title,
+                    status: statusLabel,
+                    subtitle: t.desc,
+                    img: t.user.avatar,
+                    name: t.user.name,
+                    datetime: t.date,
+                    link: t.links,
+                };
+            });
+    }, [tasks]);
 
     return (
         <div className="tasks-container">
             <div className="tasks-header">
                 <h2>Upcoming Deadlines</h2>
-                <div className="carousel-controls">
-                    <button
-                        className="carousel-button"
-                        onClick={() => scroll('left')}
-                    >
-                        <ChevronLeftIcon className='carousel-control-icon' />
-                    </button>
-                    <button
-                        className="carousel-button"
-                        onClick={() => scroll('right')}
-                    >
-                        <ChevronRightIcon className='carousel-control-icon' />
-                    </button>
-                </div>
+                {upcoming.length > 0 && (
+                    <div className="carousel-controls">
+                        <button
+                            className="carousel-button"
+                            onClick={() => scroll('left')}
+                        >
+                            <ChevronLeftIcon className='carousel-control-icon' />
+                        </button>
+                        <button
+                            className="carousel-button"
+                            onClick={() => scroll('right')}
+                        >
+                            <ChevronRightIcon className='carousel-control-icon' />
+                        </button>
+                    </div>
+                )}
             </div>
 
-            <div className="tasks-carousel">
-                <div className="tasks-track" ref={trackRef}>
-                    {tasks.map((tasks, index) => {
-                        return (
+            {upcoming.length === 0 ? (
+                <p style={{ color: "var(--grey-50)" }}>No upcoming deadlines.</p>
+            ) : (
+                <div className="tasks-carousel">
+                    <div className="tasks-track" ref={trackRef}>
+                        {upcoming.map((task, index) => (
                             <div key={index} className="task">
                                 <div className="task-body-top">
                                     <div className="tag-status">
-                                        <div className="tag">{tasks.tag}</div>
+                                        <div className="tag">{task.tag}</div>
                                         <div className="status-container">
                                             <div className="statuscircle" style={{
                                                 backgroundColor:
-                                                    tasks.status === 'Overdue alert' ? '#EF4444' :
-                                                        tasks.status === 'High Priority' ? '#FBBC05' :
-                                                            tasks.status === 'On Track' ? '#10B981' :
+                                                    task.status === 'Overdue alert' ? '#EF4444' :
+                                                        task.status === 'High Priority' ? '#FBBC05' :
+                                                            task.status === 'On Track' ? '#10B981' :
                                                                 '#6B7280'
                                             }}></div>
-                                            <div className="statuss">{tasks.status}</div>
+                                            <div className="statuss">{task.status}</div>
                                         </div>
                                     </div>
                                     <div className="task-body">
                                         <h4 className="deadline-task-title">
-                                            {tasks.title}
+                                            {task.title}
                                         </h4>
 
                                         <p className="deadline-task-subtitle">
-                                            {tasks.subtitle}
+                                            {task.subtitle}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="task-footer">
                                     <div className="profile">
-                                        <img className='profile-img' src={tasks.img} alt="" />
-                                        <p className="profile-name">{tasks.name} <span className='who'>({tasks.who})</span></p>
+                                        <img className='profile-img' src={task.img} alt="" />
+                                        <p className="profile-name">{task.name}</p>
                                     </div>
 
                                     <div className="datetime">
                                         <CalendarIcon className='datetime-icon' />
-                                        <p className="datetime-texts">{tasks.datetime}</p>
+                                        <p className="datetime-texts">{task.datetime}</p>
                                     </div>
 
                                     <div className="links">
                                         <LinkIcon className='datetime-icon' />
-                                        <p className="link-amount">{tasks.link}</p>
+                                        <p className="link-amount">{task.link}</p>
                                     </div>
                                 </div>
                             </div>
-                        );
-                    })}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

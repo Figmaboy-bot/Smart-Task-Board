@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import "./TeamActivity.css";
 import ClipboardDocumentCheckIcon from "@heroicons/react/24/outline/ClipboardDocumentCheckIcon";
 import ClockIcon from "@heroicons/react/24/outline/ClockIcon";
@@ -9,124 +9,41 @@ import EditableTable from "../EditableTable/EditableTable";
 import ActivityTaskCard from "../ActivityTaskCard/ActivityTaskCard";
 import TaskModal from "../TaskModal/TaskModal";
 
-const initialColumns = [
-	{
-		title: "TO-DO",
-		icon: ClipboardDocumentCheckIcon,
-		color: "#2563eb",
-		tasks: [
-			{
-				tag: "API",
-				status: "Medium",
-				statusColor: "#fbbc05",
-				title: "Fix API Authentication Bug",
-				desc: "The Login System Is Experiencing Authentication Issues, Preventing Some Users From Accessing Their Accounts.",
-				user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-				date: "Mar 31",
-				links: 2,
-			},
-			{
-				tag: "API",
-				status: "Medium",
-				statusColor: "#fbbc05",
-				title: "Fix API Authentication Bug",
-				desc: "He Login System Is Experiencing Authentication Issues, Preventing Some Users From Accessing Their Accounts.",
-				user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-				date: "Mar 31",
-				links: 2,
-			},
-		],
-	},
-	{
-		title: "IN PROGRESS",
-		icon: ClockIcon,
-		color: "#f59e42",
-		tasks: [
-			{
-				tag: "API",
-				status: "High",
-				statusColor: "#ef4444",
-				title: "Design Homepage UI",
-				desc: "Develop A Visually Appealing And User-Friendly Homepage Layout That Aligns With The Brand's Identity.",
-				user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-				date: "Mar 31",
-				links: 2,
-			},
-			{
-				tag: "API",
-				status: "High",
-				statusColor: "#ef4444",
-				title: "Fix API Authentication Bug",
-				desc: "He Login System Is Experiencing Authentication Issues, Preventing Some Users From Accessing Their Accounts.",
-				user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-				date: "Mar 31",
-				links: 2,
-			},
-		],
-	},
-	{
-		title: "DONE",
-		icon: CheckBadgeIcon,
-		color: "#22c55e",
-		tasks: [
-			{
-				tag: "API",
-				status: "Low",
-				statusColor: "#22c55e",
-				title: "Prepare Q2 Report",
-				desc: "Gather Key Performance Metrics And Compile Insights Into A Well-Structured Q2 Report.",
-				user: { name: "Mathew", avatar: "https://randomuser.me/api/portraits/men/45.jpg" },
-				date: "Mar 31",
-				links: 2,
-			},
-			{
-				tag: "API",
-				status: "Low",
-				statusColor: "#22c55e",
-				title: "Fix API Authentication Bug",
-				desc: "He Login System Is Experiencing Authentication Issues, Preventing Some Users From Accessing Their Accounts.",
-				user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-				date: "Mar 31",
-				links: 2,
-			},
-		],
-	},
+const COLUMN_META = [
+	{ title: "TO-DO", icon: ClipboardDocumentCheckIcon, color: "#2563eb" },
+	{ title: "IN PROGRESS", icon: ClockIcon, color: "#f59e42" },
+	{ title: "DONE", icon: CheckBadgeIcon, color: "#22c55e" },
 ];
 
-export function TeamActivity() {
-	const [columns, setColumns] = useState(initialColumns);
+export function TeamActivity({ tasks = [], loading, projects = [], teamMembers = [], createTask, updateTaskStatus }) {
 	const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 	const [view, setView] = useState("kanban");
 	const [dragOverCol, setDragOverCol] = useState(null);
 	const dragInfo = useRef(null);
 
-	const handleDragStart = (colTitle, taskIndex) => {
-		dragInfo.current = { colTitle, taskIndex };
+	const columns = useMemo(() => COLUMN_META.map(meta => ({
+		...meta,
+		tasks: tasks.filter(t => t.columnTitle === meta.title),
+	})), [tasks]);
+
+	const handleDragStart = (colTitle, task) => {
+		dragInfo.current = { colTitle, task };
 	};
 
 	const handleDrop = (targetColTitle) => {
 		if (!dragInfo.current) return;
-		const { colTitle: srcCol, taskIndex } = dragInfo.current;
-		if (srcCol === targetColTitle) return;
-
-		setColumns(prev => {
-			const next = prev.map(col => ({ ...col, tasks: [...col.tasks] }));
-			const src = next.find(c => c.title === srcCol);
-			const tgt = next.find(c => c.title === targetColTitle);
-			const [task] = src.tasks.splice(taskIndex, 1);
-			tgt.tasks.push(task);
-			return next;
-		});
-
+		const { colTitle: srcCol, task } = dragInfo.current;
 		dragInfo.current = null;
 		setDragOverCol(null);
+		if (srcCol === targetColTitle) return;
+
+		updateTaskStatus(task.id, targetColTitle);
 	};
 
 	const tableData = columns.flatMap((col) =>
-		col.tasks.map((task, j) => ({
+		col.tasks.map((task) => ({
 			...task,
 			section: col.title,
-			id: `${col.title}-${j}`,
 		}))
 	);
 
@@ -149,6 +66,23 @@ export function TeamActivity() {
 			</span>
 		),
 	}));
+
+	const handleAddTask = (task) => {
+		const matchedProject = projects.find(p => p.name === task.project);
+		createTask({
+			title: task.title,
+			description: task.description,
+			priority: task.priority,
+			assignee: task.assignee,
+			tag: task.tag,
+			dueDate: task.dueDate,
+			status: task.status,
+			links: task.links,
+			project_id: matchedProject?.id || null,
+			project: matchedProject?.name || task.project || "",
+		});
+		setIsTaskModalOpen(false);
+	};
 
 	return (
 		<div className="team-activity-container">
@@ -174,7 +108,9 @@ export function TeamActivity() {
 				</div>
 			</div>
 			<div className="team-activity-board">
-				{view === "kanban" ? (
+				{loading ? (
+					<p>Loading tasks…</p>
+				) : view === "kanban" ? (
 					columns.map((col) => (
 						<div
 							className={`activity-column${dragOverCol === col.title ? " drag-over" : ""}`}
@@ -197,11 +133,11 @@ export function TeamActivity() {
 									<button className="column-add"><EllipsisVerticalIcon className="plusicon" /></button>
 								</div>
 							</div>
-							{col.tasks.map((task, j) => (
+							{col.tasks.map((task) => (
 								<ActivityTaskCard
-									key={`${col.title}-${j}`}
+									key={task.id}
 									task={task}
-									onDragStart={() => handleDragStart(col.title, j)}
+									onDragStart={() => handleDragStart(col.title, task)}
 								/>
 							))}
 						</div>
@@ -212,7 +148,13 @@ export function TeamActivity() {
 					</div>
 				)}
 			</div>
-			<TaskModal open={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} />
+			<TaskModal
+				open={isTaskModalOpen}
+				onClose={() => setIsTaskModalOpen(false)}
+				projects={projects}
+				teamMembers={teamMembers}
+				onSubmit={handleAddTask}
+			/>
 		</div>
 	);
 }

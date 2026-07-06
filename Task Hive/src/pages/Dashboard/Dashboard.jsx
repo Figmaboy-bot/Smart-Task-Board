@@ -5,21 +5,33 @@ import './Dashboard.css';
 import { Greetings } from "../../components/Greetings/Greetings";
 import { StatsDashboard } from "../../components/StatsBoard/Statsboard";
 import { UpcomingDeadlines } from "../../components/UpcomingDeadlines/UpcomingDealines";
-import { CheckBadgeIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline';
-
+import { useTasks } from "../../hooks/useTasks";
+import { useProjects } from "../../hooks/useProjects";
+import { useTeamMembers } from "../../hooks/useTeamMembers";
 
 function Dashboard() {
+  const { tasks, loading: tasksLoading, createTask, updateTaskStatus } = useTasks();
+  const { projects } = useProjects();
+  const { teamMembers } = useTeamMembers();
+
   return (
     <div className="dashboard-container">
       <Sidebar />
       <div className="dashboard-content">
         <Header />
         <Greetings />
-        <StatsDashboard />
+        <StatsDashboard tasks={tasks} />
         <div className="upcoming-deadline-container">
-          <UpcomingDeadlines />
+          <UpcomingDeadlines tasks={tasks} />
         </div>
-        <TeamActivity />
+        <TeamActivity
+          tasks={tasks}
+          loading={tasksLoading}
+          projects={projects}
+          teamMembers={teamMembers}
+          createTask={createTask}
+          updateTaskStatus={updateTaskStatus}
+        />
       </div>
     </div>
   );
