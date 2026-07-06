@@ -4,6 +4,16 @@ import { useAuth } from "../context/AuthContext";
 import { useTasks } from "./useTasks";
 import { useTeamMembers } from "./useTeamMembers";
 
+// Demo content shown in guest mode (never touches Supabase), ported from the
+// hardcoded seed data (src/data/projectsData.js) used before real persistence existed.
+const GUEST_PROJECT_ROWS = [
+    { id: "guest-project-1", name: "Website Redesign", description: "Revamp the company website for a modern look and better UX.", due_date: null, due: "Mar 24" },
+    { id: "guest-project-2", name: "Mobile App Launch", description: "Prepare and launch the new mobile application.", due_date: null, due: "Apr 10" },
+    { id: "guest-project-3", name: "Q2 Marketing Campaign", description: "Plan and execute the Q2 marketing campaign for new products.", due_date: null, due: "May 2" },
+    { id: "guest-project-4", name: "Customer Portal Upgrade", description: "Enhance the customer portal with new features and improved security.", due_date: null, due: "Feb 15" },
+    { id: "guest-project-5", name: "Cloud Migration", description: "Migrate infrastructure to the cloud for better scalability.", due_date: null, due: "Apr 20" },
+];
+
 function formatDisplayDate(isoDate) {
     if (!isoDate) return "";
     const d = new Date(`${isoDate}T00:00:00`);
@@ -16,8 +26,8 @@ export function useProjects() {
     const isGuest = !user || user.isGuest;
     const { tasks } = useTasks();
     const { teamMembers } = useTeamMembers();
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [projects, setProjects] = useState(() => (isGuest ? GUEST_PROJECT_ROWS : []));
+    const [loading, setLoading] = useState(!isGuest);
 
     useEffect(() => {
         if (isGuest) return;
@@ -45,7 +55,16 @@ export function useProjects() {
     }, [user, isGuest]);
 
     const createProject = useCallback(async ({ title, description, dueDate }) => {
-        if (isGuest) return null;
+        if (isGuest) {
+            const localProject = {
+                id: `guest-project-${Date.now()}`,
+                name: title,
+                description: description || "",
+                due_date: dueDate || null,
+            };
+            setProjects((prev) => [...prev, localProject]);
+            return localProject;
+        }
 
         const { data, error } = await supabase
             .from("projects")
@@ -69,7 +88,7 @@ export function useProjects() {
         today.setHours(0, 0, 0, 0);
 
         return projects.map((p) => {
-            const projectTasks = tasks.filter((t) => t.project_id === p.id);
+            const projectTasks = tasks.filter((t) => t.project === p.name);
             const totalTasks = projectTasks.length;
             const doneTasks = projectTasks.filter((t) => t.columnTitle === "DONE").length;
             const overdueTasks = projectTasks.filter((t) => {
@@ -85,7 +104,7 @@ export function useProjects() {
                 id: p.id,
                 name: p.name,
                 description: p.description || "",
-                due: formatDisplayDate(p.due_date),
+                due: p.due || formatDisplayDate(p.due_date),
                 progress: totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0,
                 totalTasks,
                 overdueTasks,
@@ -94,9 +113,5 @@ export function useProjects() {
         });
     }, [projects, tasks, teamMembers]);
 
-    return {
-        projects: isGuest ? [] : projectsWithStats,
-        loading: isGuest ? false : loading,
-        createProject,
-    };
+    return { projects: projectsWithStats, loading, createProject };
 }

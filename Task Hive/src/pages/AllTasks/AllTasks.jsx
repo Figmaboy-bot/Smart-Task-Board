@@ -211,6 +211,7 @@ export default function AllTasks() {
             status: task.status,
             links: task.links,
             project_id: matchedProject?.id || null,
+            project: matchedProject?.name || task.project || "",
         });
         setShowTaskModal(false);
     };

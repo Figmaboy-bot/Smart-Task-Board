@@ -9,6 +9,28 @@ export const COLUMN_TO_STATUS = { "TO-DO": "To-Do", "IN PROGRESS": "In Progress"
 const PRIORITY_COLOR = { High: "#ef4444", Medium: "#fbbc05", Low: "#22c55e" };
 const PRIORITY_LABEL = { high: "High", medium: "Medium", low: "Low" };
 
+// Demo content shown in guest mode (never touches Supabase), ported from the
+// hardcoded seed data MyTasks/AllTasks used before real persistence existed.
+const GUEST_TASKS = [
+    { id: "guest-task-1", project_id: null, project: "Mobile App Launch", tag: "Frontend", status: "Medium", statusColor: "#fbbc05", title: "Implement login UI", desc: "Create a responsive login form for the app.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 10", links: 1, columnTitle: "TO-DO" },
+    { id: "guest-task-2", project_id: null, project: "Mobile App Launch", tag: "Frontend", status: "Low", statusColor: "#22c55e", title: "Design Dashboard", desc: "Create a responsive login form for the app.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 19", links: 1, columnTitle: "TO-DO" },
+    { id: "guest-task-3", project_id: null, project: "Mobile App Launch", tag: "Frontend", status: "High", statusColor: "#ef4444", title: "Build Settings Page", desc: "Create a responsive login form for the app.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 25", links: 1, columnTitle: "TO-DO" },
+    { id: "guest-task-4", project_id: null, project: "Mobile App Launch", tag: "Backend", status: "Medium", statusColor: "#fbbc05", title: "Implement login UI", desc: "Create a responsive login form for the app.", user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" }, date: "Jan 10", links: 1, columnTitle: "TO-DO" },
+    { id: "guest-task-5", project_id: null, project: "Cloud Migration", tag: "API", status: "Medium", statusColor: "#fbbc05", title: "Implement login UI", desc: "Create a responsive login form for the app.", user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" }, date: "Jan 10", links: 1, columnTitle: "TO-DO" },
+    { id: "guest-task-6", project_id: null, project: "Customer Portal Upgrade", tag: "Frontend", status: "High", statusColor: "#ef4444", title: "Implement login UI", desc: "Create a responsive login form for the app.", user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" }, date: "Jan 10", links: 1, columnTitle: "TO-DO" },
+    { id: "guest-task-7", project_id: null, project: "Cloud Migration", tag: "API", status: "Medium", statusColor: "#fbbc05", title: "Integrate Auth API", desc: "Connect frontend login to backend authentication API.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 11", links: 2, columnTitle: "IN PROGRESS" },
+    { id: "guest-task-8", project_id: null, project: "Cloud Migration", tag: "API", status: "High", statusColor: "#ef4444", title: "Setup Database", desc: "Connect frontend login to backend authentication API.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 19", links: 2, columnTitle: "IN PROGRESS" },
+    { id: "guest-task-9", project_id: null, project: "Customer Portal Upgrade", tag: "API", status: "Low", statusColor: "#22c55e", title: "Create User Endpoints", desc: "Connect frontend login to backend authentication API.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Feb 1", links: 2, columnTitle: "IN PROGRESS" },
+    { id: "guest-task-10", project_id: null, project: "Mobile App Launch", tag: "API", status: "Medium", statusColor: "#fbbc05", title: "Integrate Auth API", desc: "Connect frontend login to backend authentication API.", user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" }, date: "Jan 11", links: 2, columnTitle: "IN PROGRESS" },
+    { id: "guest-task-11", project_id: null, project: "Cloud Migration", tag: "Frontend", status: "Low", statusColor: "#22c55e", title: "Integrate Auth API", desc: "Connect frontend login to backend authentication API.", user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" }, date: "Jan 11", links: 2, columnTitle: "IN PROGRESS" },
+    { id: "guest-task-12", project_id: null, project: "Onboarding Guide", tag: "Docs", status: "Low", statusColor: "#22c55e", title: "Write onboarding guide", desc: "Document onboarding steps for new users.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 9", links: 0, columnTitle: "DONE" },
+    { id: "guest-task-13", project_id: null, project: "Onboarding Guide", tag: "Docs", status: "Medium", statusColor: "#fbbc05", title: "API Documentation", desc: "Document onboarding steps for new users.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 9", links: 0, columnTitle: "DONE" },
+    { id: "guest-task-14", project_id: null, project: "Onboarding Guide", tag: "Docs", status: "High", statusColor: "#ef4444", title: "Setup Instructions", desc: "Document onboarding steps for new users.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 9", links: 0, columnTitle: "DONE" },
+    { id: "guest-task-15", project_id: null, project: "Onboarding Guide", tag: "Docs", status: "High", statusColor: "#ef4444", title: "Write onboarding guide", desc: "Document onboarding steps for new users.", user: { name: "Mathew", avatar: "https://randomuser.me/api/portraits/men/45.jpg" }, date: "Jan 9", links: 0, columnTitle: "DONE" },
+    { id: "guest-task-16", project_id: null, project: "Mobile App Launch", tag: "Backend", status: "Low", statusColor: "#22c55e", title: "Write onboarding guide", desc: "Document onboarding steps for new users.", user: { name: "Me", avatar: "/Profile.jpg" }, date: "Jan 9", links: 0, columnTitle: "DONE" },
+    { id: "guest-task-17", project_id: null, project: "Cloud Migration", tag: "API", status: "Low", statusColor: "#22c55e", title: "Write onboarding guide", desc: "Document onboarding steps for new users.", user: { name: "Mathew", avatar: "https://randomuser.me/api/portraits/men/45.jpg" }, date: "Jan 9", links: 0, columnTitle: "DONE" },
+];
+
 function formatDisplayDate(isoDate) {
     if (!isoDate) return "";
     const d = new Date(`${isoDate}T00:00:00`);
@@ -36,8 +58,8 @@ function mapRowToTask(row) {
 export function useTasks() {
     const { user } = useAuth();
     const isGuest = !user || user.isGuest;
-    const [tasks, setTasks] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [tasks, setTasks] = useState(() => (isGuest ? GUEST_TASKS : []));
+    const [loading, setLoading] = useState(!isGuest);
 
     useEffect(() => {
         if (isGuest) return;
@@ -65,7 +87,25 @@ export function useTasks() {
     }, [user, isGuest]);
 
     const createTask = useCallback(async (input) => {
-        if (isGuest) return null;
+        if (isGuest) {
+            const priorityLabel = PRIORITY_LABEL[(input.priority || "medium").toLowerCase()] || "Medium";
+            const localTask = {
+                id: `guest-task-${Date.now()}`,
+                project_id: input.project_id || null,
+                project: input.project || "",
+                tag: input.tag || "General",
+                status: priorityLabel,
+                statusColor: PRIORITY_COLOR[priorityLabel],
+                title: input.title || "",
+                desc: input.description || "",
+                user: { name: input.assignee || "Me", avatar: "/Profile.jpg" },
+                date: formatDisplayDate(input.dueDate),
+                links: Array.isArray(input.links) ? input.links.length : 0,
+                columnTitle: STATUS_TO_COLUMN[input.status] || "TO-DO",
+            };
+            setTasks((prev) => [...prev, localTask]);
+            return localTask;
+        }
 
         const { data, error } = await supabase
             .from("tasks")
@@ -91,9 +131,9 @@ export function useTasks() {
     }, [user, isGuest]);
 
     const updateTaskStatus = useCallback(async (taskId, columnTitle) => {
-        if (isGuest) return;
-
         setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, columnTitle } : t)));
+
+        if (isGuest) return;
 
         const { error } = await supabase
             .from("tasks")
@@ -103,10 +143,5 @@ export function useTasks() {
         if (error) console.error("Failed to update task status:", error);
     }, [isGuest]);
 
-    return {
-        tasks: isGuest ? [] : tasks,
-        loading: isGuest ? false : loading,
-        createTask,
-        updateTaskStatus,
-    };
+    return { tasks, loading, createTask, updateTaskStatus };
 }
