@@ -13,30 +13,27 @@ import Settings from "./pages/Settings/Settings"
 import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
 import { useAuth } from "./context/AuthContext"
 
-console.log("useAuth:", useAuth);
+function ProtectedRoute({ children }) {
+  const { user, isInitialized } = useAuth()
+  if (!isInitialized) return null
+  return user ? children : <Navigate to="/login" />
+}
 
 function App() {
-  const { user } = useAuth()
-
   return (
     <Routes>
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
       <Route path="/verify-otp" element={<VerifyOtp />} />
-      <Route
-        path="/"
-        element={user ? <Dashboard /> : <Navigate to="/login" />}
-      />
-      <Route path="/my-tasks" element={<MyTasks />} />
-      <Route path="/all-tasks" element={<AllTasks />} />
-      <Route path="/projects" element={<Projects />} />
-      <Route path="/teams" element={<Teams />} />
-      <Route path="/calendar" element={<Calendar />} />
-      <Route path="/reports-insights" element={<ReportsInsights />} />
-      <Route path="/messages" element={<Messages />} />
-      <Route path="/settings" element={<Settings />} />
-
-
+      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/my-tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
+      <Route path="/all-tasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />
+      <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
+      <Route path="/teams" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
+      <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+      <Route path="/reports-insights" element={<ProtectedRoute><ReportsInsights /></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
     </Routes>
   )
 }

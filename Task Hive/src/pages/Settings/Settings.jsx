@@ -10,16 +10,14 @@ import Dropdown from "../../components/Dropdown/Dropdown";
 import LogoutModal from "../../components/Logout/LogoutModal.jsx";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../context/ProfileContext";
+import { useAuth } from "../../context/AuthContext";
 
 
 export default function Settings() {
 
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-
-    const logout = () => {
-        localStorage.removeItem("authToken");
-    }
 
     const handleLogout = () => {
         setShowLogoutModal(true);

@@ -296,21 +296,23 @@ export default function MyTasks() {
         return tableData.filter(task => filterTask(task, task.section));
     }, [tableData, filterTask]);
 
-    const handleDragStart = (colTitle, taskIndex) => {
-        dragInfo.current = { colTitle, taskIndex };
+    const handleDragStart = (colTitle, task) => {
+        dragInfo.current = { colTitle, task };
     };
 
     const handleDrop = (targetColTitle) => {
         if (!dragInfo.current) return;
-        const { colTitle: srcCol, taskIndex } = dragInfo.current;
+        const { colTitle: srcCol, task } = dragInfo.current;
         if (srcCol === targetColTitle) return;
 
         setMyKanbanColumns(prev => {
             const next = prev.map(col => ({ ...col, tasks: [...col.tasks] }));
             const src = next.find(c => c.title === srcCol);
             const tgt = next.find(c => c.title === targetColTitle);
-            const [task] = src.tasks.splice(taskIndex, 1);
-            tgt.tasks.push(task);
+            const taskIndex = src.tasks.indexOf(task);
+            if (taskIndex === -1) return prev;
+            const [movedTask] = src.tasks.splice(taskIndex, 1);
+            tgt.tasks.push(movedTask);
             return next;
         });
 
@@ -462,7 +464,7 @@ export default function MyTasks() {
                                                 key={`${col.title}-${j}-${task.title}`}
                                                 task={task}
                                                 onClick={() => setSelectedTask(task)}
-                                                onDragStart={() => handleDragStart(col.title, j)}
+                                                onDragStart={() => handleDragStart(col.title, task)}
                                             />
                                         ))}
                                     </div>
