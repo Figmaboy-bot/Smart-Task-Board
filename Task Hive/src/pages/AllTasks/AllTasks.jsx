@@ -7,10 +7,21 @@ import ActivityTaskCard from "../../components/ActivityTaskCard/ActivityTaskCard
 import EditableTable from "../../components/EditableTable/EditableTable"
 import Dropdown from "../../components/Dropdown/Dropdown"
 import TaskModal from "../../components/TaskModal/TaskModal";
-import { projectsData } from "../../data/projectsData"
+import { useTasks } from "../../hooks/useTasks"
+import { useProjects } from "../../hooks/useProjects"
+import { useTeamMembers } from "../../hooks/useTeamMembers"
 import './AllTasks.css'
 
+const COLUMN_META = [
+    { title: "TO-DO", color: "#2563eb" },
+    { title: "IN PROGRESS", color: "#f59e42" },
+    { title: "DONE", color: "#22c55e" },
+];
+
 export default function AllTasks() {
+    const { tasks, loading, createTask, updateTaskStatus } = useTasks();
+    const { projects } = useProjects();
+    const { teamMembers } = useTeamMembers();
 
     const [date, setDate] = useState("All");
     const dates = ["All", "Today", "Upcoming", "Overdue"];
@@ -35,164 +46,41 @@ export default function AllTasks() {
 
     const [createdBy, setCreatedBy] = useState("all");
 
-    const createdByOptions = [
+    const createdByOptions = useMemo(() => [
         { value: "all", label: "All Assignees" },
-        { value: "Linda", label: "Linda" },
-        { value: "Jake", label: "Jake" },
-        { value: "Mathew", label: "Mathew" },
         { value: "Me", label: "Me" },
-    ];
+        ...teamMembers.map(m => ({ value: m.name, label: m.name })),
+    ], [teamMembers]);
 
     const [view, setView] = useState("kanban");
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [dragOverCol, setDragOverCol] = useState(null);
     const dragInfo = useRef(null);
 
-    // Convert to state so we can add tasks
-    const [kanbanColumns, setKanbanColumns] = useState([
-        {
-            title: "TO-DO",
-            color: "#2563eb",
-            tasks: [
-                {
-                    tag: "Backend",
-                    status: "Medium",
-                    statusColor: "#fbbc05",
-                    project: "Mobile App Launch",
-                    title: "Implement login UI",
-                    desc: "Create a responsive login form for the app.",
-                    user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-                    date: "Jan 10",
-                    links: 1,
-                },
-                {
-                    tag: "API",
-                    status: "Medium",
-                    statusColor: "#fbbc05",
-                    project: "Cloud Migration",
-                    title: "Implement login UI",
-                    desc: "Create a responsive login form for the app.",
-                    user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-                    date: "Jan 10",
-                    links: 1,
-                },
-                {
-                    tag: "Frontend",
-                    status: "High",
-                    statusColor: "#ef4444",
-                    project: "Customer Portal Upgrade",
-                    title: "Implement login UI",
-                    desc: "Create a responsive login form for the app.",
-                    user: { name: "Linda", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-                    date: "Jan 10",
-                    links: 1,
-                },
-            ],
-        },
-        {
-            title: "IN PROGRESS",
-            color: "#f59e42",
-            tasks: [
-                {
-                    tag: "API",
-                    status: "Medium",
-                    statusColor: "#fbbc05",
-                    project: "Mobile App Launch",
-                    title: "Integrate Auth API",
-                    desc: "Connect frontend login to backend authentication API.",
-                    user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-                    date: "Jan 11",
-                    links: 2,
-                },
-                {
-                    tag: "Frontend",
-                    status: "Low",
-                    statusColor: "#22c55e",
-                    project: "Cloud Migration",
-                    title: "Integrate Auth API",
-                    desc: "Connect frontend login to backend authentication API.",
-                    user: { name: "Jake", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-                    date: "Jan 11",
-                    links: 2,
-                },
-                {
-                    tag: "Docs",
-                    status: "High",
-                    statusColor: "#ef4444",
-                    project: "Onboarding Guide",
-                    title: "Integrate Auth API",
-                    desc: "Connect frontend login to backend authentication API.",
-                    user: { name: "Me", avatar: "/Profile.jpg" },
-                    date: "Jan 11",
-                    links: 2,
-                },
-            ],
-        },
-        {
-            title: "DONE",
-            color: "#22c55e",
-            tasks: [
-                {
-                    tag: "Docs",
-                    status: "High",
-                    statusColor: "#ef4444",
-                    project: "Onboarding Guide",
-                    title: "Write onboarding guide",
-                    desc: "Document onboarding steps for new users.",
-                    user: { name: "Mathew", avatar: "https://randomuser.me/api/portraits/men/45.jpg" },
-                    date: "Jan 9",
-                    links: 0,
-                },
-                {
-                    tag: "Backend",
-                    status: "Low",
-                    statusColor: "#22c55e",
-                    project: "Mobile App Launch",
-                    title: "Write onboarding guide",
-                    desc: "Document onboarding steps for new users.",
-                    user: { name: "Me", avatar: "/Profile.jpg" },
-                    date: "Jan 9",
-                    links: 0,
-                },
-                {
-                    tag: "API",
-                    status: "Low",
-                    statusColor: "#22c55e",
-                    project: "Cloud Migration",
-                    title: "Write onboarding guide",
-                    desc: "Document onboarding steps for new users.",
-                    user: { name: "Mathew", avatar: "https://randomuser.me/api/portraits/men/45.jpg" },
-                    date: "Jan 9",
-                    links: 0,
-                },
-            ],
-        },
-    ]);
+    const kanbanColumns = useMemo(() => COLUMN_META.map(meta => ({
+        ...meta,
+        tasks: tasks.filter(t => t.columnTitle === meta.title),
+    })), [tasks]);
 
     // Project options from task data
     const projectOptions = useMemo(() => {
         const options = [{ value: "all", label: "All Projects" }];
         const projectNames = new Set();
-        
-        kanbanColumns.forEach(col => {
-            col.tasks.forEach(task => {
-                if (task.project) projectNames.add(task.project);
-            });
+
+        tasks.forEach(task => {
+            if (task.project) projectNames.add(task.project);
         });
-        
-        if (projectsData && Array.isArray(projectsData)) {
-            projectsData.forEach(p => {
-                const name = p.name || p.title || p.projectName;
-                if (name) projectNames.add(name);
-            });
-        }
-        
+
+        projects.forEach(p => {
+            if (p.name) projectNames.add(p.name);
+        });
+
         projectNames.forEach(name => {
             options.push({ value: name, label: name });
         });
-        
+
         return options;
-    }, [kanbanColumns]);
+    }, [tasks, projects]);
 
     // Filter function
     const filterTask = useCallback((task) => {
@@ -200,16 +88,16 @@ export default function AllTasks() {
         if (date !== "All") {
             const taskDateStr = task.date;
             if (!taskDateStr) return false;
-            
+
             const currentYear = new Date().getFullYear();
             const taskDate = new Date(`${taskDateStr}, ${currentYear}`);
-            
+
             if (isNaN(taskDate.getTime())) return false;
-            
+
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             taskDate.setHours(0, 0, 0, 0);
-            
+
             switch (date) {
                 case "Today":
                     if (taskDate.getTime() !== today.getTime()) return false;
@@ -274,10 +162,9 @@ export default function AllTasks() {
     // Table data derived from kanban columns
     const tableData = useMemo(() => {
         return kanbanColumns.flatMap((col) =>
-            col.tasks.map((task, j) => ({
+            col.tasks.map((task) => ({
                 ...task,
                 section: col.title,
-                id: `${col.title}-${j}`,
                 user: (
                     <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
@@ -305,57 +192,26 @@ export default function AllTasks() {
     const handleDrop = (targetColTitle) => {
         if (!dragInfo.current) return;
         const { colTitle: srcCol, task } = dragInfo.current;
-        if (srcCol === targetColTitle) return;
-
-        setKanbanColumns(prev => {
-            const next = prev.map(col => ({ ...col, tasks: [...col.tasks] }));
-            const src = next.find(c => c.title === srcCol);
-            const tgt = next.find(c => c.title === targetColTitle);
-            const taskIndex = src.tasks.indexOf(task);
-            if (taskIndex === -1) return prev;
-            const [movedTask] = src.tasks.splice(taskIndex, 1);
-            tgt.tasks.push(movedTask);
-            return next;
-        });
-
         dragInfo.current = null;
         setDragOverCol(null);
+        if (srcCol === targetColTitle) return;
+
+        updateTaskStatus(task.id, targetColTitle);
     };
 
     const handleAddTask = (task) => {
-
-        const statusMap = {
-            "To-Do": "TO-DO",
-            "In Progress": "IN PROGRESS",
-            "Done": "DONE",
-        };
-        const priorityMap = {
-            "high": "High",
-            "medium": "Medium",
-            "low": "Low",
-        };
-
-        const normalizedStatus = statusMap[task.status] || "TO-DO";
-        const normalizedPriority = priorityMap[task.priority] || "Medium";
-
-        const newTask = {
-            status: normalizedPriority,
-            statusColor: normalizedPriority === "High" ? "#ef4444" : (normalizedPriority === "Medium" ? "#fbbc05" : "#22c55e"),
-            user: { name: task.assignee || "Me", avatar: "/Profile.jpg" },
-            desc: task.description || "",
-            title: task.title || "",
-            tag: task.tag || "General",
-            date: task.dueDate || "",
-            links: task.linksCount || 0,
-        };
-
-        setKanbanColumns((prev) => prev.map(col => {
-            if (col.title === normalizedStatus) {
-                return { ...col, tasks: [...col.tasks, newTask] };
-            }
-            return col;
-        }));
-
+        const matchedProject = projects.find(p => p.name === task.project);
+        createTask({
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            assignee: task.assignee,
+            tag: task.tag,
+            dueDate: task.dueDate,
+            status: task.status,
+            links: task.links,
+            project_id: matchedProject?.id || null,
+        });
         setShowTaskModal(false);
     };
 
@@ -440,7 +296,9 @@ export default function AllTasks() {
                     </div>
                 </div>
                 <div className="Tasks-main-contents">
-                    {view === "kanban" ? (
+                    {loading ? (
+                        <p>Loading tasks…</p>
+                    ) : view === "kanban" ? (
                         <div className="team-activity-board">
                             {filteredKanbanColumns.map((col) => (
                                 <div
@@ -463,9 +321,9 @@ export default function AllTasks() {
                                             <EllipsisVerticalIcon className="plusicon" />
                                         </div>
                                     </div>
-                                    {col.tasks.map((task, j) => (
+                                    {col.tasks.map((task) => (
                                         <ActivityTaskCard
-                                            key={`${col.title}-${j}-${task.title}`}
+                                            key={task.id}
                                             task={task}
                                             onDragStart={() => handleDragStart(col.title, task)}
                                         />
@@ -484,6 +342,8 @@ export default function AllTasks() {
             <TaskModal
                 open={showTaskModal}
                 onClose={() => setShowTaskModal(false)}
+                projects={projects}
+                teamMembers={teamMembers}
                 onSubmit={handleAddTask}
             />
         </div>

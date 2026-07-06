@@ -1,30 +1,8 @@
 import React from "react";
-import { useState } from "react";
 import './AddProjectModal.css';
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import Dropdown from "../Dropdown/Dropdown";
 
 export default function AddProjectModal({ open, onClose, onSubmit }) {
-
-	const [priority, setPriority] = useState(null);
-	const [assignee, setAssignee] = useState(null);
-	const [dueDate, setDueDate] = useState(null);
-
-	const priorityOptions = [
-		{ value: "all", label: "All Owners" },
-		{ value: "owner1", label: "Owner 1" },
-		{ value: "owner2", label: "Owner 2" },
-	];
-	const assigneeOptions = [
-		{ value: "all", label: "All Owners" },
-		{ value: "owner1", label: "Owner 1" },
-		{ value: "owner2", label: "Owner 2" },
-	];
-	const dueDateOptions = [
-		{ value: "all", label: "All Owners" },
-		{ value: "owner1", label: "Owner 1" },
-		{ value: "owner2", label: "Owner 2" },
-	];
 
 	if (!open) return null;
 	return (
@@ -40,51 +18,28 @@ export default function AddProjectModal({ open, onClose, onSubmit }) {
 						const form = e.target;
 						const title = form.title.value;
 						const description = form.description.value;
-						onSubmit && onSubmit({ title, description });
+						const dueDate = form.dueDate.value;
+						onSubmit && onSubmit({ title, description, dueDate });
+						form.reset();
 						onClose();
 					}}
 				>
 					<div className="task-modal-body">
 						<div className="task-modal-field">
-							<label>Task Title</label>
+							<label>Project Title</label>
 							<input name="title" className="form-input" required placeholder="Enter Title" />
 						</div>
 						<div className="task-modal-field">
 							<label>Description</label>
 							<textarea name="description" rows={3} className="form-input" placeholder="Enter Description" />
 						</div>
-						<div className="priority-due-date-assignee">
-							<div className="task-modal-field">
-								<label>Priority</label>
-								<Dropdown
-									options={priorityOptions}
-									value={priority}
-									onChange={setPriority}
-									placeholder="All Priorities"
-								/>
-							</div>
-							<div className="task-modal-field">
-								<label>Due Date</label>
-								<Dropdown
-									options={dueDateOptions}
-									value={dueDate}
-									onChange={setDueDate}
-									placeholder="All Due Dates"
-								/>
-							</div>
-						</div>
 						<div className="task-modal-field">
-							<label>Assignee</label>
-							<Dropdown
-								options={assigneeOptions}
-								value={assignee}
-								onChange={setAssignee}
-								placeholder="All Assignees"
-							/>
+							<label>Due Date</label>
+							<input name="dueDate" type="date" className="form-input" />
 						</div>
 						<div className="create-task-button">
 							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>
-							<button type="submit" className="task-modal-submit">Add Task</button>
+							<button type="submit" className="task-modal-submit">Add Project</button>
 						</div>
 					</div>
 				</form>

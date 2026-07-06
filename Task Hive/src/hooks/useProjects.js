@@ -13,19 +13,18 @@ function formatDisplayDate(isoDate) {
 
 export function useProjects() {
     const { user } = useAuth();
+    const isGuest = !user || user.isGuest;
     const { tasks } = useTasks();
     const { teamMembers } = useTeamMembers();
     const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(!user?.isGuest);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!user || user.isGuest) {
-            setProjects([]);
-            setLoading(false);
-            return;
-        }
+        if (isGuest) return;
 
         let cancelled = false;
+        // Kicking off a fetch is a deliberate direct setState, not a sync loop.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         supabase
             .from("projects")
@@ -43,10 +42,10 @@ export function useProjects() {
             });
 
         return () => { cancelled = true };
-    }, [user]);
+    }, [user, isGuest]);
 
     const createProject = useCallback(async ({ title, description, dueDate }) => {
-        if (!user || user.isGuest) return null;
+        if (isGuest) return null;
 
         const { data, error } = await supabase
             .from("projects")
@@ -62,7 +61,7 @@ export function useProjects() {
         if (error) throw error;
         setProjects((prev) => [...prev, data]);
         return data;
-    }, [user]);
+    }, [user, isGuest]);
 
     const projectsWithStats = useMemo(() => {
         const avatarByName = new Map(teamMembers.map((m) => [m.name, m.avatar_url]));
@@ -95,5 +94,9 @@ export function useProjects() {
         });
     }, [projects, tasks, teamMembers]);
 
-    return { projects: projectsWithStats, loading, createProject };
+    return {
+        projects: isGuest ? [] : projectsWithStats,
+        loading: isGuest ? false : loading,
+        createProject,
+    };
 }

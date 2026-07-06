@@ -35,17 +35,16 @@ function mapRowToTask(row) {
 
 export function useTasks() {
     const { user } = useAuth();
+    const isGuest = !user || user.isGuest;
     const [tasks, setTasks] = useState([]);
-    const [loading, setLoading] = useState(!user?.isGuest);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!user || user.isGuest) {
-            setTasks([]);
-            setLoading(false);
-            return;
-        }
+        if (isGuest) return;
 
         let cancelled = false;
+        // Kicking off a fetch is a deliberate direct setState, not a sync loop.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         supabase
             .from("tasks")
@@ -63,10 +62,10 @@ export function useTasks() {
             });
 
         return () => { cancelled = true };
-    }, [user]);
+    }, [user, isGuest]);
 
     const createTask = useCallback(async (input) => {
-        if (!user || user.isGuest) return null;
+        if (isGuest) return null;
 
         const { data, error } = await supabase
             .from("tasks")
@@ -89,10 +88,10 @@ export function useTasks() {
         const mapped = mapRowToTask(data);
         setTasks((prev) => [...prev, mapped]);
         return mapped;
-    }, [user]);
+    }, [user, isGuest]);
 
     const updateTaskStatus = useCallback(async (taskId, columnTitle) => {
-        if (!user || user.isGuest) return;
+        if (isGuest) return;
 
         setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, columnTitle } : t)));
 
@@ -102,7 +101,12 @@ export function useTasks() {
             .eq("id", taskId);
 
         if (error) console.error("Failed to update task status:", error);
-    }, [user]);
+    }, [isGuest]);
 
-    return { tasks, loading, createTask, updateTaskStatus };
+    return {
+        tasks: isGuest ? [] : tasks,
+        loading: isGuest ? false : loading,
+        createTask,
+        updateTaskStatus,
+    };
 }

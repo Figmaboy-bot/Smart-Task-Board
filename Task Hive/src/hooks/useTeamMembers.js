@@ -4,17 +4,16 @@ import { useAuth } from "../context/AuthContext";
 
 export function useTeamMembers() {
     const { user } = useAuth();
+    const isGuest = !user || user.isGuest;
     const [teamMembers, setTeamMembers] = useState([]);
-    const [loading, setLoading] = useState(!user?.isGuest);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!user || user.isGuest) {
-            setTeamMembers([]);
-            setLoading(false);
-            return;
-        }
+        if (isGuest) return;
 
         let cancelled = false;
+        // Kicking off a fetch is a deliberate direct setState, not a sync loop.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         supabase
             .from("team_members")
@@ -32,10 +31,10 @@ export function useTeamMembers() {
             });
 
         return () => { cancelled = true };
-    }, [user]);
+    }, [user, isGuest]);
 
     const createTeamMember = useCallback(async ({ member, email, role, status, img }) => {
-        if (!user || user.isGuest) return null;
+        if (isGuest) return null;
 
         const { data, error } = await supabase
             .from("team_members")
@@ -52,7 +51,11 @@ export function useTeamMembers() {
         if (error) throw error;
         setTeamMembers((prev) => [...prev, data]);
         return data;
-    }, [user]);
+    }, [isGuest]);
 
-    return { teamMembers, loading, createTeamMember };
+    return {
+        teamMembers: isGuest ? [] : teamMembers,
+        loading: isGuest ? false : loading,
+        createTeamMember,
+    };
 }

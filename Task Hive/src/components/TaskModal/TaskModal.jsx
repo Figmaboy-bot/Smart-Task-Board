@@ -4,7 +4,7 @@ import './TaskModal.css';
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Dropdown from "../Dropdown/Dropdown";
 
-export default function TaskModal({ open, onClose, onSubmit, projects = [] }) {
+export default function TaskModal({ open, onClose, onSubmit, projects = [], teamMembers = [] }) {
 	const [project, setProject] = useState(null);
 	const [priority, setPriority] = useState(null);
 	const [assignee, setAssignee] = useState(null);
@@ -13,7 +13,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [] }) {
 	const [links, setLinks] = useState(['']);
 
 	// Convert projects prop to dropdown options
-	const projectOptions = projects.length > 0 
+	const projectOptions = projects.length > 0
 		? projects.map(p => ({ value: p.name || p, label: p.name || p }))
 		: [
 			{ value: "Project A", label: "Project A" },
@@ -33,9 +33,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [] }) {
 	];
 	const assigneeOptions = [
 		{ value: "Me", label: "Me" },
-		{ value: "Linda", label: "Linda" },
-		{ value: "Jake", label: "Jake" },
-		{ value: "Mathew", label: "Mathew" },
+		...teamMembers.map(m => ({ value: m.name, label: m.name })),
 	];
 	const tagOptions = [
 		{ value: "Frontend", label: "Frontend" },
@@ -86,10 +84,10 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [] }) {
 							tag: tag || "General",
 							dueDate,
 							status: status || "To-Do",
+							project,
 							links: validLinks,
 							linksCount: validLinks.length
 						};
-						console.log('TaskModal submit values:', submittedTask);
 						// Reset form fields
 						form.reset();
 						setPriority(null);

@@ -9,10 +9,12 @@ import Dropdown from "../../components/Dropdown/Dropdown";
 import ProjectGrid from "./ProjectGrid";
 import ProjectList from "./ProjectList";
 import AddProjectModal from "../../components/AddProjectModal/AddProjectModal";
+import { useProjects } from "../../hooks/useProjects";
 import './Projects.css';
 
 export default function Projects() {
 
+    const { projects, loading, createProject } = useProjects();
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
     const [owner, setOwner] = useState(null);
@@ -65,7 +67,11 @@ export default function Projects() {
                             onClick={() => setShowAddProjectModal(true)}
                         />
 
-                        <AddProjectModal open={showAddProjectModal} onClose={() => setShowAddProjectModal(false)} />
+                        <AddProjectModal
+                            open={showAddProjectModal}
+                            onClose={() => setShowAddProjectModal(false)}
+                            onSubmit={createProject}
+                        />
 
                     </div>
                 </div>
@@ -112,7 +118,13 @@ export default function Projects() {
                 </div>
                 {/* Render view based on switcher */}
                 <div className="projects-view-container">
-                    {view === "grid" ? <ProjectGrid /> : <ProjectList />}
+                    {loading ? (
+                        <p>Loading projects…</p>
+                    ) : view === "grid" ? (
+                        <ProjectGrid projects={projects} />
+                    ) : (
+                        <ProjectList projects={projects} />
+                    )}
                 </div>
             </div>
         </div>
