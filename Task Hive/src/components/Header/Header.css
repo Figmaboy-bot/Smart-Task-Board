@@ -57,6 +57,7 @@
   }
   
   .header-notification {
+    position: relative;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -67,6 +68,22 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background-color: var(--error-50);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 16px;
+    text-align: center;
   }
   
   .header-notification:hover {

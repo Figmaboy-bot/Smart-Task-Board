@@ -1,60 +1,26 @@
 import { useState } from "react"
-import { MagnifyingGlassIcon, BellIcon, CheckBadgeIcon, ChatBubbleLeftEllipsisIcon } from "@heroicons/react/24/outline"
+import { MagnifyingGlassIcon, BellIcon, ExclamationTriangleIcon, ClockIcon, CalendarDaysIcon } from "@heroicons/react/24/outline"
 import Notifications from "../../pages/Notifications/Notifications"
 import { useLocation } from "react-router-dom";
 import { useProfile } from "../../context/ProfileContext";
+import { useTasks } from "../../hooks/useTasks";
+import { useNotifications } from "../../hooks/useNotifications";
 import './Header.css'
+
+const NOTIFICATION_ICON = {
+  error: <ExclamationTriangleIcon width={24} height={24} />,
+  warning: <ClockIcon width={24} height={24} />,
+  grey: <CalendarDaysIcon width={24} height={24} />,
+};
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const { profilePic } = useProfile();
   const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
-
-  const notifications = [
-    {
-      group: 'Today',
-      items: [
-        {
-          id: 1,
-          type: 'success',
-          title: 'Task Completed',
-          desc: 'You have completed the task "Design Homepage".',
-          time: '9:42 AM',
-          icon: <CheckBadgeIcon width={24} height={24} />
-        },
-        {
-          id: 2,
-          type: 'grey',
-          title: 'New Comment',
-          desc: 'John commented on your task "Update Docs".',
-          time: '8:15 AM',
-          icon: <ChatBubbleLeftEllipsisIcon width={24} height={24} />
-        },
-      ]
-    },
-    {
-      group: 'Yesterday',
-      items: [
-        {
-          id: 3,
-          type: 'warning',
-          title: 'Deadline Approaching',
-          desc: 'The deadline for "Release v2.0" is tomorrow.',
-          time: '4:30 PM',
-          icon: <CheckBadgeIcon width={24} height={24} />
-        },
-        {
-          id: 4,
-          type: 'error',
-          title: 'Task Failed',
-          desc: 'The deployment for "Release v2.0" failed.',
-          time: '2:10 PM',
-          icon: <CheckBadgeIcon width={24} height={24} />
-        },
-      ]
-    }
-  ];
+  const { tasks } = useTasks();
+  const notificationItems = useNotifications(tasks);
+  const notifications = notificationItems.map(n => ({ ...n, icon: NOTIFICATION_ICON[n.type] }));
 
   // Map route to search placeholder
   const searchPlaceholders = {
@@ -99,6 +65,9 @@ function Header() {
           onClick={() => setNotifOpen(true)}
         >
           <BellIcon className="notification-icon" />
+          {notifications.length > 0 && (
+            <span className="notification-badge">{notifications.length}</span>
+          )}
         </button>
         <Notifications open={notifOpen} onClose={() => setNotifOpen(false)} notifications={notifications} />
 
