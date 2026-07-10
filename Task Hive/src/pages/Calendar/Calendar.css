@@ -123,6 +123,22 @@
     min-height: 100px;
 }
 
+.calendar-body-row {
+    display: flex;
+    min-height: 320px;
+}
+
+.calendar-day-col-today .calendar-date-label,
+.calendar-day-col-today .calendar-day-label {
+    color: var(--primary-50);
+}
+
+.calendar-day-empty {
+    color: var(--grey-40);
+    font-size: 12px;
+    padding: 8px 0;
+}
+
 .calendar-time-col {
     width: 7.5%;
     background: var(--color-background);
@@ -163,6 +179,9 @@
 
 .calendar-slot-inner {
     padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .calendar-event-card {
@@ -175,6 +194,9 @@
     font-size: 15px;
     background: var(--color-background);
     height: fit-content;
+    border: none;
+    text-align: left;
+    cursor: pointer;
 }
 
 .calendar-event-card[style*='background: #fde2cf'] {
