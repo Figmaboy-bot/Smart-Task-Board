@@ -320,7 +320,7 @@ export default function MyTasks() {
                                                 <span className="column-title">{col.title} ({col.tasks.length})</span>
                                             </div>
                                             <div>
-                                                <button className="column-add" onClick={() => setShowTaskModal(true)}>
+                                                <button className="column-add" onClick={openCreateModal}>
                                                     <PlusCircleIcon className="plusicon" />
                                                 </button>
                                                 <EllipsisVerticalIcon className="plusicon" />
@@ -350,6 +350,7 @@ export default function MyTasks() {
                 open={!!selectedTask}
                 onClose={() => setSelectedTask(null)}
                 task={selectedTask}
+                onEdit={openEditModal}
             />
         </div>
     );
