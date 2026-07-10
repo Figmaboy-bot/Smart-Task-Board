@@ -354,11 +354,20 @@ export default function AllTasks() {
             </div>
 
             <TaskModal
+                key={editingTask?.id ?? "create"}
                 open={showTaskModal}
                 onClose={() => setShowTaskModal(false)}
                 projects={projects}
                 teamMembers={teamMembers}
+                initialTask={editingTask}
                 onSubmit={handleAddTask}
+            />
+
+            <TaskDetailModal
+                open={!!selectedTask}
+                onClose={() => setSelectedTask(null)}
+                task={selectedTask}
+                onEdit={openEditModal}
             />
         </div>
     )
