@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 export const STATUS_TO_COLUMN = { "To-Do": "TO-DO", "In Progress": "IN PROGRESS", "Done": "DONE" };
 export const COLUMN_TO_STATUS = { "TO-DO": "To-Do", "IN PROGRESS": "In Progress", "DONE": "Done" };
 
-const PRIORITY_COLOR = { High: "#ef4444", Medium: "#fbbc05", Low: "#22c55e" };
+export const PRIORITY_COLOR = { High: "#ef4444", Medium: "#fbbc05", Low: "#22c55e" };
 const PRIORITY_LABEL = { high: "High", medium: "Medium", low: "Low" };
 
 // Demo content shown in guest mode (never touches Supabase), ported from the

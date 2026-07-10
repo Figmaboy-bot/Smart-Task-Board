@@ -14,3 +14,235 @@
     align-content: flex-start;
     width: 100%;
 }
+
+.reports-insights-container {
+    padding: 1rem 0;
+}
+
+.reports-insights-container h2 {
+    margin-bottom: 1.25rem;
+}
+
+.ri-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.ri-kpi-tile {
+    background: var(--color-background);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ri-kpi-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--grey-60);
+}
+
+.ri-kpi-label-danger {
+    color: var(--error-50);
+}
+
+.ri-kpi-value {
+    font-size: 32px;
+    font-weight: 500;
+}
+
+.ri-kpi-value-danger {
+    color: var(--error-50);
+}
+
+.ri-card {
+    background: var(--color-background);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 1rem;
+}
+
+.ri-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.ri-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.ri-empty {
+    color: var(--grey-50);
+    font-size: 14px;
+}
+
+.ri-caption {
+    color: var(--grey-50);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+/* Meter */
+
+.ri-meter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ri-meter-track {
+    flex: 1;
+    height: 12px;
+    border-radius: 6px;
+    background: var(--primary-0);
+    overflow: hidden;
+}
+
+.ri-meter-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: var(--primary-50);
+    transition: width 0.3s ease;
+}
+
+.ri-meter-value {
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 44px;
+    text-align: right;
+}
+
+/* Bar list */
+
+.ri-bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ri-bar-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 64px;
+    align-items: center;
+    gap: 12px;
+    border-radius: 8px;
+    padding: 4px 6px;
+    outline: none;
+}
+
+.ri-bar-row-active {
+    background: var(--primary-0);
+}
+
+.ri-bar-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--grey-70);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ri-bar-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ri-bar-track {
+    height: 16px;
+    border-radius: 8px;
+    background: var(--grey-20);
+    overflow: hidden;
+}
+
+.ri-bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease;
+}
+
+.ri-bar-value {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Overdue list */
+
+.ri-overdue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ri-overdue-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 100px;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.ri-overdue-row:hover,
+.ri-overdue-row:focus {
+    background: var(--primary-0);
+    outline: none;
+}
+
+.ri-overdue-title {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ri-overdue-project,
+.ri-overdue-assignee {
+    color: var(--grey-60);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ri-overdue-date {
+    color: var(--error-50);
+    font-weight: 600;
+    text-align: right;
+}
+
+@media (max-width: 900px) {
+    .ri-kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ri-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ri-overdue-row {
+        grid-template-columns: 2fr 1fr 80px;
+    }
+
+    .ri-overdue-assignee {
+        display: none;
+    }
+}
