@@ -118,10 +118,10 @@ export default function TaskDetailModal({ open, onClose, task, onEdit }) {
                         <div className="task-detail-section">
                             <h4>Attached Links</h4>
                             <div className="task-links-list">
-                                {Array.from({ length: task.links }).map((_, index) => (
-                                    <a key={index} href="#" className="task-link-item">
+                                {(task.rawLinks?.length ? task.rawLinks : Array.from({ length: task.links })).map((url, index) => (
+                                    <a key={index} href={url || "#"} target="_blank" rel="noopener noreferrer" className="task-link-item">
                                         <LinkIcon className="link-icon" />
-                                        <span>Link {index + 1}</span>
+                                        <span>{url || `Link ${index + 1}`}</span>
                                     </a>
                                 ))}
                             </div>
