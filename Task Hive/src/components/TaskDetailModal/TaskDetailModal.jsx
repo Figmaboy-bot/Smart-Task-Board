@@ -9,9 +9,12 @@ import {
     ClockIcon,
     RectangleStackIcon
 } from "@heroicons/react/24/outline";
+import { usePreferences } from "../../context/PreferencesContext";
+import { formatDateWithPreference } from "../../utils/formatDate";
 import "./TaskDetailModal.css";
 
 export default function TaskDetailModal({ open, onClose, task, onEdit }) {
+    const { preferences } = usePreferences();
     if (!open || !task) return null;
 
 
@@ -81,7 +84,7 @@ export default function TaskDetailModal({ open, onClose, task, onEdit }) {
                             <CalendarIcon className="meta-icon" />
                             <div className="meta-content">
                                 <span className="meta-label">Due Date</span>
-                                <span className="meta-value">{task.date || task.dueDate || "Not set"}</span>
+                                <span className="meta-value">{formatDateWithPreference(task.due_date, preferences.date_format) || task.date || task.dueDate || "Not set"}</span>
                             </div>
                         </div>
 

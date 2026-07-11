@@ -164,7 +164,6 @@ export default function Settings() {
             return;
         }
         refreshMfaFactors();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isGuest]);
 
     const handleStartEnroll2fa = async () => {

@@ -7,12 +7,18 @@ import { useMessages } from "../../hooks/useMessages";
 import { useTasks } from "../../hooks/useTasks";
 import { useProjects } from "../../hooks/useProjects";
 import { useTeamMembers } from "../../hooks/useTeamMembers";
+import { usePreferences } from "../../context/PreferencesContext";
 import './Messages.css';
 
-function formatTime(isoString) {
+function formatTime(isoString, { timezone, time_format } = {}) {
     const d = new Date(isoString);
     if (isNaN(d.getTime())) return "";
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: time_format !== "24-hour",
+        timeZone: timezone || undefined,
+    });
 }
 
 export default function Messages() {
@@ -20,6 +26,7 @@ export default function Messages() {
     const { createTask } = useTasks();
     const { projects } = useProjects();
     const { teamMembers } = useTeamMembers();
+    const { preferences } = usePreferences();
 
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [draft, setDraft] = useState("");
@@ -78,7 +85,7 @@ export default function Messages() {
                                             <div className={`chat-message-bubble${isMe ? " chat-message-bubble-me" : " chat-message-bubble-them"}`}>
                                                 {!isMe && <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{msg.sender_name}</div>}
                                                 {msg.body}
-                                                <div className={`chat-message-time${isMe ? " chat-message-time-me" : " chat-message-time-them"}`}>{formatTime(msg.created_at)}</div>
+                                                <div className={`chat-message-time${isMe ? " chat-message-time-me" : " chat-message-time-them"}`}>{formatTime(msg.created_at, preferences)}</div>
                                             </div>
                                         </div>
                                     );

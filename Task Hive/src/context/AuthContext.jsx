@@ -6,8 +6,20 @@ const AuthContext = createContext()
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  // True when a session exists but hasn't cleared its second (TOTP) factor
+  // yet, i.e. Supabase's assurance level is aal1 with aal2 required.
+  const [mfaRequired, setMfaRequired] = useState(false)
 
   const GUEST_USER = { id: "guest", email: "guest@taskhive.com", isGuest: true }
+
+  const checkMfaStatus = async () => {
+    const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    if (error) {
+      setMfaRequired(false)
+      return
+    }
+    setMfaRequired(data.currentLevel === "aal1" && data.nextLevel === "aal2")
+  }
 
   useEffect(() => {
     // Restore guest session across refreshes
@@ -17,17 +29,42 @@ export function AuthProvider({ children }) {
       return
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null)
+      if (session?.user) await checkMfaStatus()
       setIsInitialized(true)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
+      if (session?.user) {
+        await checkMfaStatus()
+      } else {
+        setMfaRequired(false)
+      }
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  const verifyMfa = async (code) => {
+    const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
+    if (factorsError) throw factorsError
+    const factor = factors?.totp?.find((f) => f.status === "verified")
+    if (!factor) throw new Error("No two-factor method found on this account.")
+
+    const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: factor.id })
+    if (challengeError) throw challengeError
+
+    const { error: verifyError } = await supabase.auth.mfa.verify({
+      factorId: factor.id,
+      challengeId: challenge.id,
+      code: code.trim(),
+    })
+    if (verifyError) throw verifyError
+
+    await checkMfaStatus()
+  }
 
   const signup = async (email, password) => {
     const { error } = await supabase.auth.signUp({ email, password })
@@ -95,6 +132,8 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user,
       isInitialized,
+      mfaRequired,
+      verifyMfa,
       signup,
       completeSignup,
       login,
