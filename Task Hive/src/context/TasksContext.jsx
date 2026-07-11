@@ -92,11 +92,7 @@ export function TasksProvider({ children }) {
     const [loading, setLoading] = useState(!isGuest);
 
     useEffect(() => {
-        if (isGuest) return;
-        if (!activeWorkspaceId) {
-            setTasks([]);
-            return;
-        }
+        if (isGuest || !activeWorkspaceId) return;
 
         let cancelled = false;
         // Kicking off a fetch is a deliberate direct setState, not a sync loop.

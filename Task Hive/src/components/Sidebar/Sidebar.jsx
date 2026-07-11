@@ -57,8 +57,13 @@ function Sidebar() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const location = useLocation();
+    const isGuest = !user || user.isGuest;
+    const { workspaces, activeWorkspace, setActiveWorkspaceId, createWorkspace } = useWorkspaces();
     // Removed unused isThemeOn state
     const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false)
+    const [showNewWorkspaceForm, setShowNewWorkspaceForm] = useState(false)
+    const [newWorkspaceName, setNewWorkspaceName] = useState("")
+    const [creatingWorkspace, setCreatingWorkspace] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
     const { theme, toggleTheme } = useTheme();
 
@@ -99,12 +104,26 @@ function Sidebar() {
         setIsCollapsed(!isCollapsed)
     }
 
-    // Dropdown workspace options
-    const workspaceOptions = [
-        { name: "Personal Workspace", email: "personal@email.com" },
-        { name: "Design Team", email: "designteam@email.com" },
-        { name: "Dev Workspace", email: "devworkspace@email.com" },
-    ];
+    const handleSelectWorkspace = (id) => {
+        setActiveWorkspaceId(id);
+        setShowWorkspaceDropdown(false);
+    };
+
+    const handleCreateWorkspace = async (e) => {
+        e.preventDefault();
+        if (!newWorkspaceName.trim() || creatingWorkspace) return;
+        setCreatingWorkspace(true);
+        try {
+            await createWorkspace(newWorkspaceName);
+            setNewWorkspaceName("");
+            setShowNewWorkspaceForm(false);
+            setShowWorkspaceDropdown(false);
+        } catch (err) {
+            console.error("Failed to create workspace:", err);
+        } finally {
+            setCreatingWorkspace(false);
+        }
+    };
 
     // Close dropdown on outside click
     React.useEffect(() => {
@@ -113,6 +132,7 @@ function Sidebar() {
             if (!document.querySelector('.workspace-dropdown-menu')?.contains(e.target) &&
                 !document.querySelector('.workspace-dropdown')?.contains(e.target)) {
                 setShowWorkspaceDropdown(false);
+                setShowNewWorkspaceForm(false);
             }
         }
         document.addEventListener('mousedown', handleClick);
@@ -146,11 +166,11 @@ function Sidebar() {
                 </div>
                 {!isCollapsed && (
                     <div className="workspace-info">
-                        <div className="workspace-name">Design Team</div>
+                        <div className="workspace-name">{isGuest ? "Design Team" : (activeWorkspace?.name || "Workspace")}</div>
                         <div className="workspace-email">{user?.email || "Workspacename@gmail.com"}</div>
                     </div>
                 )}
-                {!isCollapsed && (
+                {!isCollapsed && !isGuest && (
                     <button
                         className="workspace-dropdown"
                         onClick={() => setShowWorkspaceDropdown(!showWorkspaceDropdown)}
@@ -162,20 +182,48 @@ function Sidebar() {
                     </button>
                 )}
                 {/* Dropdown menu */}
-                {showWorkspaceDropdown && !isCollapsed && (
+                {showWorkspaceDropdown && !isCollapsed && !isGuest && (
                     <div className="workspace-dropdown-menu">
-                        {workspaceOptions.map((ws, idx) => (
+                        {workspaces.map((ws) => (
                             <div
-                                key={ws.email}
-                                className={`workspace-dropdown-item${idx !== workspaceOptions.length - 1 ? ' with-border' : ''}`}
+                                key={ws.id}
+                                className="workspace-dropdown-item with-border"
                                 tabIndex={0}
                                 role="option"
-                                aria-selected={ws.name === 'Design Team'}
+                                aria-selected={ws.id === activeWorkspace?.id}
+                                onClick={() => handleSelectWorkspace(ws.id)}
+                                onKeyDown={(e) => { if (e.key === "Enter") handleSelectWorkspace(ws.id); }}
                             >
                                 <div className="workspace-dropdown-name">{ws.name}</div>
-                                <div className="workspace-dropdown-email">{ws.email}</div>
+                                <div className="workspace-dropdown-email">{ws.role}</div>
                             </div>
                         ))}
+                        {showNewWorkspaceForm ? (
+                            <form className="workspace-dropdown-item workspace-new-form" onSubmit={handleCreateWorkspace}>
+                                <input
+                                    type="text"
+                                    className="workspace-new-input"
+                                    placeholder="Workspace name"
+                                    value={newWorkspaceName}
+                                    onChange={(e) => setNewWorkspaceName(e.target.value)}
+                                    autoFocus
+                                />
+                                <button type="submit" className="workspace-new-submit" disabled={creatingWorkspace || !newWorkspaceName.trim()}>
+                                    {creatingWorkspace ? "…" : "Create"}
+                                </button>
+                            </form>
+                        ) : (
+                            <div
+                                className="workspace-dropdown-item workspace-dropdown-add"
+                                tabIndex={0}
+                                role="button"
+                                onClick={() => setShowNewWorkspaceForm(true)}
+                                onKeyDown={(e) => { if (e.key === "Enter") setShowNewWorkspaceForm(true); }}
+                            >
+                                <PlusIcon style={{ width: 16, height: 16 }} />
+                                <span>New workspace</span>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

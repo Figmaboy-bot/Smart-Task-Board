@@ -23,11 +23,7 @@ export function useMessages() {
     const [loading, setLoading] = useState(!isGuest);
 
     useEffect(() => {
-        if (isGuest) return;
-        if (!activeWorkspaceId) {
-            setMessages([]);
-            return;
-        }
+        if (isGuest || !activeWorkspaceId) return;
 
         let cancelled = false;
         // Kicking off a fetch is a deliberate direct setState, not a sync loop.
