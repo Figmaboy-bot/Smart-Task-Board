@@ -177,12 +177,13 @@ export function WorkspacesProvider({ children }) {
         return newRow;
     }, [user, setActiveWorkspaceId]);
 
-    const inviteToWorkspace = useCallback(async ({ email, role }) => {
-        if (!activeWorkspaceId) return null;
+    const inviteToWorkspace = useCallback(async ({ email, role }, workspaceId) => {
+        const targetWorkspaceId = workspaceId || activeWorkspaceId;
+        if (!targetWorkspaceId) return null;
         const { data, error } = await supabase
             .from("workspace_invites")
             .insert({
-                workspace_id: activeWorkspaceId,
+                workspace_id: targetWorkspaceId,
                 email: email.trim().toLowerCase(),
                 role: role === "Owner" ? "Owner" : "Member",
                 invited_by: user.id,

@@ -5,15 +5,34 @@ import { XMarkIcon, PencilIcon } from "@heroicons/react/24/outline";
 import Dropdown from "../Dropdown/Dropdown";
 import IconButton from "../Buttons/Buttons";
 
-export default function AddTeamModal({ open, onClose, onSubmit }) {
+export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [], activeWorkspaceId }) {
 	const [profilePic, setProfilePic] = useState("/Icons/default-profile.svg");
 	const [status, setStatus] = useState(null);
+	const [selectedWorkspaceIds, setSelectedWorkspaceIds] = useState([]);
+	const [allWorkspaces, setAllWorkspaces] = useState(false);
+
+	React.useEffect(() => {
+		if (open) {
+			setSelectedWorkspaceIds(activeWorkspaceId ? [activeWorkspaceId] : []);
+			setAllWorkspaces(false);
+		}
+	}, [open, activeWorkspaceId]);
+
+	const toggleWorkspace = (id) => {
+		setSelectedWorkspaceIds((prev) => (
+			prev.includes(id) ? prev.filter((wsId) => wsId !== id) : [...prev, id]
+		));
+	};
 
 	const statusOptions = [
 		{ value: "Invited", label: "Invited" },
 		{ value: "Active", label: "Active" },
 		{ value: "Suspended", label: "Suspended" },
 	];
+
+	const showWorkspacePicker = workspaces.length > 0;
+	const workspaceIds = allWorkspaces ? workspaces.map((w) => w.id) : selectedWorkspaceIds;
+	const canSubmit = !showWorkspacePicker || workspaceIds.length > 0;
 
 	if (!open) return null;
 	return (
@@ -37,7 +56,8 @@ export default function AddTeamModal({ open, onClose, onSubmit }) {
 							email,
 							role,
 							status,
-							img: profilePic
+							img: profilePic,
+							workspaceIds
 						});
 						onClose();
 					}}
@@ -123,9 +143,35 @@ export default function AddTeamModal({ open, onClose, onSubmit }) {
 								/>
 							</div>
 						</div>
+						{showWorkspacePicker && (
+							<div className="task-modal-field">
+								<label>Add to Workspace(s)</label>
+								<div className="workspace-picker-list">
+									<label className="workspace-picker-option workspace-picker-all">
+										<input
+											type="checkbox"
+											checked={allWorkspaces}
+											onChange={(e) => setAllWorkspaces(e.target.checked)}
+										/>
+										<span>All Workspaces</span>
+									</label>
+									{workspaces.map((ws) => (
+										<label key={ws.id} className="workspace-picker-option">
+											<input
+												type="checkbox"
+												checked={allWorkspaces || selectedWorkspaceIds.includes(ws.id)}
+												disabled={allWorkspaces}
+												onChange={() => toggleWorkspace(ws.id)}
+											/>
+											<span>{ws.name}</span>
+										</label>
+									))}
+								</div>
+							</div>
+						)}
 						<div className="create-task-button">
 							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>
-							<button type="submit" className="task-modal-submit">Add team member</button>
+							<button type="submit" className="task-modal-submit" disabled={!canSubmit}>Add team member</button>
 						</div>
 					</div>
 				</form>
