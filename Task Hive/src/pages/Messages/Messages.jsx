@@ -1,73 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TaskModal from "../../components/TaskModal/TaskModal";
-import Dropdown from "../../components/Dropdown/Dropdown";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
-import { FaceSmileIcon, PaperClipIcon, PhotoIcon, PlusIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { useMessages } from "../../hooks/useMessages";
+import { useTasks } from "../../hooks/useTasks";
+import { useProjects } from "../../hooks/useProjects";
+import { useTeamMembers } from "../../hooks/useTeamMembers";
 import './Messages.css';
 
+function formatTime(isoString) {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
 export default function Messages() {
-        const [showTaskModal, setShowTaskModal] = useState(false);
-    // Dummy data for chat list and messages
-    const chats = [
-        { id: 1, name: "Mr. Rosemary Koss", lastMessage: "Can someone review the landing page task? @You", unread: 1, avatar: "https://randomuser.me/api/portraits/men/32.jpg", time: "09:12" },
-        { id: 2, name: "Cora Goyette", lastMessage: "Hi, i want to ask something...", unread: 1, active: true, avatar: "https://randomuser.me/api/portraits/women/44.jpg", time: "10:45" },
-        { id: 3, name: "Mrs. Darin O'Keefe", lastMessage: "Hi, i want to ask something...", unread: 3, avatar: "https://randomuser.me/api/portraits/men/65.jpg", time: "11:30" },
-        { id: 4, name: "Irene Dicki", lastMessage: "Hi, i want to ask something...", unread: 1, avatar: "https://randomuser.me/api/portraits/women/68.jpg", time: "12:01" },
-    ];
+    const { messages, loading, sendMessage, currentUserId } = useMessages();
+    const { createTask } = useTasks();
+    const { projects } = useProjects();
+    const { teamMembers } = useTeamMembers();
 
+    const [showTaskModal, setShowTaskModal] = useState(false);
+    const [draft, setDraft] = useState("");
+    const messagesEndRef = useRef(null);
 
-    const [filter, setFilter] = useState('All');
-    const [sort, setSort] = useState('Newest');
-    const [showChatArea, setShowChatArea] = useState(true);
-    const [activeChatId, setActiveChatId] = useState(
-        chats.find(chat => chat.active)?.id || chats[0].id
-    );
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ block: "end" });
+    }, [messages]);
 
-    const sortOptions = [
-        { value: 'Newest', label: 'Newest' },
-        { value: 'Oldest', label: 'Oldest' },
-        { value: 'Unread', label: 'Unread' }
-    ];
+    const handleSend = () => {
+        if (!draft.trim()) return;
+        sendMessage(draft);
+        setDraft("");
+    };
 
-    const filterOptions = [
-        { value: 'All', label: 'All' },
-        { value: 'Unread', label: 'Unread' },
-        { value: 'Mentions', label: 'Mentions' },
-        { value: 'Tasks', label: 'Tasks' }
-    ];
-
-
-    // Filter chats based on selected filter (dummy logic for now)
-    let filteredChats = chats.filter(chat => {
-        if (filter === 'All') return true;
-        if (filter === 'Unread') return chat.unread > 0;
-        // For demo, Mentions and Tasks just return all
-        return true;
-    });
-
-    // Sort chats based on selected sort option
-    if (sort === 'Newest') {
-        filteredChats = [...filteredChats].sort((a, b) => b.id - a.id);
-    } else if (sort === 'Oldest') {
-        filteredChats = [...filteredChats].sort((a, b) => a.id - b.id);
-    } else if (sort === 'Unread') {
-        filteredChats = [...filteredChats].sort((a, b) => (b.unread || 0) - (a.unread || 0));
-    }
-
-    const messages = [
-        { id: 1, from: "me", text: "Thank you. Please enter the amount and date of the transaction (e.g., $100, December 21th).", time: "13.34" },
-        { id: 2, from: "them", text: "$50, November 30th.", time: "13.34" },
-        { id: 3, from: "me", text: "Thank you! It seems there might be a delay in processing the transaction. What would you like to do next?", time: "13.34" },
-        { id: 4, from: "me", text: "Retry Checking the Balance", time: "13.34", isButton: true },
-        { id: 5, from: "me", text: "Speak to a Representative", time: "13.34", isButton: true },
-        { id: 6, from: "them", text: "Speak to a Representative", time: "13.34" },
-        { id: 7, from: "system", text: "Chat got taken over by customer service" },
-        { id: 8, from: "agent", text: "Hi, this is Alex from Customer Support. I see you’re having an issue with your top-up. Could you confirm if the $50 transaction on November 30th is showing in your bank statement or pending?", time: "13.34" },
-    ];
-
-    // Find the active chat
-    const activeChat = chats.find(chat => chat.id === activeChatId) || chats[0];
+    const handleAddTask = (task) => {
+        const matchedProject = projects.find(p => p.name === task.project);
+        createTask({
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            assignee: task.assignee,
+            tag: task.tag,
+            dueDate: task.dueDate,
+            status: task.status,
+            links: task.links,
+            project_id: matchedProject?.id || null,
+            project: matchedProject?.name || task.project || "",
+        });
+        setShowTaskModal(false);
+    };
 
     return (
         <div className="messages-page">
@@ -75,132 +58,65 @@ export default function Messages() {
             <div className="messages-content">
                 <Header onNotificationClick={() => { }} />
                 <div className="messages-view">
-                    {/* Chat List */}
-                    <div
-                        className={`chat-list${!showChatArea ? ' chat-list-full' : ''}`}
-                        style={!showChatArea ? { flex: 1, width: '100%' } : {}}
-                    >
-                        <div className="chat-list-header">
-                            <div className="chat-list-title">Messages</div>
-                            <div className="chat-list-controls" style={{ gap: 8, display: 'flex', alignItems: 'center' }}>
-                                <Dropdown
-                                    options={filterOptions}
-                                    value={filter}
-                                    onChange={setFilter}
-                                    placeholder="Filter"
-                                    className="chat-list-filter-dropdown"
-                                />
-                                <Dropdown
-                                    options={sortOptions}
-                                    value={sort}
-                                    onChange={setSort}
-                                    placeholder="Sort"
-                                    className="chat-list-filter-dropdown"
-                                />
+                    <div className="chat-area">
+                        <div className="chat-header">
+                            <div className="chat-header-title">
+                                Team Channel <span className="chat-header-status">● {teamMembers.length} member{teamMembers.length === 1 ? "" : "s"}</span>
                             </div>
                         </div>
-                        <div className="chat-list-scroll">
-                            {filteredChats.map(chat => (
-                                <div
-                                    key={chat.id}
-                                    className={`chat-list-item${chat.id === activeChatId && showChatArea ? ' active' : ''}`}
-                                    onClick={() => {
-                                        setActiveChatId(chat.id);
-                                        setShowChatArea(true);
-                                    }}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    <div className="chat-avatar">
-                                        <img src={chat.avatar} alt={chat.name} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
-                                    </div>
-                                    <div className="chat-list-item-content">
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <div className="chat-list-item-name">{chat.name}</div>
-                                            <div className="chat-list-item-time" style={{ fontSize: 12, color: '#bfc9d9', marginLeft: 8, minWidth: 40, textAlign: 'right' }}>{chat.time}</div>
+
+                        <div className="chat-messages">
+                            {loading ? (
+                                <p style={{ color: "var(--grey-50)" }}>Loading messages…</p>
+                            ) : messages.length === 0 ? (
+                                <p style={{ color: "var(--grey-50)" }}>No messages yet. Say hello.</p>
+                            ) : (
+                                messages.map((msg) => {
+                                    const isMe = msg.sender_id === currentUserId;
+                                    return (
+                                        <div key={msg.id} className={`chat-message${isMe ? " chat-message-me" : " chat-message-them"}`}>
+                                            <div className={`chat-message-bubble${isMe ? " chat-message-bubble-me" : " chat-message-bubble-them"}`}>
+                                                {!isMe && <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{msg.sender_name}</div>}
+                                                {msg.body}
+                                                <div className={`chat-message-time${isMe ? " chat-message-time-me" : " chat-message-time-them"}`}>{formatTime(msg.created_at)}</div>
+                                            </div>
                                         </div>
-                                        <div className="chat-last-message-unread">
-                                            <div className="chat-list-item-last-message">{chat.lastMessage}</div>
-                                            {chat.unread > 0 && <div className="chat-list-item-unread">{chat.unread}</div>}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                                    );
+                                })
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
+
+                        <div className="chat-input-bar">
+                            <div className="chat-input-top">
+                                <input
+                                    type="text"
+                                    className="chat-input"
+                                    placeholder="Message the team..."
+                                    value={draft}
+                                    onChange={(e) => setDraft(e.target.value)}
+                                    onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
+                                />
+                                <button className="chat-send-btn" onClick={handleSend}>Send</button>
+                            </div>
+                            <div className="chat-input-bottom">
+                                <div />
+                                <button className="chat-form-btn" onClick={() => setShowTaskModal(true)}>
+                                    <PlusIcon className="chat-input-bottom-left-icon" aria-hidden="true" /> Create task
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    {/* Chat Area */}
-                    {showChatArea && (
-                        <div className="chat-area">
-                            {/* Chat Header */}
-                            <div className="chat-header">
-                                <div className="chat-avatar chat-avatar-lg">
-                                    <img src={activeChat.avatar} alt={activeChat.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                                </div>
-                                <div className="chat-header-title">
-                                    {activeChat.name} <span className="chat-header-status">● Online</span>
-                                </div>
-                                <button className="chat-header-btn chat-header-btn-close" onClick={() => setShowChatArea(false)}><XCircleIcon className="close-chat-icon" /></button>
-                            </div>
-                            {/* Chat Messages */}
-                            <div className="chat-messages">
-                                {messages.map((msg) => {
-                                    if (msg.from === 'me') {
-                                        if (msg.isButton) {
-                                            return null; // Render buttons below
-                                        }
-                                        return (
-                                            <div key={msg.id} className="chat-message chat-message-me">
-                                                <div className="chat-message-bubble chat-message-bubble-me">
-                                                    {msg.text}
-                                                    <div className="chat-message-time chat-message-time-me">{msg.time}</div>
-                                                </div>
-                                            </div>
-                                        );
-                                    } else if (msg.from === 'them') {
-                                        return (
-                                            <div key={msg.id} className="chat-message chat-message-them">
-                                                <div className="chat-message-bubble chat-message-bubble-them">
-                                                    {msg.text}
-                                                    <div className="chat-message-time chat-message-time-them">{msg.time}</div>
-                                                </div>
-                                            </div>
-                                        );
-                                    } else if (msg.from === 'agent') {
-                                        return (
-                                            <div key={msg.id} className="chat-message chat-message-agent">
-                                                <div className="chat-message-bubble chat-message-bubble-me">
-                                                    {msg.text}
-                                                    <div className="chat-message-time chat-message-time-me">{msg.time}</div>
-                                                </div>
-                                            </div>
-                                        );
-                                    } else if (msg.from === 'system') {
-                                        return (
-                                            <div key={msg.id} className="chat-message-system">{msg.text}</div>
-                                        );
-                                    }
-                                    return null;
-                                })}
-                            </div>
-                            {/* Chat Input */}
-                            <div className="chat-input-bar">
-                                <div className="chat-input-top">
-                                    <input type="text" className="chat-input" placeholder="Type '/' to use command" />
-                                    <button className="chat-send-btn">Send</button>
-                                </div>
-                                <div className="chat-input-bottom">
-                                    <div className="emoji-attachment">
-                                        <button className="chat-attach-btn" title="Attach"><PaperClipIcon className="chat-input-bottom-icon" aria-hidden="true" /></button>
-                                        <button className="chat-attach-btn" title="Photo"><PhotoIcon className="chat-input-bottom-icon" aria-hidden="true" /></button>
-                                        <button className="chat-emoji-btn" title="Emoji"><FaceSmileIcon className="chat-input-bottom-icon" aria-hidden="true" /></button>
-                                    </div>
-                                    <button className="chat-form-btn" onClick={() => setShowTaskModal(true)}> <PlusIcon className="chat-input-bottom-left-icon" aria-hidden="true" /> Create task</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
-            <TaskModal open={showTaskModal} onClose={() => setShowTaskModal(false)} />
+
+            <TaskModal
+                open={showTaskModal}
+                onClose={() => setShowTaskModal(false)}
+                projects={projects}
+                teamMembers={teamMembers}
+                onSubmit={handleAddTask}
+            />
         </div>
     );
 }
