@@ -34,11 +34,7 @@ export function PreferencesProvider({ children }) {
     const [loading, setLoading] = useState(!isGuest);
 
     useEffect(() => {
-        if (isGuest) {
-            setPreferences(DEFAULT_PREFERENCES);
-            setLoading(false);
-            return;
-        }
+        if (isGuest) return;
 
         let cancelled = false;
         setLoading(true);

@@ -160,7 +160,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 						</div>
 						<div className="priority-due-date-assignee">
 							<div className="task-modal-field">
-								<label>Assignee</label>
+								<label>Assignee{preferences.block_reassignment_focus ? " (locked during focus)" : ""}</label>
 								<Dropdown
 									className="full-width-dropdown"
 									options={assigneeOptions}
@@ -169,6 +169,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 									placeholder="Select Assignee"
 									fontSize="0.8rem"
 									padding="12px 16px"
+									disabled={preferences.block_reassignment_focus}
 								/>
 							</div>
 							<div className="task-modal-field">
