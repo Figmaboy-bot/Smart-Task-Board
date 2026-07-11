@@ -17,7 +17,7 @@ export default function Teams() {
     const { user } = useAuth();
     const isGuest = !user || user.isGuest;
     const { teamMembers, loading, createTeamMember } = useTeamMembers();
-    const { inviteToWorkspace } = useWorkspaces();
+    const { workspaces, activeWorkspaceId, inviteToWorkspace } = useWorkspaces();
     const [showAddTeamModal, setShowAddTeamModal] = useState(false);
 
     const rows = useMemo(() => teamMembers.map((m) => ({
@@ -86,15 +86,27 @@ export default function Teams() {
                         )}
                     </div>
                 </div>
-                <AddTeamModal open={showAddTeamModal} onClose={() => setShowAddTeamModal(false)} onSubmit={(newTeam) => {
-                    createTeamMember(newTeam);
-                    if (!isGuest && newTeam.email) {
-                        inviteToWorkspace({ email: newTeam.email, role: "Member" }).catch((err) => {
-                            console.error("Failed to invite team member:", err);
+                <AddTeamModal
+                    open={showAddTeamModal}
+                    onClose={() => setShowAddTeamModal(false)}
+                    workspaces={isGuest ? [] : workspaces}
+                    activeWorkspaceId={activeWorkspaceId}
+                    onSubmit={(newTeam) => {
+                        const targetWorkspaceIds = isGuest || !newTeam.workspaceIds?.length
+                            ? [undefined]
+                            : newTeam.workspaceIds;
+
+                        targetWorkspaceIds.forEach((workspaceId) => {
+                            createTeamMember(newTeam, workspaceId);
+                            if (!isGuest && newTeam.email) {
+                                inviteToWorkspace({ email: newTeam.email, role: "Member" }, workspaceId).catch((err) => {
+                                    console.error("Failed to invite team member:", err);
+                                });
+                            }
                         });
-                    }
-                    setShowAddTeamModal(false);
-                }} />
+                        setShowAddTeamModal(false);
+                    }}
+                />
             </div>
         </div>
     );

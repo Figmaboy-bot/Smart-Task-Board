@@ -75,7 +75,7 @@ export function WorkspacesProvider({ children }) {
                     try {
                         const { error: joinError } = await supabase
                             .from("workspace_members")
-                            .insert({ workspace_id: invite.workspace_id, user_id: user.id, role: invite.role });
+                            .insert({ workspace_id: invite.workspace_id, user_id: user.id, email: user.email, role: invite.role });
                         if (joinError) throw joinError;
 
                         await supabase
