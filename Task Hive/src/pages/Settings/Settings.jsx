@@ -15,6 +15,7 @@ import { useWorkspaces } from "../../context/WorkspacesContext";
 import { usePreferences } from "../../context/PreferencesContext";
 import { supabase } from "../../utils/supabaseClient";
 
+let listFactorsPromise = null;
 
 export default function Settings() {
 
@@ -153,7 +154,13 @@ export default function Settings() {
     const verifiedTotpFactor = mfaFactors.find((f) => f.factor_type === "totp" && f.status === "verified");
 
     const refreshMfaFactors = async () => {
-        const { data, error } = await supabase.auth.mfa.listFactors();
+        // Deduped at module scope so React StrictMode's double-invoked mount
+        // effect doesn't fire two concurrent requests against Supabase's
+        // internal auth lock (throws NavigatorLockAcquireTimeoutError).
+        if (!listFactorsPromise) {
+            listFactorsPromise = supabase.auth.mfa.listFactors().finally(() => { listFactorsPromise = null; });
+        }
+        const { data, error } = await listFactorsPromise;
         if (!error) setMfaFactors(data?.totp || []);
         setMfaLoading(false);
     };

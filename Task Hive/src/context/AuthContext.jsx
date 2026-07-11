@@ -3,6 +3,13 @@ import { supabase } from "../utils/supabaseClient"
 
 const AuthContext = createContext()
 
+// Module-level (not per-render) so concurrent calls - e.g. React
+// StrictMode's intentional double-invoke of effects in dev - share a single
+// in-flight request instead of both hitting supabase-js's internal auth lock
+// at once, which throws NavigatorLockAcquireTimeoutError and can leave the
+// app stuck before isInitialized ever gets set.
+let mfaStatusPromise = null
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [isInitialized, setIsInitialized] = useState(false)
@@ -13,7 +20,11 @@ export function AuthProvider({ children }) {
   const GUEST_USER = { id: "guest", email: "guest@taskhive.com", isGuest: true }
 
   const checkMfaStatus = async () => {
-    const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    if (!mfaStatusPromise) {
+      mfaStatusPromise = supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+        .finally(() => { mfaStatusPromise = null })
+    }
+    const { data, error } = await mfaStatusPromise
     if (error) {
       setMfaRequired(false)
       return
