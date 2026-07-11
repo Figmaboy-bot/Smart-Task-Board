@@ -11,6 +11,7 @@ import ReportsInsights from "./pages/ReportsInsights/ReportsInsights"
 import Messages from "./pages/Messages/Messages"
 import Settings from "./pages/Settings/Settings"
 import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
+import VerifyMfa from "./pages/VerifyMfa/VerifyMfa"
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword/ResetPassword"
 import { useAuth } from "./context/AuthContext"
@@ -18,11 +19,12 @@ import { useWorkspaces } from "./context/WorkspacesContext"
 import WorkspaceOnboarding from "./components/WorkspaceOnboarding/WorkspaceOnboarding"
 
 function ProtectedRoute({ children }) {
-  const { user, isInitialized } = useAuth()
+  const { user, isInitialized, mfaRequired } = useAuth()
   const { loading: workspacesLoading, workspaces } = useWorkspaces()
   if (!isInitialized) return null
   if (!user) return <Navigate to="/login" />
   if (!user.isGuest) {
+    if (mfaRequired) return <Navigate to="/verify-mfa" />
     if (workspacesLoading) return null
     if (workspaces.length === 0) return <WorkspaceOnboarding />
   }
@@ -35,6 +37,7 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
       <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route path="/verify-mfa" element={<VerifyMfa />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
