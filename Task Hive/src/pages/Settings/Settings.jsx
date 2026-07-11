@@ -601,47 +601,110 @@ export default function Settings() {
                         <h3>Security Settings</h3>
                         <p>Update your password and security options.</p>
                     </div>
-                    <div className="save-btn-container">
-                        <IconButton
-                            type="button"
-                            className="save-btn"
-                            onClick={() => { }}
-                            text="Save Changes"
-                            icon={MdOutlineSave}
-                        />
-                    </div>
                 </div>
 
-                <div className="settings">
-                    <div className="task-notifications">
-                        <h3>Account Security</h3>
-                        <div className="account-security-form">
-                            <p>Password:</p>
-                            <input type="password" placeholder="········" className="form-inputs password" />
+                {isGuest ? (
+                    <div className="settings">
+                        <div className="task-notifications">
+                            <h3>Account Security</h3>
+                            <p>Guest sessions have no real account to secure. Sign up for password and 2FA options.</p>
                         </div>
                     </div>
-
-                    <div className="team-notifications">
-                        <h3>Two-Factor Authentication</h3>
-                        <div className="two-fa-settings">
-                            <p>Status: <span>OFF</span></p>
+                ) : (
+                    <div className="settings">
+                        <div className="task-notifications">
+                            <h3>Account Security</h3>
+                            <div className="account-security-form">
+                                <p>New Password:</p>
+                                <input
+                                    type="password"
+                                    placeholder="At least 8 characters"
+                                    className="form-inputs password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                />
+                            </div>
+                            <div className="account-security-form">
+                                <p>Confirm Password:</p>
+                                <input
+                                    type="password"
+                                    placeholder="········"
+                                    className="form-inputs password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                />
+                            </div>
+                            {passwordError && <p style={{ color: "var(--error-50)" }}>{passwordError}</p>}
+                            {passwordMessage && <p style={{ color: "var(--success-50)" }}>{passwordMessage}</p>}
                             <IconButton
                                 type="button"
-                                className="enable-2fa-btn"
-                                onClick={() => { }}
-                                text="Enable 2FA"
-                                icon={ShieldCheckIcon}
+                                className="save-btn"
+                                onClick={handleChangePassword}
+                                text={passwordSaving ? "Saving…" : "Update Password"}
+                                icon={MdOutlineSave}
+                                disabled={passwordSaving || !newPassword || !confirmPassword}
                             />
                         </div>
+
+                        <div className="team-notifications">
+                            <h3>Two-Factor Authentication</h3>
+                            {mfaLoading ? (
+                                <p>Loading…</p>
+                            ) : mfaEnrolling ? (
+                                <div className="two-fa-settings" style={{ flexDirection: "column", alignItems: "flex-start", gap: "12px" }}>
+                                    <p>Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.), then enter the 6-digit code it shows.</p>
+                                    {mfaQrCode && (
+                                        <img src={mfaQrCode} alt="2FA QR code" style={{ width: 180, height: 180, background: "#fff", padding: 8, borderRadius: 8 }} />
+                                    )}
+                                    <input
+                                        type="text"
+                                        placeholder="123456"
+                                        className="form-inputs"
+                                        style={{ maxWidth: 160 }}
+                                        value={mfaCode}
+                                        onChange={(e) => setMfaCode(e.target.value)}
+                                        maxLength={6}
+                                    />
+                                    {mfaError && <p style={{ color: "var(--error-50)" }}>{mfaError}</p>}
+                                    <div style={{ display: "flex", gap: "8px" }}>
+                                        <IconButton type="button" className="save-btn" onClick={handleVerify2fa} text={mfaBusy ? "Verifying…" : "Verify & Enable"} icon={ShieldCheckIcon} disabled={mfaBusy} />
+                                        <IconButton type="button" className="connect-btn" onClick={handleCancelEnroll2fa} text="Cancel" icon={XMarkIcon} disabled={mfaBusy} />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="two-fa-settings">
+                                    <p>Status: <span>{verifiedTotpFactor ? "ON" : "OFF"}</span></p>
+                                    {mfaError && <p style={{ color: "var(--error-50)" }}>{mfaError}</p>}
+                                    {verifiedTotpFactor ? (
+                                        <IconButton
+                                            type="button"
+                                            className="connect-btn"
+                                            onClick={handleDisable2fa}
+                                            text={mfaBusy ? "Disabling…" : "Disable 2FA"}
+                                            icon={XMarkIcon}
+                                            disabled={mfaBusy}
+                                        />
+                                    ) : (
+                                        <IconButton
+                                            type="button"
+                                            className="enable-2fa-btn"
+                                            onClick={handleStartEnroll2fa}
+                                            text={mfaBusy ? "Starting…" : "Enable 2FA"}
+                                            icon={ShieldCheckIcon}
+                                            disabled={mfaBusy}
+                                        />
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="team-notifications smart-focus-settings">
                     <h3>Sessions</h3>
                     <div className="sessions-settings">
                         <div className="session-details">
-                            <p>MacBook Pro</p>
-                            <p>Lagos, NG</p>
+                            <p>This device</p>
                             <p className="active-now">Active now</p>
                         </div>
                         <IconButton
@@ -657,24 +720,13 @@ export default function Settings() {
                     </div>
                 </div>
             </div>
-
-
         ),
         Preferences: (
             <div>
                 <div className="settings-tab-content tab-header-section">
                     <div className="tab-header">
                         <h4>Preferences</h4>
-                        <p>Set your app preferences and appearance.</p>
-                    </div>
-                    <div className="save-btn-container">
-                        <IconButton
-                            type="button"
-                            className="save-btn"
-                            onClick={() => { }}
-                            text="Save Changes"
-                            icon={MdOutlineSave}
-                        />
+                        <p>Set your app preferences and appearance. Changes save automatically.</p>
                     </div>
                 </div>
                 <div className="settings">
@@ -683,9 +735,9 @@ export default function Settings() {
                             <span>Time zone</span>
                             <Dropdown
                                 options={timeZoneOptions}
-                                value={timeZone}
-                                onChange={setTimeZone}
-                                placeholder="Africa/Lagos"
+                                value={preferences.timezone}
+                                onChange={setPref("timezone")}
+                                placeholder="UTC"
                                 className="custom-select"
                             />
                         </div>
@@ -693,8 +745,8 @@ export default function Settings() {
                             <span>Date format</span>
                             <Dropdown
                                 options={dateFormatOptions}
-                                value={dateFormat}
-                                onChange={setDateFormat}
+                                value={preferences.date_format}
+                                onChange={setPref("date_format")}
                                 placeholder="MM/DD/YYYY"
                                 className="custom-select"
                             />
@@ -703,8 +755,8 @@ export default function Settings() {
                             <span>Time format</span>
                             <Dropdown
                                 options={timeFormatOptions}
-                                value={timeFormat}
-                                onChange={setTimeFormat}
+                                value={preferences.time_format}
+                                onChange={setPref("time_format")}
                                 placeholder="24-hour"
                                 className="custom-select"
                             />
@@ -713,11 +765,12 @@ export default function Settings() {
                             <span>Language</span>
                             <Dropdown
                                 options={languageOptions}
-                                value={language}
-                                onChange={setLanguage}
+                                value={preferences.language}
+                                onChange={setPref("language")}
                                 placeholder="English"
                                 className="custom-select"
                             />
+                            <p style={{ color: "var(--grey-50)", fontSize: 12, margin: "4px 0 0" }}>More languages coming soon.</p>
                         </div>
                     </div>
                 </div>
