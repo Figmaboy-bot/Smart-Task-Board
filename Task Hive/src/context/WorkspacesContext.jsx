@@ -160,7 +160,7 @@ export function WorkspacesProvider({ children }) {
 
         const { error: memberError } = await supabase
             .from("workspace_members")
-            .insert({ workspace_id: workspace.id, user_id: user.id, role: "Owner" });
+            .insert({ workspace_id: workspace.id, user_id: user.id, email: user.email, role: "Owner" });
         if (memberError) throw memberError;
 
         await supabase.from("team_members").insert({
@@ -177,6 +177,69 @@ export function WorkspacesProvider({ children }) {
         return newRow;
     }, [user, setActiveWorkspaceId]);
 
+    const [members, setMembers] = useState([]);
+    const [pendingInvites, setPendingInvites] = useState([]);
+    const [membersLoading, setMembersLoading] = useState(false);
+
+    useEffect(() => {
+        if (isGuest || !activeWorkspaceId) {
+            setMembers([]);
+            setPendingInvites([]);
+            return;
+        }
+
+        let cancelled = false;
+        setMembersLoading(true);
+
+        (async () => {
+            const [membersRes, invitesRes] = await Promise.all([
+                supabase
+                    .from("workspace_members")
+                    .select("id, user_id, email, role")
+                    .eq("workspace_id", activeWorkspaceId)
+                    .order("created_at", { ascending: true }),
+                supabase
+                    .from("workspace_invites")
+                    .select("id, email, role, created_at")
+                    .eq("workspace_id", activeWorkspaceId)
+                    .is("accepted_at", null)
+                    .order("created_at", { ascending: true }),
+            ]);
+
+            if (cancelled) return;
+
+            if (membersRes.error) {
+                console.error("Failed to load workspace members:", membersRes.error);
+                setMembers([]);
+            } else {
+                setMembers(membersRes.data);
+            }
+
+            if (invitesRes.error) {
+                console.error("Failed to load pending invites:", invitesRes.error);
+                setPendingInvites([]);
+            } else {
+                setPendingInvites(invitesRes.data);
+            }
+
+            setMembersLoading(false);
+        })();
+
+        return () => { cancelled = true };
+    }, [isGuest, activeWorkspaceId]);
+
+    const removeMember = useCallback(async (memberRowId) => {
+        const { error } = await supabase.from("workspace_members").delete().eq("id", memberRowId);
+        if (error) throw error;
+        setMembers((prev) => prev.filter((m) => m.id !== memberRowId));
+    }, []);
+
+    const cancelInvite = useCallback(async (inviteId) => {
+        const { error } = await supabase.from("workspace_invites").delete().eq("id", inviteId);
+        if (error) throw error;
+        setPendingInvites((prev) => prev.filter((i) => i.id !== inviteId));
+    }, []);
+
     const inviteToWorkspace = useCallback(async ({ email, role }, workspaceId) => {
         const targetWorkspaceId = workspaceId || activeWorkspaceId;
         if (!targetWorkspaceId) return null;
@@ -192,6 +255,9 @@ export function WorkspacesProvider({ children }) {
             .single();
 
         if (error) throw error;
+        if (targetWorkspaceId === activeWorkspaceId) {
+            setPendingInvites((prev) => [...prev, data]);
+        }
         return data;
     }, [user, activeWorkspaceId]);
 
@@ -206,6 +272,11 @@ export function WorkspacesProvider({ children }) {
             setActiveWorkspaceId,
             createWorkspace,
             inviteToWorkspace,
+            members,
+            pendingInvites,
+            membersLoading,
+            removeMember,
+            cancelInvite,
         }}>
             {children}
         </WorkspacesContext.Provider>

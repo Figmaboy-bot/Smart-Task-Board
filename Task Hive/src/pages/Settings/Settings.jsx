@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar/Sidebar"
 import Header from "../../components/Header/Header"
 import './Settings.css'
 import IconButton from "../../components/Buttons/Buttons"
-import { PencilIcon, ShieldCheckIcon, ArrowLeftEndOnRectangleIcon } from "@heroicons/react/24/outline"
+import { PencilIcon, ShieldCheckIcon, ArrowLeftEndOnRectangleIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { MdOutlineSave } from "react-icons/md";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import LogoutModal from "../../components/Logout/LogoutModal.jsx";
@@ -19,11 +19,15 @@ export default function Settings() {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const isGuest = !user || user.isGuest;
-    const { workspaces, activeWorkspaceId, setActiveWorkspaceId, createWorkspace } = useWorkspaces();
+    const {
+        workspaces, activeWorkspaceId, activeWorkspace, setActiveWorkspaceId, createWorkspace,
+        members, pendingInvites, membersLoading, removeMember, cancelInvite,
+    } = useWorkspaces();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
     const [creatingWorkspace, setCreatingWorkspace] = useState(false);
     const [workspaceError, setWorkspaceError] = useState("");
+    const isOwner = activeWorkspace?.role === "Owner";
 
     const handleCreateWorkspace = async () => {
         if (!newWorkspaceName.trim() || creatingWorkspace) return;
@@ -37,6 +41,16 @@ export default function Settings() {
         } finally {
             setCreatingWorkspace(false);
         }
+    };
+
+    const handleRemoveMember = (memberRowId) => {
+        if (!window.confirm("Remove this person's access to the workspace?")) return;
+        removeMember(memberRowId).catch((err) => alert(err.message || "Failed to remove member."));
+    };
+
+    const handleCancelInvite = (inviteId) => {
+        if (!window.confirm("Cancel this pending invite?")) return;
+        cancelInvite(inviteId).catch((err) => alert(err.message || "Failed to cancel invite."));
     };
 
     const handleLogout = () => {
@@ -236,6 +250,73 @@ export default function Settings() {
                                     ))}
                                 </div>
                             </div>
+
+                            <div className="task-notifications">
+                                <h3>Members of {activeWorkspace?.name || "this workspace"}</h3>
+                                {membersLoading ? (
+                                    <p>Loading members…</p>
+                                ) : (
+                                    <div className="integrations-list">
+                                        {members.map((m) => (
+                                            <div className="integration-item" key={m.id}>
+                                                <div className="item-logo-desc">
+                                                    <div className="item-desc">
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <h3 style={{ margin: 0 }}>{m.email || "Unknown"}</h3>
+                                                            <span className={`status-badge ${m.role === 'Owner' ? 'connected' : 'not-connected'}`}>
+                                                                {m.role}
+                                                            </span>
+                                                            {m.user_id === user.id && (
+                                                                <span className="status-badge not-connected">You</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {isOwner && m.user_id !== user.id && (
+                                                    <IconButton
+                                                        type="button"
+                                                        className="connect-btn"
+                                                        onClick={() => handleRemoveMember(m.id)}
+                                                        text="Remove"
+                                                        icon={XMarkIcon}
+                                                    />
+                                                )}
+                                            </div>
+                                        ))}
+                                        {members.length === 0 && <p>No members yet.</p>}
+                                    </div>
+                                )}
+                            </div>
+
+                            {pendingInvites.length > 0 && (
+                                <div className="team-notifications">
+                                    <h3>Pending Invites</h3>
+                                    <div className="integrations-list">
+                                        {pendingInvites.map((inv) => (
+                                            <div className="integration-item" key={inv.id}>
+                                                <div className="item-logo-desc">
+                                                    <div className="item-desc">
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <h3 style={{ margin: 0 }}>{inv.email}</h3>
+                                                            <span className="status-badge not-connected">{inv.role}</span>
+                                                        </div>
+                                                        <p>Invited {new Date(inv.created_at).toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+                                                {isOwner && (
+                                                    <IconButton
+                                                        type="button"
+                                                        className="connect-btn"
+                                                        onClick={() => handleCancelInvite(inv.id)}
+                                                        text="Cancel"
+                                                        icon={XMarkIcon}
+                                                    />
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="team-notifications">
                                 <h3>Create a New Workspace</h3>
