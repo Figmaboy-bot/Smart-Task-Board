@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "./AuthContext";
+import { useWorkspaces } from "./WorkspacesContext";
 
 // Kanban column titles as rendered <-> the `tasks.status` DB enum.
 export const STATUS_TO_COLUMN = { "To-Do": "TO-DO", "In Progress": "IN PROGRESS", "Done": "DONE" };
@@ -86,11 +87,16 @@ const TasksContext = createContext(null);
 export function TasksProvider({ children }) {
     const { user } = useAuth();
     const isGuest = !user || user.isGuest;
+    const { activeWorkspaceId } = useWorkspaces();
     const [tasks, setTasks] = useState(() => (isGuest ? GUEST_TASKS : []));
     const [loading, setLoading] = useState(!isGuest);
 
     useEffect(() => {
         if (isGuest) return;
+        if (!activeWorkspaceId) {
+            setTasks([]);
+            return;
+        }
 
         let cancelled = false;
         // Kicking off a fetch is a deliberate direct setState, not a sync loop.
@@ -99,6 +105,7 @@ export function TasksProvider({ children }) {
         supabase
             .from("tasks")
             .select("*, projects(name)")
+            .eq("workspace_id", activeWorkspaceId)
             .order("created_at", { ascending: true })
             .then(({ data, error }) => {
                 if (cancelled) return;
@@ -112,7 +119,7 @@ export function TasksProvider({ children }) {
             });
 
         return () => { cancelled = true };
-    }, [user, isGuest]);
+    }, [user, isGuest, activeWorkspaceId]);
 
     const createTask = useCallback(async (input) => {
         if (isGuest) {
@@ -124,6 +131,7 @@ export function TasksProvider({ children }) {
         const { data, error } = await supabase
             .from("tasks")
             .insert({
+                workspace_id: activeWorkspaceId,
                 project_id: input.project_id || null,
                 title: input.title,
                 description: input.description || "",
@@ -142,7 +150,7 @@ export function TasksProvider({ children }) {
         const mapped = mapRowToTask(data);
         setTasks((prev) => [...prev, mapped]);
         return mapped;
-    }, [user, isGuest]);
+    }, [user, isGuest, activeWorkspaceId]);
 
     const updateTask = useCallback(async (taskId, input) => {
         if (isGuest) {

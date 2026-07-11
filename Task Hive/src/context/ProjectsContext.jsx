@@ -3,6 +3,7 @@ import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "./AuthContext";
 import { useTasks } from "./TasksContext";
 import { useTeamMembers } from "./TeamMembersContext";
+import { useWorkspaces } from "./WorkspacesContext";
 
 // Demo content shown in guest mode (never touches Supabase), ported from the
 // hardcoded seed data (src/data/projectsData.js) used before real persistence existed.
@@ -28,6 +29,7 @@ const ProjectsContext = createContext(null);
 export function ProjectsProvider({ children }) {
     const { user } = useAuth();
     const isGuest = !user || user.isGuest;
+    const { activeWorkspaceId } = useWorkspaces();
     const { tasks } = useTasks();
     const { teamMembers } = useTeamMembers();
     const [projects, setProjects] = useState(() => (isGuest ? GUEST_PROJECT_ROWS : []));
@@ -35,6 +37,10 @@ export function ProjectsProvider({ children }) {
 
     useEffect(() => {
         if (isGuest) return;
+        if (!activeWorkspaceId) {
+            setProjects([]);
+            return;
+        }
 
         let cancelled = false;
         // Kicking off a fetch is a deliberate direct setState, not a sync loop.
@@ -43,6 +49,7 @@ export function ProjectsProvider({ children }) {
         supabase
             .from("projects")
             .select("*")
+            .eq("workspace_id", activeWorkspaceId)
             .order("created_at", { ascending: true })
             .then(({ data, error }) => {
                 if (cancelled) return;
@@ -56,7 +63,7 @@ export function ProjectsProvider({ children }) {
             });
 
         return () => { cancelled = true };
-    }, [user, isGuest]);
+    }, [user, isGuest, activeWorkspaceId]);
 
     const createProject = useCallback(async ({ title, description, dueDate }) => {
         if (isGuest) {
@@ -73,6 +80,7 @@ export function ProjectsProvider({ children }) {
         const { data, error } = await supabase
             .from("projects")
             .insert({
+                workspace_id: activeWorkspaceId,
                 name: title,
                 description: description || "",
                 due_date: dueDate || null,
@@ -84,7 +92,7 @@ export function ProjectsProvider({ children }) {
         if (error) throw error;
         setProjects((prev) => [...prev, data]);
         return data;
-    }, [user, isGuest]);
+    }, [user, isGuest, activeWorkspaceId]);
 
     const projectsWithStats = useMemo(() => {
         const avatarByName = new Map(teamMembers.map((m) => [m.name, m.avatar_url]));
