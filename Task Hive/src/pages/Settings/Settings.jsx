@@ -11,13 +11,33 @@ import LogoutModal from "../../components/Logout/LogoutModal.jsx";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../context/ProfileContext";
 import { useAuth } from "../../context/AuthContext";
+import { useWorkspaces } from "../../context/WorkspacesContext";
 
 
 export default function Settings() {
 
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
+    const isGuest = !user || user.isGuest;
+    const { workspaces, activeWorkspaceId, setActiveWorkspaceId, createWorkspace } = useWorkspaces();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [newWorkspaceName, setNewWorkspaceName] = useState("");
+    const [creatingWorkspace, setCreatingWorkspace] = useState(false);
+    const [workspaceError, setWorkspaceError] = useState("");
+
+    const handleCreateWorkspace = async () => {
+        if (!newWorkspaceName.trim() || creatingWorkspace) return;
+        setCreatingWorkspace(true);
+        setWorkspaceError("");
+        try {
+            await createWorkspace(newWorkspaceName);
+            setNewWorkspaceName("");
+        } catch (err) {
+            setWorkspaceError(err.message || "Failed to create workspace.");
+        } finally {
+            setCreatingWorkspace(false);
+        }
+    };
 
     const handleLogout = () => {
         setShowLogoutModal(true);
@@ -46,7 +66,7 @@ export default function Settings() {
     };
     const { profilePic, updateProfilePic } = useProfile();
     const [setting, setSetting] = useState("Profile");
-    const settings = ["Profile", "Notifications", "Productivity", "Integrations", "Security", "Preferences"];
+    const settings = ["Profile", "Workspace", "Notifications", "Productivity", "Integrations", "Security", "Preferences"];
     const [taskView, setTaskView] = useState("Today");
     const taskViewOptions = [
         { value: "Today", label: "Today" },
@@ -169,6 +189,78 @@ export default function Settings() {
                         </form>
                     </div>
 
+                </div>
+            </div>
+        ),
+        Workspace: (
+            <div>
+                <div className="settings-tab-content tab-header-section">
+                    <div className="tab-header">
+                        <h3>Workspace Settings</h3>
+                        <p>Manage the workspaces you belong to.</p>
+                    </div>
+                </div>
+                <div className="settings">
+                    {isGuest ? (
+                        <div className="task-notifications">
+                            <h3>Workspace</h3>
+                            <p>Guest sessions don&apos;t use real workspaces. Sign up for an account to create and manage workspaces.</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="task-notifications">
+                                <h3>Your Workspaces</h3>
+                                <div className="integrations-list">
+                                    {workspaces.map((ws) => (
+                                        <div className="integration-item" key={ws.id}>
+                                            <div className="item-logo-desc">
+                                                <div className="item-desc">
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                        <h3 style={{ margin: 0 }}>{ws.name}</h3>
+                                                        <span className={`status-badge ${ws.id === activeWorkspaceId ? 'connected' : 'not-connected'}`}>
+                                                            {ws.id === activeWorkspaceId ? 'Active' : ws.role}
+                                                        </span>
+                                                    </div>
+                                                    <p>{ws.role === "Owner" ? "You own this workspace." : "You're a member of this workspace."}</p>
+                                                </div>
+                                            </div>
+                                            <IconButton
+                                                type="button"
+                                                className="connect-btn"
+                                                onClick={() => setActiveWorkspaceId(ws.id)}
+                                                text={ws.id === activeWorkspaceId ? 'Current' : 'Switch'}
+                                                icon={PencilIcon}
+                                                disabled={ws.id === activeWorkspaceId}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="team-notifications">
+                                <h3>Create a New Workspace</h3>
+                                <div className="account-security-form">
+                                    <p>Workspace name:</p>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Marketing Team"
+                                        className="form-inputs"
+                                        value={newWorkspaceName}
+                                        onChange={(e) => setNewWorkspaceName(e.target.value)}
+                                    />
+                                </div>
+                                {workspaceError && <p style={{ color: "var(--error-50)" }}>{workspaceError}</p>}
+                                <IconButton
+                                    type="button"
+                                    className="save-btn"
+                                    onClick={handleCreateWorkspace}
+                                    text={creatingWorkspace ? "Creating…" : "Create Workspace"}
+                                    icon={MdOutlineSave}
+                                    disabled={creatingWorkspace || !newWorkspaceName.trim()}
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         ),
