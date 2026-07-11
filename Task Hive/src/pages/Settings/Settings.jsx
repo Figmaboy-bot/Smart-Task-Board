@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../context/ProfileContext";
 import { useAuth } from "../../context/AuthContext";
 import { useWorkspaces } from "../../context/WorkspacesContext";
+import { usePreferences } from "../../context/PreferencesContext";
+import { supabase } from "../../utils/supabaseClient";
 
 
 export default function Settings() {
@@ -67,75 +69,175 @@ export default function Settings() {
         navigate("/login");
     };
 
-    // Example connection state for each integration
-    const [integrationStatus, setIntegrationStatus] = useState({
-        'google-calendar': false,
-        'slack': true,
-        'trello': false,
-        'notion': true,
-    });
-
-    const handleConnect = (key) => {
-        setIntegrationStatus((prev) => ({ ...prev, [key]: true }));
-    };
     const { profilePic, updateProfilePic } = useProfile();
+    const { preferences, updatePreferences } = usePreferences();
     const [setting, setSetting] = useState("Profile");
     const settings = ["Profile", "Workspace", "Notifications", "Productivity", "Integrations", "Security", "Preferences"];
-    const [taskView, setTaskView] = useState("Today");
-    const taskViewOptions = [
-        { value: "Today", label: "Today" },
-        { value: "project1", label: "Project 1" },
-        { value: "project2", label: "Project 2" },
+
+    const setPref = (key) => (value) => {
+        updatePreferences({ [key]: value }).catch((err) => console.error("Failed to save preference:", err));
+    };
+    const togglePref = (key) => (e) => setPref(key)(e.target.checked);
+
+    const priorityOptions = [
+        { value: "Low", label: "Low" },
+        { value: "Medium", label: "Medium" },
+        { value: "High", label: "High" },
     ];
 
-    const [taskPriority, setTaskPriority] = useState("6:00 PM");
-    const taskPriorityOptions = [
-        { value: "6:00 PM", label: "6:00 PM" },
-        { value: "project1", label: "Project 1" },
-        { value: "project2", label: "Project 2" },
-    ];
-
-    const [dueTime, setDueTime] = useState("all");
-    const dueTimeOptions = [
-        { value: "all", label: "All Projects" },
-        { value: "project1", label: "Project 1" },
-        { value: "project2", label: "Project 2" },
-    ];
-
-    const [taskReminder, setTaskReminder] = useState("all");
-    const taskReminderOptions = [
-        { value: "all", label: "All Projects" },
-        { value: "project1", label: "Project 1" },
-        { value: "project2", label: "Project 2" },
-    ];
-
-    // preferences options dropdowns
-    const [timeZone, setTimeZone] = useState("Africa/Lagos");
     const timeZoneOptions = [
+        { value: "UTC", label: "UTC" },
         { value: "Africa/Lagos", label: "Africa/Lagos" },
-        { value: "GMT +5", label: "GMT +5" },
-        { value: "GMT -3", label: "GMT -3" },
+        { value: "America/New_York", label: "America/New York" },
+        { value: "America/Los_Angeles", label: "America/Los Angeles" },
+        { value: "Europe/London", label: "Europe/London" },
+        { value: "Asia/Dubai", label: "Asia/Dubai" },
     ];
 
-    const [dateFormat, setDateFormat] = useState("DD/MM/YYYY");
     const dateFormatOptions = [
         { value: "DD/MM/YYYY", label: "DD/MM/YYYY" },
         { value: "MM/DD/YYYY", label: "MM/DD/YYYY" },
         { value: "YYYY/MM/DD", label: "YYYY/MM/DD" },
     ];
 
-    const [timeFormat, setTimeFormat] = useState("24-hour");
     const timeFormatOptions = [
         { value: "24-hour", label: "24-hour" },
         { value: "12-hour", label: "12-hour" },
     ];
 
-    const [language, setLanguage] = useState("English");
     const languageOptions = [
         { value: "English", label: "English" },
-        { value: "Spanish", label: "Spanish" },
-        { value: "French", label: "French" },
     ];
+
+    // Security tab state
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [passwordSaving, setPasswordSaving] = useState(false);
+    const [passwordMessage, setPasswordMessage] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+
+    const handleChangePassword = async () => {
+        setPasswordMessage("");
+        setPasswordError("");
+        if (newPassword.length < 8) {
+            setPasswordError("Password must be at least 8 characters.");
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setPasswordError("Passwords don't match.");
+            return;
+        }
+        setPasswordSaving(true);
+        try {
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+            if (error) throw error;
+            setPasswordMessage("Password updated.");
+            setNewPassword("");
+            setConfirmPassword("");
+        } catch (err) {
+            setPasswordError(err.message || "Failed to update password.");
+        } finally {
+            setPasswordSaving(false);
+        }
+    };
+
+    // Two-factor authentication (Supabase Auth TOTP MFA)
+    const [mfaFactors, setMfaFactors] = useState([]);
+    const [mfaLoading, setMfaLoading] = useState(!isGuest);
+    const [mfaEnrolling, setMfaEnrolling] = useState(false);
+    const [mfaQrCode, setMfaQrCode] = useState("");
+    const [mfaFactorId, setMfaFactorId] = useState(null);
+    const [mfaCode, setMfaCode] = useState("");
+    const [mfaError, setMfaError] = useState("");
+    const [mfaBusy, setMfaBusy] = useState(false);
+    const verifiedTotpFactor = mfaFactors.find((f) => f.factor_type === "totp" && f.status === "verified");
+
+    const refreshMfaFactors = async () => {
+        const { data, error } = await supabase.auth.mfa.listFactors();
+        if (!error) setMfaFactors(data?.totp || []);
+        setMfaLoading(false);
+    };
+
+    React.useEffect(() => {
+        if (isGuest) {
+            setMfaLoading(false);
+            return;
+        }
+        refreshMfaFactors();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isGuest]);
+
+    const handleStartEnroll2fa = async () => {
+        setMfaError("");
+        setMfaBusy(true);
+        try {
+            const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+            if (error) throw error;
+            setMfaFactorId(data.id);
+            setMfaQrCode(data.totp.qr_code);
+            setMfaEnrolling(true);
+        } catch (err) {
+            setMfaError(err.message || "Failed to start 2FA enrollment.");
+        } finally {
+            setMfaBusy(false);
+        }
+    };
+
+    const handleVerify2fa = async () => {
+        setMfaError("");
+        if (mfaCode.trim().length !== 6) {
+            setMfaError("Enter the 6-digit code from your authenticator app.");
+            return;
+        }
+        setMfaBusy(true);
+        try {
+            const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
+            if (challengeError) throw challengeError;
+
+            const { error: verifyError } = await supabase.auth.mfa.verify({
+                factorId: mfaFactorId,
+                challengeId: challenge.id,
+                code: mfaCode.trim(),
+            });
+            if (verifyError) throw verifyError;
+
+            setMfaEnrolling(false);
+            setMfaQrCode("");
+            setMfaFactorId(null);
+            setMfaCode("");
+            await refreshMfaFactors();
+        } catch (err) {
+            setMfaError(err.message || "Invalid code. Please try again.");
+        } finally {
+            setMfaBusy(false);
+        }
+    };
+
+    const handleCancelEnroll2fa = async () => {
+        if (mfaFactorId) {
+            await supabase.auth.mfa.unenroll({ factorId: mfaFactorId }).catch(() => { });
+        }
+        setMfaEnrolling(false);
+        setMfaQrCode("");
+        setMfaFactorId(null);
+        setMfaCode("");
+        setMfaError("");
+    };
+
+    const handleDisable2fa = async () => {
+        if (!verifiedTotpFactor) return;
+        if (!window.confirm("Disable two-factor authentication?")) return;
+        setMfaBusy(true);
+        try {
+            const { error } = await supabase.auth.mfa.unenroll({ factorId: verifiedTotpFactor.id });
+            if (error) throw error;
+            await refreshMfaFactors();
+        } catch (err) {
+            setMfaError(err.message || "Failed to disable 2FA.");
+        } finally {
+            setMfaBusy(false);
+        }
+    };
 
 
     // Tab content mapping
@@ -350,16 +452,7 @@ export default function Settings() {
                 <div className="settings-tab-content tab-header-section">
                     <div className="tab-header">
                         <h3>Notification Settings</h3>
-                        <p>Manage your notification preferences here.</p>
-                    </div>
-                    <div className="save-btn-container">
-                        <IconButton
-                            type="button"
-                            className="save-btn"
-                            onClick={() => { }}
-                            text="Save Changes"
-                            icon={MdOutlineSave}
-                        />
+                        <p>Manage your notification preferences here. Changes save automatically.</p>
                     </div>
                 </div>
                 <div className="settings">
@@ -369,21 +462,21 @@ export default function Settings() {
                             <div className="notification-option">
                                 <span>Assigned to a task</span>
                                 <label className="theme-toggle">
-                                    <input type="checkbox" defaultChecked />
+                                    <input type="checkbox" checked={preferences.notify_assigned} onChange={togglePref("notify_assigned")} />
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
                             <div className="notification-option">
                                 <span>Due date reminders</span>
                                 <label className="theme-toggle">
-                                    <input type="checkbox" defaultChecked />
+                                    <input type="checkbox" checked={preferences.notify_due_date} onChange={togglePref("notify_due_date")} />
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
                             <div className="notification-option">
                                 <span>Task completed</span>
                                 <label className="theme-toggle">
-                                    <input type="checkbox" />
+                                    <input type="checkbox" checked={preferences.notify_task_completed} onChange={togglePref("notify_task_completed")} />
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
@@ -396,21 +489,21 @@ export default function Settings() {
                             <div className="notification-option">
                                 <span>Mentions</span>
                                 <label className="theme-toggle">
-                                    <input type="checkbox" defaultChecked />
+                                    <input type="checkbox" checked={preferences.notify_mentions} onChange={togglePref("notify_mentions")} />
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
                             <div className="notification-option">
                                 <span>Project updates</span>
                                 <label className="theme-toggle">
-                                    <input type="checkbox" />
+                                    <input type="checkbox" checked={preferences.notify_project_updates} onChange={togglePref("notify_project_updates")} />
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
                             <div className="notification-option">
                                 <span>New team members</span>
                                 <label className="theme-toggle">
-                                    <input type="checkbox" defaultChecked />
+                                    <input type="checkbox" checked={preferences.notify_new_team_members} onChange={togglePref("notify_new_team_members")} />
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
@@ -420,9 +513,9 @@ export default function Settings() {
                     <div className="delivery-notifications">
                         <h3>Delivery Notifications</h3>
                         <div className="delivery-notifications-list">
-                            <DeliveryCheckbox id="delivery-mentions" label="Push" defaultChecked={true} />
-                            <DeliveryCheckbox id="delivery-project-updates" label="Email" defaultChecked={false} />
-                            <DeliveryCheckbox id="delivery-new-team-members" label="In-app" defaultChecked={true} />
+                            <DeliveryCheckbox id="delivery-push" label="Push" checked={preferences.delivery_push} onChange={togglePref("delivery_push")} />
+                            <DeliveryCheckbox id="delivery-email" label="Email" checked={preferences.delivery_email} onChange={togglePref("delivery_email")} />
+                            <DeliveryCheckbox id="delivery-in-app" label="In-app" checked={preferences.delivery_in_app} onChange={togglePref("delivery_in_app")} />
                         </div>
                     </div>
                 </div>
@@ -433,16 +526,7 @@ export default function Settings() {
                 <div className="settings-tab-content tab-header-section">
                     <div className="tab-header">
                         <h3>Productivity Settings</h3>
-                        <p>Customize productivity tools and options.</p>
-                    </div>
-                    <div className="save-btn-container">
-                        <IconButton
-                            type="button"
-                            className="save-btn"
-                            onClick={() => { }}
-                            text="Save Changes"
-                            icon={MdOutlineSave}
-                        />
+                        <p>Customize productivity tools and options. Changes save automatically.</p>
                     </div>
                 </div>
 
@@ -451,42 +535,12 @@ export default function Settings() {
                         <h3>Task Defaults</h3>
                         <div className="task-notifications-list">
                             <div className="notification-option">
-                                <span>Default task view</span>
-                                <Dropdown
-                                    options={taskViewOptions}
-                                    value={taskView}
-                                    onChange={setTaskView}
-                                    placeholder="All Projects"
-                                    className="custom-select"
-                                />
-                            </div>
-                            <div className="notification-option">
                                 <span>Default task priority</span>
                                 <Dropdown
-                                    options={taskPriorityOptions}
-                                    value={taskPriority}
-                                    onChange={setTaskPriority}
-                                    placeholder="All Projects"
-                                    className="custom-select"
-                                />
-                            </div>
-                            <div className="notification-option">
-                                <span>Default due time</span>
-                                <Dropdown
-                                    options={dueTimeOptions}
-                                    value={dueTime}
-                                    onChange={setDueTime}
-                                    placeholder="All Projects"
-                                    className="custom-select"
-                                />
-                            </div>
-                            <div className="notification-option">
-                                <span>Default task reminder</span>
-                                <Dropdown
-                                    options={taskReminderOptions}
-                                    value={taskReminder}
-                                    onChange={setTaskReminder}
-                                    placeholder="All Projects"
+                                    options={priorityOptions}
+                                    value={preferences.default_priority}
+                                    onChange={setPref("default_priority")}
+                                    placeholder="Medium"
                                     className="custom-select"
                                 />
                             </div>
@@ -497,9 +551,9 @@ export default function Settings() {
                         <h3>Smart Focus & Attention Control</h3>
                         <div className="task-notifications-list">
                             <div className="smart-settings">
-                                <DeliveryCheckbox id="delivery-mentions" label="Silence non-urgent notifications" defaultChecked={true} />
-                                <DeliveryCheckbox id="delivery-hide-completed" label="Hide completed tasks" defaultChecked={true} />
-                                <DeliveryCheckbox id="delivery-block-reassignment" label="Block task reassignment during focus" defaultChecked={true} />
+                                <DeliveryCheckbox id="silence-non-urgent" label="Silence non-urgent notifications" checked={preferences.silence_non_urgent} onChange={togglePref("silence_non_urgent")} />
+                                <DeliveryCheckbox id="hide-completed" label="Hide completed tasks" checked={preferences.hide_completed_tasks} onChange={togglePref("hide_completed_tasks")} />
+                                <DeliveryCheckbox id="block-reassignment" label="Block task reassignment during focus" checked={preferences.block_reassignment_focus} onChange={togglePref("block_reassignment_focus")} />
                             </div>
                         </div>
                     </div>
@@ -513,106 +567,29 @@ export default function Settings() {
                         <h3>Integrations</h3>
                         <p>Connect with third-party apps and services.</p>
                     </div>
-                    <div className="save-btn-container">
-                        <IconButton
-                            type="button"
-                            className="save-btn"
-                            onClick={() => { }}
-                            text="Save Changes"
-                            icon={MdOutlineSave}
-                        />
-                    </div>
                 </div>
                 <div className="settings">
                     <div className="integrations-list">
-                        <div className="integration-item">
-                            <div className="item-logo-desc">
-                                <img src="Icons/google-calendar.svg" alt="" />
-                                <div className="item-desc">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <h3 style={{ margin: 0 }}>Google Calendar</h3>
-                                        <span className={`status-badge ${integrationStatus['google-calendar'] ? 'connected' : 'not-connected'}`}>
-                                            {integrationStatus['google-calendar'] ? 'Connected' : 'Not Connected'}
-                                        </span>
+                        {[
+                            { key: "google-calendar", icon: "Icons/google-calendar.svg", name: "Google Calendar", desc: "Sync your tasks with Google Calendar." },
+                            { key: "slack", icon: "Icons/slack.svg", name: "Slack", desc: "Receive task notifications in Slack." },
+                            { key: "trello", icon: "Icons/trello.svg", name: "Trello", desc: "Import tasks from Trello boards." },
+                            { key: "notion", icon: "Icons/notion.svg", name: "Notion", desc: "Import tasks from Notion pages.", iconClassName: "notion-icon" },
+                        ].map((integration) => (
+                            <div className="integration-item" key={integration.key}>
+                                <div className="item-logo-desc">
+                                    <img src={integration.icon} alt="" className={integration.iconClassName} />
+                                    <div className="item-desc">
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <h3 style={{ margin: 0 }}>{integration.name}</h3>
+                                            <span className="status-badge not-connected">Coming Soon</span>
+                                        </div>
+                                        <p>{integration.desc}</p>
                                     </div>
-                                    <p>Sync your tasks with Google Calendar.</p>
                                 </div>
+                                <IconButton type="button" className="connect-btn" text="Coming Soon" icon={PencilIcon} disabled />
                             </div>
-                            <IconButton
-                                type="button"
-                                className="connect-btn"
-                                onClick={() => handleConnect('google-calendar')}
-                                text={integrationStatus['google-calendar'] ? 'Connected' : 'Connect'}
-                                icon={PencilIcon}
-                                disabled={integrationStatus['google-calendar']}
-                            />
-                        </div>
-                        <div className="integration-item">
-                            <div className="item-logo-desc">
-                                <img src="Icons/slack.svg" alt="" />
-                                <div className="item-desc">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <h3 style={{ margin: 0 }}>Slack</h3>
-                                        <span className={`status-badge ${integrationStatus['slack'] ? 'connected' : 'not-connected'}`}>
-                                            {integrationStatus['slack'] ? 'Connected' : 'Not Connected'}
-                                        </span>
-                                    </div>
-                                    <p>Receive task notifications in Slack.</p>
-                                </div>
-                            </div>
-                            <IconButton
-                                type="button"
-                                className="connect-btn"
-                                onClick={() => handleConnect('slack')}
-                                text={integrationStatus['slack'] ? 'Connected' : 'Connect'}
-                                icon={PencilIcon}
-                                disabled={integrationStatus['slack']}
-                            />
-                        </div>
-                        <div className="integration-item">
-                            <div className="item-logo-desc">
-                                <img src="Icons/trello.svg" alt="" />
-                                <div className="item-desc">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <h3 style={{ margin: 0 }}>Trello</h3>
-                                        <span className={`status-badge ${integrationStatus['trello'] ? 'connected' : 'not-connected'}`}>
-                                            {integrationStatus['trello'] ? 'Connected' : 'Not Connected'}
-                                        </span>
-                                    </div>
-                                    <p>Import tasks from Trello boards.</p>
-                                </div>
-                            </div>
-                            <IconButton
-                                type="button"
-                                className="connect-btn"
-                                onClick={() => handleConnect('trello')}
-                                text={integrationStatus['trello'] ? 'Connected' : 'Connect'}
-                                icon={PencilIcon}
-                                disabled={integrationStatus['trello']}
-                            />
-                        </div>
-                        <div className="integration-item">
-                            <div className="item-logo-desc">
-                                <img src="Icons/notion.svg" alt="" className="notion-icon" />
-                                <div className="item-desc">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <h3 style={{ margin: 0 }}>Notion</h3>
-                                        <span className={`status-badge ${integrationStatus['notion'] ? 'connected' : 'not-connected'}`}>
-                                            {integrationStatus['notion'] ? 'Connected' : 'Not Connected'}
-                                        </span>
-                                    </div>
-                                    <p>Import tasks from Notion pages.</p>
-                                </div>
-                            </div>
-                            <IconButton
-                                type="button"
-                                className="connect-btn"
-                                onClick={() => handleConnect('notion')}
-                                text={integrationStatus['notion'] ? 'Connected' : 'Connect'}
-                                icon={PencilIcon}
-                                disabled={integrationStatus['notion']}
-                            />
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -780,8 +757,7 @@ export default function Settings() {
 }
 
 // Checkbox with checkmark icon for delivery notifications
-function DeliveryCheckbox({ id, label, defaultChecked }) {
-    const [checked, setChecked] = React.useState(!!defaultChecked);
+function DeliveryCheckbox({ id, label, checked, onChange }) {
     return (
         <div className="notification-option" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div className="checkbox-wrapper">
@@ -789,8 +765,8 @@ function DeliveryCheckbox({ id, label, defaultChecked }) {
                     type="checkbox"
                     className="table-checkbox"
                     id={id}
-                    checked={checked}
-                    onChange={e => setChecked(e.target.checked)}
+                    checked={!!checked}
+                    onChange={onChange}
                 />
                 {checked && <CheckIcon className="checkbox-checkmark" />}
             </div>

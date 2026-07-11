@@ -37,6 +37,8 @@ export function PreferencesProvider({ children }) {
         if (isGuest) return;
 
         let cancelled = false;
+        // Kicking off a fetch is a deliberate direct setState, not a sync loop.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
 
         (async () => {
