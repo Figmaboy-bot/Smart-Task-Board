@@ -9,6 +9,12 @@ const AuthContext = createContext()
 // at once, which throws NavigatorLockAcquireTimeoutError and can leave the
 // app stuck before isInitialized ever gets set.
 let mfaStatusPromise = null
+// onAuthStateChange also fires for routine events like TOKEN_REFRESHED, not
+// just sign-in. Re-running the MFA check on every one of those turned into a
+// feedback loop (the check's own session read could itself trigger a token
+// refresh, firing another event, ad infinitum) that starved every Supabase
+// call in the app of the auth lock. Only check once per signed-in user.
+let mfaCheckedForUserId = null
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -42,13 +48,15 @@ export function AuthProvider({ children }) {
 
     // onAuthStateChange fires immediately with the current session (if any)
     // on subscribe, so this alone covers both first load and later sign-ins.
-    // Also calling getSession().then(...) here would race it for the same
-    // Supabase auth lock and intermittently throw NavigatorLockAcquireTimeoutError.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        await checkMfaStatus()
+        if (mfaCheckedForUserId !== session.user.id) {
+          mfaCheckedForUserId = session.user.id
+          await checkMfaStatus()
+        }
       } else {
+        mfaCheckedForUserId = null
         setMfaRequired(false)
       }
       setIsInitialized(true)
