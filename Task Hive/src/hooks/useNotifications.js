@@ -12,8 +12,12 @@ function daysUntil(dueDateIso, today) {
 // Derives notifications live from the current task list rather than a
 // persisted table, since every case here (overdue / due today / due soon)
 // is reconstructable from a task's own due_date at read time.
-export function useNotifications(tasks) {
+export function useNotifications(tasks, preferences = {}) {
+    const { notify_due_date: notifyDueDate = true, silence_non_urgent: silenceNonUrgent = false } = preferences;
+
     return useMemo(() => {
+        if (!notifyDueDate) return [];
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -59,9 +63,10 @@ export function useNotifications(tasks) {
                 return null;
             })
             .filter(Boolean)
+            .filter((item) => !silenceNonUrgent || item.rank === 0)
             .sort((a, b) => a.rank - b.rank || a.diff - b.diff)
             .slice(0, MAX_NOTIFICATIONS);
 
         return items;
-    }, [tasks]);
+    }, [tasks, notifyDueDate, silenceNonUrgent]);
 }

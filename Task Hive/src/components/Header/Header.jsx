@@ -3,6 +3,7 @@ import { MagnifyingGlassIcon, BellIcon, ExclamationTriangleIcon, ClockIcon, Cale
 import Notifications from "../../pages/Notifications/Notifications"
 import { useLocation } from "react-router-dom";
 import { useProfile } from "../../context/ProfileContext";
+import { usePreferences } from "../../context/PreferencesContext";
 import { useTasks } from "../../hooks/useTasks";
 import { useNotifications } from "../../hooks/useNotifications";
 import './Header.css'
@@ -19,7 +20,8 @@ function Header() {
   const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
   const { tasks } = useTasks();
-  const notificationItems = useNotifications(tasks);
+  const { preferences } = usePreferences();
+  const notificationItems = useNotifications(tasks, preferences);
   const notifications = notificationItems.map(n => ({ ...n, icon: NOTIFICATION_ICON[n.type] }));
 
   // Map route to search placeholder

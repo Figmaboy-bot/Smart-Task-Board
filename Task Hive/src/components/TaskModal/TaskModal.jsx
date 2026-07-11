@@ -4,11 +4,13 @@ import './TaskModal.css';
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import Dropdown from "../Dropdown/Dropdown";
 import { COLUMN_TO_STATUS } from "../../hooks/useTasks";
+import { usePreferences } from "../../context/PreferencesContext";
 
 export default function TaskModal({ open, onClose, onSubmit, projects = [], teamMembers = [], initialTask = null }) {
 	const isEditing = !!initialTask;
+	const { preferences } = usePreferences();
 	const [project, setProject] = useState(initialTask?.project || null);
-	const [priority, setPriority] = useState(initialTask?.status?.toLowerCase() || null);
+	const [priority, setPriority] = useState(initialTask?.status?.toLowerCase() || (isEditing ? null : preferences.default_priority?.toLowerCase()) || null);
 	const [assignee, setAssignee] = useState(initialTask?.user?.name || null);
 	const [tag, setTag] = useState(initialTask?.tag || null);
 	const [status, setStatus] = useState(initialTask ? (COLUMN_TO_STATUS[initialTask.columnTitle] || null) : null);

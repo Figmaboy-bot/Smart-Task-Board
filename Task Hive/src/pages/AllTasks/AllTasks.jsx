@@ -11,6 +11,7 @@ import TaskDetailModal from "../../components/TaskDetailModal/TaskDetailModal";
 import { useTasks } from "../../hooks/useTasks"
 import { useProjects } from "../../hooks/useProjects"
 import { useTeamMembers } from "../../hooks/useTeamMembers"
+import { usePreferences } from "../../context/PreferencesContext"
 import './AllTasks.css'
 
 const COLUMN_META = [
@@ -23,6 +24,7 @@ export default function AllTasks() {
     const { tasks, loading, createTask, updateTask, updateTaskStatus } = useTasks();
     const { projects } = useProjects();
     const { teamMembers } = useTeamMembers();
+    const { preferences } = usePreferences();
 
     const [date, setDate] = useState("All");
     const dates = ["All", "Today", "Upcoming", "Overdue"];
@@ -64,10 +66,12 @@ export default function AllTasks() {
     const [dragOverCol, setDragOverCol] = useState(null);
     const dragInfo = useRef(null);
 
-    const kanbanColumns = useMemo(() => COLUMN_META.map(meta => ({
-        ...meta,
-        tasks: tasks.filter(t => t.columnTitle === meta.title),
-    })), [tasks]);
+    const kanbanColumns = useMemo(() => COLUMN_META
+        .filter(meta => !preferences.hide_completed_tasks || meta.title !== "DONE")
+        .map(meta => ({
+            ...meta,
+            tasks: tasks.filter(t => t.columnTitle === meta.title),
+        })), [tasks, preferences.hide_completed_tasks]);
 
     // Project options from task data
     const projectOptions = useMemo(() => {

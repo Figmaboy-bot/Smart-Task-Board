@@ -66,7 +66,7 @@ placeholder {
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import "./Dropdown.css";
 
-export default function Dropdown({ options = [], value, onChange, placeholder = "Select", className = "", width = "auto", fontSize = "14px", padding }) {
+export default function Dropdown({ options = [], value, onChange, placeholder = "Select", className = "", width = "auto", fontSize = "14px", padding, disabled = false }) {
   // Inject styles once per mount
   useEffect(() => {
     if (!document.getElementById('dropdown-inline-styles')) {
@@ -102,14 +102,17 @@ export default function Dropdown({ options = [], value, onChange, placeholder = 
     >
       <button
         className={`custom-dropdown-trigger${open ? " open" : ""}`}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => !disabled && setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
+        disabled={disabled}
         style={{
           color: isSelected ? "var(--color-black)" : "var(--grey-60)",
           width: "100%",
           fontSize,
-          padding: padding || "6px 12px"
+          padding: padding || "6px 12px",
+          opacity: disabled ? 0.6 : 1,
+          cursor: disabled ? "not-allowed" : "pointer",
         }}
       >
         <span>{selected ? selected.label : placeholder}</span>

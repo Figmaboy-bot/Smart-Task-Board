@@ -11,6 +11,7 @@ import TaskDetailModal from "../../components/TaskDetailModal/TaskDetailModal"
 import { useTasks } from "../../hooks/useTasks"
 import { useProjects } from "../../hooks/useProjects"
 import { useTeamMembers } from "../../hooks/useTeamMembers"
+import { usePreferences } from "../../context/PreferencesContext"
 import './MyTasks.css'
 
 const COLUMN_META = [
@@ -23,6 +24,7 @@ export default function MyTasks() {
     const { tasks, loading, createTask, updateTask, updateTaskStatus } = useTasks();
     const { projects } = useProjects();
     const { teamMembers } = useTeamMembers();
+    const { preferences } = usePreferences();
 
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
@@ -42,10 +44,12 @@ export default function MyTasks() {
     // behavior where every task created from this page defaults to "Me".
     const myTasks = useMemo(() => tasks.filter(t => t.user.name === "Me"), [tasks]);
 
-    const myKanbanColumns = useMemo(() => COLUMN_META.map(meta => ({
-        ...meta,
-        tasks: myTasks.filter(t => t.columnTitle === meta.title),
-    })), [myTasks]);
+    const myKanbanColumns = useMemo(() => COLUMN_META
+        .filter(meta => !preferences.hide_completed_tasks || meta.title !== "DONE")
+        .map(meta => ({
+            ...meta,
+            tasks: myTasks.filter(t => t.columnTitle === meta.title),
+        })), [myTasks, preferences.hide_completed_tasks]);
 
     const [project, setProject] = useState("all");
     const projectOptions = useMemo(() => {
