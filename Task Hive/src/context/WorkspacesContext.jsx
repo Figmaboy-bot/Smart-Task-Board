@@ -115,7 +115,7 @@ export function WorkspacesProvider({ children }) {
 
                     const { error: memberError } = await supabase
                         .from("workspace_members")
-                        .insert({ workspace_id: workspace.id, user_id: user.id, role: "Owner" });
+                        .insert({ workspace_id: workspace.id, user_id: user.id, email: user.email, role: "Owner" });
                     if (memberError) throw memberError;
 
                     await supabase.from("team_members").insert({
