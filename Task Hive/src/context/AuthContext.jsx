@@ -29,12 +29,10 @@ export function AuthProvider({ children }) {
       return
     }
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) await checkMfaStatus()
-      setIsInitialized(true)
-    })
-
+    // onAuthStateChange fires immediately with the current session (if any)
+    // on subscribe, so this alone covers both first load and later sign-ins.
+    // Also calling getSession().then(...) here would race it for the same
+    // Supabase auth lock and intermittently throw NavigatorLockAcquireTimeoutError.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
@@ -42,6 +40,7 @@ export function AuthProvider({ children }) {
       } else {
         setMfaRequired(false)
       }
+      setIsInitialized(true)
     })
 
     return () => subscription.unsubscribe()
