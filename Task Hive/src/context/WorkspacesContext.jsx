@@ -60,6 +60,44 @@ export function WorkspacesProvider({ children }) {
                 .filter((r) => r.workspaces)
                 .map((r) => ({ id: r.workspaces.id, name: r.workspaces.name, role: r.role }));
 
+            // Accept any pending invites addressed to this email before
+            // deciding whether to auto-provision a new workspace, so an
+            // invited teammate joins the workspace they were invited to
+            // instead of getting a fresh empty one.
+            const { data: invites, error: invitesError } = await supabase
+                .from("workspace_invites")
+                .select("id, workspace_id, role, workspaces(name)")
+                .eq("email", user.email)
+                .is("accepted_at", null);
+
+            if (!invitesError && invites?.length) {
+                for (const invite of invites) {
+                    try {
+                        const { error: joinError } = await supabase
+                            .from("workspace_members")
+                            .insert({ workspace_id: invite.workspace_id, user_id: user.id, role: invite.role });
+                        if (joinError) throw joinError;
+
+                        await supabase
+                            .from("workspace_invites")
+                            .update({ accepted_at: new Date().toISOString() })
+                            .eq("id", invite.id);
+
+                        await supabase
+                            .from("team_members")
+                            .update({ status: "Active" })
+                            .eq("workspace_id", invite.workspace_id)
+                            .eq("email", user.email);
+
+                        if (invite.workspaces && !rows.some((w) => w.id === invite.workspace_id)) {
+                            rows = [...rows, { id: invite.workspace_id, name: invite.workspaces.name, role: invite.role }];
+                        }
+                    } catch (acceptError) {
+                        console.error("Failed to accept workspace invite:", acceptError);
+                    }
+                }
+            }
+
             // A signed-up user with no workspace yet (first login, or an
             // account that somehow lost membership) gets a personal
             // workspace provisioned automatically so the app is never stuck
@@ -139,6 +177,23 @@ export function WorkspacesProvider({ children }) {
         return newRow;
     }, [user, setActiveWorkspaceId]);
 
+    const inviteToWorkspace = useCallback(async ({ email, role }) => {
+        if (!activeWorkspaceId) return null;
+        const { data, error } = await supabase
+            .from("workspace_invites")
+            .insert({
+                workspace_id: activeWorkspaceId,
+                email: email.trim().toLowerCase(),
+                role: role === "Owner" ? "Owner" : "Member",
+                invited_by: user.id,
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    }, [user, activeWorkspaceId]);
+
     const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) || null;
 
     return (
@@ -149,6 +204,7 @@ export function WorkspacesProvider({ children }) {
             loading,
             setActiveWorkspaceId,
             createWorkspace,
+            inviteToWorkspace,
         }}>
             {children}
         </WorkspacesContext.Provider>

@@ -48,7 +48,7 @@ create policy "self-leave or owner removes" on public.workspace_members
 -- before, since those only ever recursed through workspace_members).
 drop policy "members can view their workspaces" on public.workspaces;
 create policy "members can view their workspaces" on public.workspaces
-  for select using (public.is_workspace_member(id));
+  for select using (public.is_workspace_member(id) or created_by = auth.uid());
 
 drop policy "workspace members read/write" on public.team_members;
 create policy "workspace members read/write" on public.team_members

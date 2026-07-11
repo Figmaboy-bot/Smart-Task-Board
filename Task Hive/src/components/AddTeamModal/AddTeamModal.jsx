@@ -10,10 +10,9 @@ export default function AddTeamModal({ open, onClose, onSubmit }) {
 	const [status, setStatus] = useState(null);
 
 	const statusOptions = [
-		{ value: "all", label: "All Statuses" },
+		{ value: "Invited", label: "Invited" },
 		{ value: "Active", label: "Active" },
 		{ value: "Suspended", label: "Suspended" },
-		{ value: "Pending", label: "Pending" },
 	];
 
 	if (!open) return null;

@@ -84,8 +84,11 @@ as $$
   );
 $$;
 
+-- Includes created_by so a user can see the workspace they just created
+-- before their own workspace_members row exists yet (insert-and-return is
+-- two separate requests, not one transaction).
 create policy "members can view their workspaces" on public.workspaces
-  for select using (public.is_workspace_member(id));
+  for select using (public.is_workspace_member(id) or created_by = auth.uid());
 create policy "authenticated can create workspaces" on public.workspaces
   for insert with check (auth.role() = 'authenticated' and created_by = auth.uid());
 create policy "owner can update their workspace" on public.workspaces
