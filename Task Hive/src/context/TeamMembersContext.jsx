@@ -49,7 +49,7 @@ export function TeamMembersProvider({ children }) {
         return () => { cancelled = true };
     }, [user, isGuest, activeWorkspaceId]);
 
-    const createTeamMember = useCallback(async ({ member, email, role, status, img }) => {
+    const createTeamMember = useCallback(async ({ member, email, role, status, img }, workspaceId) => {
         if (isGuest) {
             const localMember = {
                 id: `guest-member-${Date.now()}`,
@@ -63,10 +63,11 @@ export function TeamMembersProvider({ children }) {
             return localMember;
         }
 
+        const targetWorkspaceId = workspaceId || activeWorkspaceId;
         const { data, error } = await supabase
             .from("team_members")
             .insert({
-                workspace_id: activeWorkspaceId,
+                workspace_id: targetWorkspaceId,
                 name: member,
                 email,
                 role: role || "Member",
@@ -77,7 +78,12 @@ export function TeamMembersProvider({ children }) {
             .single();
 
         if (error) throw error;
-        setTeamMembers((prev) => [...prev, data]);
+        // Only reflect it in the visible list if it was added to the
+        // workspace currently being viewed; other targeted workspaces will
+        // pick it up next time their own team_members list is fetched.
+        if (targetWorkspaceId === activeWorkspaceId) {
+            setTeamMembers((prev) => [...prev, data]);
+        }
         return data;
     }, [isGuest, activeWorkspaceId]);
 
