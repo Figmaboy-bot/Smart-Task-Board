@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "../context/AuthContext";
+import { useWorkspaces } from "../context/WorkspacesContext";
 
 // Demo content shown in guest mode (never touches Supabase). Guest sessions
 // are solo and local-only, so this just gives new visitors something to see
@@ -17,11 +18,16 @@ function senderNameFromEmail(email) {
 export function useMessages() {
     const { user } = useAuth();
     const isGuest = !user || user.isGuest;
+    const { activeWorkspaceId } = useWorkspaces();
     const [messages, setMessages] = useState(() => (isGuest ? GUEST_MESSAGES : []));
     const [loading, setLoading] = useState(!isGuest);
 
     useEffect(() => {
         if (isGuest) return;
+        if (!activeWorkspaceId) {
+            setMessages([]);
+            return;
+        }
 
         let cancelled = false;
         // Kicking off a fetch is a deliberate direct setState, not a sync loop.
@@ -30,6 +36,7 @@ export function useMessages() {
         supabase
             .from("messages")
             .select("*")
+            .eq("workspace_id", activeWorkspaceId)
             .order("created_at", { ascending: true })
             .then(({ data, error }) => {
                 if (cancelled) return;
@@ -43,8 +50,13 @@ export function useMessages() {
             });
 
         const channel = supabase
-            .channel("messages-channel")
-            .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+            .channel(`messages-channel-${activeWorkspaceId}`)
+            .on("postgres_changes", {
+                event: "INSERT",
+                schema: "public",
+                table: "messages",
+                filter: `workspace_id=eq.${activeWorkspaceId}`,
+            }, (payload) => {
                 setMessages((prev) => (prev.some((m) => m.id === payload.new.id) ? prev : [...prev, payload.new]));
             })
             .subscribe();
@@ -53,7 +65,7 @@ export function useMessages() {
             cancelled = true;
             supabase.removeChannel(channel);
         };
-    }, [user, isGuest]);
+    }, [user, isGuest, activeWorkspaceId]);
 
     const sendMessage = useCallback(async (body) => {
         const trimmed = body.trim();
@@ -74,6 +86,7 @@ export function useMessages() {
         const { data, error } = await supabase
             .from("messages")
             .insert({
+                workspace_id: activeWorkspaceId,
                 sender_id: user.id,
                 sender_name: senderNameFromEmail(user.email),
                 body: trimmed,
@@ -86,7 +99,7 @@ export function useMessages() {
         // there by id rather than appending it twice.
         setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, data]));
         return data;
-    }, [user, isGuest]);
+    }, [user, isGuest, activeWorkspaceId]);
 
     return { messages, loading, sendMessage, currentUserId: user?.id || "guest" };
 }

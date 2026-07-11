@@ -32,9 +32,11 @@ import {
     Cog6ToothIcon as Cog6ToothIconSolid,
     MoonIcon as MoonIconSolid,
 } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import HamburgerMenu from "./HamburgerMenu";
 import LogoutModal from "../Logout/LogoutModal";
 import { useTheme } from "../../context/ThemeContext";
+import { useWorkspaces } from "../../context/WorkspacesContext";
 
 function Sidebar() {
         const [showLogoutModal, setShowLogoutModal] = useState(false);

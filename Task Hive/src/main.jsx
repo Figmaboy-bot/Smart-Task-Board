@@ -4,6 +4,7 @@ import App from "./App";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ProfileProvider } from "./context/ProfileContext";
+import { WorkspacesProvider } from "./context/WorkspacesContext";
 import { TeamMembersProvider } from "./context/TeamMembersContext";
 import { TasksProvider } from "./context/TasksContext";
 import { ProjectsProvider } from "./context/ProjectsContext";
@@ -15,13 +16,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <ProfileProvider>
           <ThemeProvider>
-            <TeamMembersProvider>
-              <TasksProvider>
-                <ProjectsProvider>
-                  <App />
-                </ProjectsProvider>
-              </TasksProvider>
-            </TeamMembersProvider>
+            <WorkspacesProvider>
+              <TeamMembersProvider>
+                <TasksProvider>
+                  <ProjectsProvider>
+                    <App />
+                  </ProjectsProvider>
+                </TasksProvider>
+              </TeamMembersProvider>
+            </WorkspacesProvider>
           </ThemeProvider>
         </ProfileProvider>
       </AuthProvider>

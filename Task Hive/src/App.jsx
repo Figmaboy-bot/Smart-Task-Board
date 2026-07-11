@@ -14,11 +14,19 @@ import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword/ResetPassword"
 import { useAuth } from "./context/AuthContext"
+import { useWorkspaces } from "./context/WorkspacesContext"
+import WorkspaceOnboarding from "./components/WorkspaceOnboarding/WorkspaceOnboarding"
 
 function ProtectedRoute({ children }) {
   const { user, isInitialized } = useAuth()
+  const { loading: workspacesLoading, workspaces } = useWorkspaces()
   if (!isInitialized) return null
-  return user ? children : <Navigate to="/login" />
+  if (!user) return <Navigate to="/login" />
+  if (!user.isGuest) {
+    if (workspacesLoading) return null
+    if (workspaces.length === 0) return <WorkspaceOnboarding />
+  }
+  return children
 }
 
 function App() {

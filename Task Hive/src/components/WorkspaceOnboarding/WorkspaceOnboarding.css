@@ -1,0 +1,65 @@
+.workspace-onboarding-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--color-white);
+    padding: 1rem;
+}
+
+.workspace-onboarding-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--color-background);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.workspace-onboarding-card h2 {
+    margin: 0;
+}
+
+.workspace-onboarding-card p {
+    margin: 0 0 8px 0;
+    color: var(--grey-60);
+    font-size: 14px;
+}
+
+.workspace-onboarding-input {
+    border: 1px solid var(--grey-30);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    background: var(--color-white);
+    color: var(--color-black);
+}
+
+.workspace-onboarding-input:focus {
+    outline: none;
+    border-color: var(--primary-50);
+}
+
+.workspace-onboarding-error {
+    color: var(--error-50);
+    font-size: 13px;
+    margin: 0;
+}
+
+.workspace-onboarding-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    background: var(--primary-50);
+    color: #fff;
+}
+
+.workspace-onboarding-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
