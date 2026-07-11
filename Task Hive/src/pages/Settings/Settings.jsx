@@ -156,13 +156,20 @@ export default function Settings() {
     const refreshMfaFactors = async () => {
         // Deduped at module scope so React StrictMode's double-invoked mount
         // effect doesn't fire two concurrent requests against Supabase's
-        // internal auth lock (throws NavigatorLockAcquireTimeoutError).
-        if (!listFactorsPromise) {
-            listFactorsPromise = supabase.auth.mfa.listFactors().finally(() => { listFactorsPromise = null; });
+        // internal auth lock (throws NavigatorLockAcquireTimeoutError). Also
+        // guarded with try/catch since a lock timeout rejects rather than
+        // resolving to { error }, which would otherwise skip setMfaLoading(false).
+        try {
+            if (!listFactorsPromise) {
+                listFactorsPromise = supabase.auth.mfa.listFactors().finally(() => { listFactorsPromise = null; });
+            }
+            const { data, error } = await listFactorsPromise;
+            if (!error) setMfaFactors(data?.totp || []);
+        } catch (err) {
+            console.error("Failed to load 2FA factors:", err);
+        } finally {
+            setMfaLoading(false);
         }
-        const { data, error } = await listFactorsPromise;
-        if (!error) setMfaFactors(data?.totp || []);
-        setMfaLoading(false);
     };
 
     React.useEffect(() => {

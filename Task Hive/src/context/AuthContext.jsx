@@ -26,16 +26,25 @@ export function AuthProvider({ children }) {
   const GUEST_USER = { id: "guest", email: "guest@taskhive.com", isGuest: true }
 
   const checkMfaStatus = async () => {
-    if (!mfaStatusPromise) {
-      mfaStatusPromise = supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-        .finally(() => { mfaStatusPromise = null })
-    }
-    const { data, error } = await mfaStatusPromise
-    if (error) {
+    // Never let a lock-timeout or any other rejection escape this function:
+    // it's awaited from the onAuthStateChange handler, and an uncaught
+    // throw there would skip the setIsInitialized(true) that follows it,
+    // leaving the whole app stuck on a blank screen forever.
+    try {
+      if (!mfaStatusPromise) {
+        mfaStatusPromise = supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+          .finally(() => { mfaStatusPromise = null })
+      }
+      const { data, error } = await mfaStatusPromise
+      if (error) {
+        setMfaRequired(false)
+        return
+      }
+      setMfaRequired(data.currentLevel === "aal1" && data.nextLevel === "aal2")
+    } catch (err) {
+      console.error("Failed to check MFA status:", err)
       setMfaRequired(false)
-      return
     }
-    setMfaRequired(data.currentLevel === "aal1" && data.nextLevel === "aal2")
   }
 
   useEffect(() => {
