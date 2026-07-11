@@ -53,10 +53,39 @@ alter table public.messages alter column workspace_id set not null;
 alter table public.workspaces enable row level security;
 alter table public.workspace_members enable row level security;
 
-create policy "members can view their workspaces" on public.workspaces
-  for select using (
-    id in (select workspace_id from public.workspace_members where user_id = auth.uid())
+-- workspace_members' own policies must not query workspace_members directly
+-- inside their USING/WITH CHECK clauses (Postgres re-evaluates the same
+-- policy on the inner query forever: "infinite recursion detected in policy
+-- for relation workspace_members"). Routing the check through a SECURITY
+-- DEFINER function bypasses RLS inside the function body and breaks the loop.
+create or replace function public.is_workspace_member(_workspace_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.workspace_members
+    where workspace_id = _workspace_id and user_id = auth.uid()
   );
+$$;
+
+create or replace function public.is_workspace_owner(_workspace_id uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.workspace_members
+    where workspace_id = _workspace_id and user_id = auth.uid() and role = 'Owner'
+  );
+$$;
+
+create policy "members can view their workspaces" on public.workspaces
+  for select using (public.is_workspace_member(id));
 create policy "authenticated can create workspaces" on public.workspaces
   for insert with check (auth.role() = 'authenticated' and created_by = auth.uid());
 create policy "owner can update their workspace" on public.workspaces
@@ -65,19 +94,11 @@ create policy "owner can delete their workspace" on public.workspaces
   for delete using (created_by = auth.uid());
 
 create policy "members can view workspace membership" on public.workspace_members
-  for select using (
-    workspace_id in (select workspace_id from public.workspace_members wm where wm.user_id = auth.uid())
-  );
+  for select using (public.is_workspace_member(workspace_id));
 create policy "self-join or owner invites" on public.workspace_members
-  for insert with check (
-    user_id = auth.uid()
-    or workspace_id in (select workspace_id from public.workspace_members wm where wm.user_id = auth.uid() and wm.role = 'Owner')
-  );
+  for insert with check (user_id = auth.uid() or public.is_workspace_owner(workspace_id));
 create policy "self-leave or owner removes" on public.workspace_members
-  for delete using (
-    user_id = auth.uid()
-    or workspace_id in (select workspace_id from public.workspace_members wm where wm.user_id = auth.uid() and wm.role = 'Owner')
-  );
+  for delete using (user_id = auth.uid() or public.is_workspace_owner(workspace_id));
 
 -- Replace the old "any authenticated user" policies with workspace-scoped ones.
 drop policy "authenticated read/write" on public.team_members;
@@ -86,18 +107,10 @@ drop policy "authenticated read/write" on public.tasks;
 drop policy "authenticated read/write" on public.messages;
 
 create policy "workspace members read/write" on public.team_members
-  for all
-  using (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()))
-  with check (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()));
+  for all using (public.is_workspace_member(workspace_id)) with check (public.is_workspace_member(workspace_id));
 create policy "workspace members read/write" on public.projects
-  for all
-  using (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()))
-  with check (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()));
+  for all using (public.is_workspace_member(workspace_id)) with check (public.is_workspace_member(workspace_id));
 create policy "workspace members read/write" on public.tasks
-  for all
-  using (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()))
-  with check (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()));
+  for all using (public.is_workspace_member(workspace_id)) with check (public.is_workspace_member(workspace_id));
 create policy "workspace members read/write" on public.messages
-  for all
-  using (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()))
-  with check (workspace_id in (select workspace_id from public.workspace_members where user_id = auth.uid()));
+  for all using (public.is_workspace_member(workspace_id)) with check (public.is_workspace_member(workspace_id));
