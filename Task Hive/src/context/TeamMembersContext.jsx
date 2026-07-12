@@ -87,8 +87,17 @@ export function TeamMembersProvider({ children }) {
         return data;
     }, [isGuest, activeWorkspaceId]);
 
+    const removeTeamMember = useCallback(async (memberId) => {
+        setTeamMembers((prev) => prev.filter((m) => m.id !== memberId));
+
+        if (isGuest) return;
+
+        const { error } = await supabase.from("team_members").delete().eq("id", memberId);
+        if (error) console.error("Failed to remove team member:", error);
+    }, [isGuest]);
+
     return (
-        <TeamMembersContext.Provider value={{ teamMembers, loading, createTeamMember }}>
+        <TeamMembersContext.Provider value={{ teamMembers, loading, createTeamMember, removeTeamMember }}>
             {children}
         </TeamMembersContext.Provider>
     );

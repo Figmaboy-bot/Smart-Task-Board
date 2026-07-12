@@ -117,12 +117,18 @@ export function ProjectsProvider({ children }) {
             const team = [...new Set(projectTasks.map((t) => t.user.name))]
                 .map((name) => avatarByName.get(name) || "/Profile.jpg");
 
+            const progress = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+            const status = totalTasks === 0 ? "Not Started" : progress === 100 ? "Completed" : "In Progress";
+
             return {
                 id: p.id,
                 name: p.name,
                 description: p.description || "",
                 due: p.due || formatDisplayDate(p.due_date),
-                progress: totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0,
+                dueDateRaw: p.due_date || null,
+                createdBy: p.created_by || null,
+                status,
+                progress,
                 totalTasks,
                 overdueTasks,
                 team,

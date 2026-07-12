@@ -13,6 +13,7 @@ export default function ProjectDetailModal({ open, onClose, project, onDelete })
             case "completed": return "var(--success-50)";
             case "in progress": return "var(--warning-50)";
             case "on hold": return "var(--error-50)";
+            case "not started": return "var(--grey-50)";
             default: return "var(--success-50)";
         }
     };
