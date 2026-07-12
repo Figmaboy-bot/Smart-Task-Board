@@ -13,48 +13,48 @@ export default function JoinWorkspace() {
   const { redeemInviteLink } = useWorkspaces()
   const isGuest = !user || user.isGuest
 
-  const [status, setStatus] = useState("checking")
-  const [errorMsg, setErrorMsg] = useState("")
-  const [workspaceName, setWorkspaceName] = useState("")
+  const [asyncResult, setAsyncResult] = useState(null) // null | {ok:true,name} | {ok:false,message}
   const attempted = useRef(false)
 
+  // Not signed in yet: remember the token so ProtectedRoute can send the
+  // user back here once they log in or finish signing up.
   useEffect(() => {
-    if (!isInitialized || !token) return
-
-    if (isGuest) {
+    if (isInitialized && isGuest && token) {
       localStorage.setItem(PENDING_INVITE_KEY, token)
-      setStatus("needs-auth")
-      return
     }
+  }, [isInitialized, isGuest, token])
 
+  // Signed in: redeem the invite exactly once.
+  useEffect(() => {
+    if (!isInitialized || !token || isGuest) return
     if (attempted.current) return
     attempted.current = true
 
-    setStatus("joining")
+    localStorage.removeItem(PENDING_INVITE_KEY)
     redeemInviteLink(token)
       .then((joined) => {
-        localStorage.removeItem(PENDING_INVITE_KEY)
-        setWorkspaceName(joined.name)
-        setStatus("success")
+        setAsyncResult({ ok: true, name: joined.name })
         setTimeout(() => navigate("/"), 1500)
       })
       .catch((err) => {
-        localStorage.removeItem(PENDING_INVITE_KEY)
-        setErrorMsg(err.message || "This invite link is invalid or has expired.")
-        setStatus("error")
+        setAsyncResult({ ok: false, message: err.message || "This invite link is invalid or has expired." })
       })
   }, [isInitialized, isGuest, token, redeemInviteLink, navigate])
+
+  let phase = "checking"
+  if (isInitialized) {
+    if (isGuest) phase = "needs-auth"
+    else if (!asyncResult) phase = "joining"
+    else if (asyncResult.ok) phase = "success"
+    else phase = "error"
+  }
 
   return (
     <div className="otp-page">
       <div className="otp-container">
-        {status === "checking" && (
-          <>
-            <h2>Checking invite link…</h2>
-          </>
-        )}
+        {phase === "checking" && <h2>Checking invite link…</h2>}
 
-        {status === "needs-auth" && (
+        {phase === "needs-auth" && (
           <>
             <h2>Join a Workspace</h2>
             <p>Sign in or create an account to accept this invite.</p>
@@ -71,24 +71,24 @@ export default function JoinWorkspace() {
           </>
         )}
 
-        {status === "joining" && (
+        {phase === "joining" && (
           <>
             <h2>Joining workspace…</h2>
             <p>Please wait while we add you.</p>
           </>
         )}
 
-        {status === "success" && (
+        {phase === "success" && (
           <>
             <h2>You're in!</h2>
-            <p>You've joined {workspaceName}. Redirecting…</p>
+            <p>You've joined {asyncResult.name}. Redirecting…</p>
           </>
         )}
 
-        {status === "error" && (
+        {phase === "error" && (
           <>
             <h2>Invite link invalid</h2>
-            <p className="error" style={{ marginTop: 0 }}>{errorMsg}</p>
+            <p className="error" style={{ marginTop: 0 }}>{asyncResult.message}</p>
             <Link to="/" className="Verify-Button" style={{ textAlign: "center", textDecoration: "none", display: "block" }}>
               Go to Dashboard
             </Link>
