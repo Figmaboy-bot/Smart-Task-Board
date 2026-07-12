@@ -99,15 +99,35 @@ export function AuthProvider({ children }) {
     await checkMfaStatus()
   }
 
-  const signup = async (email, password) => {
-    const { error } = await supabase.auth.signUp({ email, password })
+  const checkEmailExists = async (email) => {
+    const { data, error } = await withTimeout(supabase.rpc("check_email_exists", { p_email: email }))
     if (error) throw error
-    // Store email so VerifyOtp can access it
+    return data === true
+  }
+
+  // Passwordless signup: an OTP is emailed up front and the account is
+  // created (unconfirmed password) the moment it's verified. The password
+  // itself is only collected afterward, via setPassword.
+  const sendSignupOtp = async (email) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true },
+    })
+    if (error) throw error
     localStorage.setItem("pendingEmail", email)
   }
 
-  const completeSignup = async (email, token) => {
-    const { error } = await supabase.auth.verifyOtp({ email, token, type: "signup" })
+  const verifySignupOtp = async (token) => {
+    const email = localStorage.getItem("pendingEmail")
+    if (!email) throw new Error("Session expired. Please start again.")
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" })
+    if (error) throw error
+  }
+
+  // Sets the password on the session opened by verifySignupOtp, finishing
+  // account creation.
+  const setPassword = async (password) => {
+    const { error } = await supabase.auth.updateUser({ password })
     if (error) throw error
     localStorage.removeItem("pendingEmail")
   }
@@ -167,8 +187,10 @@ export function AuthProvider({ children }) {
       isInitialized,
       mfaRequired,
       verifyMfa,
-      signup,
-      completeSignup,
+      checkEmailExists,
+      sendSignupOtp,
+      verifySignupOtp,
+      setPassword,
       login,
       loginAsGuest,
       logout,

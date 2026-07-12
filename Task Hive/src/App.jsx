@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
-import SignUp from "./pages/Signup/SignUp"
-import Login from "./pages/Login/Login"
+import AuthFlow from "./pages/Auth/AuthFlow"
 import Dashboard from "./pages/Dashboard/Dashboard"
 import MyTasks from "./pages/MyTasks/MyTasks"
 import AllTasks from "./pages/AllTasks/AllTasks"
@@ -10,7 +9,6 @@ import Calendar from "./pages/Calendar/Calendar"
 import ReportsInsights from "./pages/ReportsInsights/ReportsInsights"
 import Messages from "./pages/Messages/Messages"
 import Settings from "./pages/Settings/Settings"
-import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
 import VerifyMfa from "./pages/VerifyMfa/VerifyMfa"
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword/ResetPassword"
@@ -40,9 +38,8 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <Routes>
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route path="/signup" element={<AuthFlow />} />
+      <Route path="/login" element={<AuthFlow />} />
       <Route path="/verify-mfa" element={<VerifyMfa />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
