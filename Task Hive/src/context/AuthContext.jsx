@@ -59,7 +59,11 @@ export function AuthProvider({ children }) {
     // onAuthStateChange fires immediately with the current session (if any)
     // on subscribe, so this alone covers both first load and later sign-ins.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null)
+      // checkMfaStatus needs the same supabase-js auth lock that every other
+      // context's initial fetch needs. Resolving it before setUser() (rather
+      // than firing it in parallel) means those contexts - which only start
+      // fetching once `user` is truthy - don't pile onto the lock while the
+      // MFA check is still mid-flight and stealing it out from under them.
       if (session?.user) {
         if (mfaCheckedForUserId !== session.user.id) {
           mfaCheckedForUserId = session.user.id
@@ -69,6 +73,7 @@ export function AuthProvider({ children }) {
         mfaCheckedForUserId = null
         setMfaRequired(false)
       }
+      setUser(session?.user ?? null)
       setIsInitialized(true)
     })
 
