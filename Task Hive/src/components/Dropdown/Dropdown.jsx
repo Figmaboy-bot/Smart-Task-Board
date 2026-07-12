@@ -101,6 +101,7 @@ export default function Dropdown({ options = [], value, onChange, placeholder = 
       style={{ width }}
     >
       <button
+        type="button"
         className={`custom-dropdown-trigger${open ? " open" : ""}`}
         onClick={() => !disabled && setOpen((o) => !o)}
         aria-haspopup="listbox"
