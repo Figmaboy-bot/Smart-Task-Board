@@ -42,11 +42,19 @@ export function PreferencesProvider({ children }) {
         setLoading(true);
 
         (async () => {
-            const { data, error } = await supabase
-                .from("user_preferences")
-                .select("*")
-                .eq("user_id", user.id)
-                .maybeSingle();
+            // See WorkspacesContext.jsx for why this retries: a cold page
+            // load can race supabase-js's own auth-token lock, which
+            // rejects with a transient error rather than a real response.
+            let data, error;
+            for (let attempt = 0; attempt < 3; attempt++) {
+                ({ data, error } = await supabase
+                    .from("user_preferences")
+                    .select("*")
+                    .eq("user_id", user.id)
+                    .maybeSingle());
+                if (!error || !/lock/i.test(error.message || "")) break;
+                await new Promise((resolve) => setTimeout(resolve, 600));
+            }
 
             if (cancelled) return;
 

@@ -42,10 +42,21 @@ export function WorkspacesProvider({ children }) {
         setLoading(true);
 
         (async () => {
-            const { data, error } = await supabase
-                .from("workspace_members")
-                .select("role, workspaces(id, name, created_by)")
-                .eq("user_id", user.id);
+            // On a cold page load this can race supabase-js's own auth-token
+            // lock while it's still being acquired by other mount-time calls
+            // (preferences, MFA check, ...), which rejects with a transient
+            // lock-contention error instead of a real API response. Left
+            // unguarded, that falsely looked like "you have zero workspaces"
+            // and could nudge an existing user into creating a duplicate one.
+            let data, error;
+            for (let attempt = 0; attempt < 3; attempt++) {
+                ({ data, error } = await supabase
+                    .from("workspace_members")
+                    .select("role, workspaces(id, name, created_by)")
+                    .eq("user_id", user.id));
+                if (!error || !/lock/i.test(error.message || "")) break;
+                await new Promise((resolve) => setTimeout(resolve, 600));
+            }
 
             if (cancelled) return;
 

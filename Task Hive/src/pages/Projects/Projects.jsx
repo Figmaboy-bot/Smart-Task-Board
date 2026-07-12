@@ -4,7 +4,7 @@ import Header from "../../components/Header/Header";
 import OutlineButton from "../../components/Buttons/Buttons";
 import IconButton from "../../components/Buttons/Buttons";
 import { PlusCircleIcon, FunnelIcon, TableCellsIcon, ViewColumnsIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import ProjectGrid from "./ProjectGrid";
 import ProjectList from "./ProjectList";
@@ -46,6 +46,14 @@ export default function Projects() {
         { value: "in-progress", label: "In Progress" },
         { value: "completed", label: "Completed" },
     ];
+
+    const filteredProjects = useMemo(() => {
+        const query = search.trim().toLowerCase();
+        if (!query) return projects;
+        return projects.filter((p) =>
+            `${p.name || ""} ${p.description || ""}`.toLowerCase().includes(query)
+        );
+    }, [projects, search]);
 
 
     return (
@@ -122,9 +130,9 @@ export default function Projects() {
                     {loading ? (
                         <p>Loading projects…</p>
                     ) : view === "grid" ? (
-                        <ProjectGrid projects={projects} />
+                        <ProjectGrid projects={filteredProjects} />
                     ) : (
-                        <ProjectList projects={projects} />
+                        <ProjectList projects={filteredProjects} />
                     )}
                 </div>
             </div>

@@ -19,12 +19,20 @@ export default function Teams() {
     const { teamMembers, loading, createTeamMember } = useTeamMembers();
     const { workspaces, activeWorkspaceId, inviteToWorkspace } = useWorkspaces();
     const [showAddTeamModal, setShowAddTeamModal] = useState(false);
+    const [search, setSearch] = useState("");
 
-    const rows = useMemo(() => teamMembers.map((m) => ({
-        ...m,
-        member: m.name,
-        img: m.avatar_url || "/Icons/default-profile.svg",
-    })), [teamMembers]);
+    const rows = useMemo(() => {
+        const query = search.trim().toLowerCase();
+        const mapped = teamMembers.map((m) => ({
+            ...m,
+            member: m.name,
+            img: m.avatar_url || "/Icons/default-profile.svg",
+        }));
+        if (!query) return mapped;
+        return mapped.filter((m) =>
+            `${m.name || ""} ${m.email || ""} ${m.role || ""}`.toLowerCase().includes(query)
+        );
+    }, [teamMembers, search]);
 
     const columns = [
         {
@@ -60,7 +68,7 @@ export default function Teams() {
         <div className="teams-page">
             <Sidebar />
             <div className="teams-content">
-                <Header onNotificationClick={() => { }} />
+                <Header onNotificationClick={() => { }} searchValue={search} onSearchChange={setSearch} />
                 <div className="teams-main">
                     <div className="team-top-content">
                         <h2>Teams Page</h2>
