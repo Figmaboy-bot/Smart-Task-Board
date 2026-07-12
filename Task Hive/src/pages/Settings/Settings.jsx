@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar/Sidebar"
 import Header from "../../components/Header/Header"
 import './Settings.css'
 import IconButton from "../../components/Buttons/Buttons"
-import { PencilIcon, ShieldCheckIcon, ArrowLeftEndOnRectangleIcon, XMarkIcon } from "@heroicons/react/24/outline"
+import { PencilIcon, ShieldCheckIcon, ArrowLeftEndOnRectangleIcon, XMarkIcon, LinkIcon, ClipboardIcon } from "@heroicons/react/24/outline"
 import { MdOutlineSave } from "react-icons/md";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import LogoutModal from "../../components/Logout/LogoutModal.jsx";
@@ -26,11 +26,14 @@ export default function Settings() {
     const {
         workspaces, activeWorkspaceId, activeWorkspace, setActiveWorkspaceId, createWorkspace,
         members, pendingInvites, membersLoading, removeMember, cancelInvite,
+        inviteLinks, inviteLinksLoading, createInviteLink, revokeInviteLink,
     } = useWorkspaces();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
     const [creatingWorkspace, setCreatingWorkspace] = useState(false);
     const [workspaceError, setWorkspaceError] = useState("");
+    const [creatingInviteLink, setCreatingInviteLink] = useState(false);
+    const [copiedLinkId, setCopiedLinkId] = useState(null);
     const isOwner = activeWorkspace?.role === "Owner";
 
     const handleCreateWorkspace = async () => {
@@ -55,6 +58,31 @@ export default function Settings() {
     const handleCancelInvite = (inviteId) => {
         if (!window.confirm("Cancel this pending invite?")) return;
         cancelInvite(inviteId).catch((err) => alert(err.message || "Failed to cancel invite."));
+    };
+
+    const handleCreateInviteLink = async () => {
+        if (creatingInviteLink) return;
+        setCreatingInviteLink(true);
+        try {
+            await createInviteLink("Member");
+        } catch (err) {
+            alert(err.message || "Failed to create invite link.");
+        } finally {
+            setCreatingInviteLink(false);
+        }
+    };
+
+    const handleCopyInviteLink = (link) => {
+        const url = `${window.location.origin}/join/${link.token}`;
+        navigator.clipboard.writeText(url).then(() => {
+            setCopiedLinkId(link.id);
+            setTimeout(() => setCopiedLinkId((id) => (id === link.id ? null : id)), 2000);
+        });
+    };
+
+    const handleRevokeInviteLink = (linkId) => {
+        if (!window.confirm("Revoke this invite link? Anyone with the link will no longer be able to join.")) return;
+        revokeInviteLink(linkId).catch((err) => alert(err.message || "Failed to revoke invite link."));
     };
 
     const handleLogout = () => {
@@ -431,6 +459,61 @@ export default function Settings() {
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+                            )}
+
+                            {isOwner && (
+                                <div className="team-notifications">
+                                    <h3>Invite Links</h3>
+                                    <p>Share a link to let anyone join {activeWorkspace?.name || "this workspace"} as a Member, without sending individual email invites.</p>
+                                    {inviteLinksLoading ? (
+                                        <p>Loading invite links…</p>
+                                    ) : (
+                                        <div className="integrations-list">
+                                            {inviteLinks.map((link) => (
+                                                <div className="integration-item" key={link.id}>
+                                                    <div className="item-logo-desc">
+                                                        <div className="item-desc">
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                <h3 style={{ margin: 0, fontFamily: 'monospace', fontSize: '0.9rem' }}>
+                                                                    {`${window.location.origin}/join/${link.token}`}
+                                                                </h3>
+                                                            </div>
+                                                            <p>
+                                                                {link.role} access
+                                                                {link.use_count > 0 && ` · used ${link.use_count} time${link.use_count === 1 ? "" : "s"}`}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                        <IconButton
+                                                            type="button"
+                                                            className="connect-btn"
+                                                            onClick={() => handleCopyInviteLink(link)}
+                                                            text={copiedLinkId === link.id ? "Copied!" : "Copy"}
+                                                            icon={ClipboardIcon}
+                                                        />
+                                                        <IconButton
+                                                            type="button"
+                                                            className="connect-btn"
+                                                            onClick={() => handleRevokeInviteLink(link.id)}
+                                                            text="Revoke"
+                                                            icon={XMarkIcon}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {inviteLinks.length === 0 && <p>No active invite links.</p>}
+                                        </div>
+                                    )}
+                                    <IconButton
+                                        type="button"
+                                        className="save-btn"
+                                        onClick={handleCreateInviteLink}
+                                        text={creatingInviteLink ? "Generating…" : "Generate Invite Link"}
+                                        icon={LinkIcon}
+                                        disabled={creatingInviteLink}
+                                    />
                                 </div>
                             )}
 

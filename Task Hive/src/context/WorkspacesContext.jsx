@@ -101,8 +101,11 @@ export function WorkspacesProvider({ children }) {
             // A signed-up user with no workspace yet (first login, or an
             // account that somehow lost membership) gets a personal
             // workspace provisioned automatically so the app is never stuck
-            // with nothing to show.
-            if (rows.length === 0 && !provisioning.current) {
+            // with nothing to show. Skipped when a workspace-invite-link
+            // redemption is pending, so a brand-new user who signed up via
+            // an invite link joins that workspace instead of also getting
+            // an unwanted empty one.
+            if (rows.length === 0 && !provisioning.current && !localStorage.getItem("pendingInviteToken")) {
                 provisioning.current = true;
                 try {
                     const name = defaultNameFor(user.email);

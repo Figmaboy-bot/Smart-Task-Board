@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom"
+import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import SignUp from "./pages/Signup/SignUp"
 import Login from "./pages/Login/Login"
 import Dashboard from "./pages/Dashboard/Dashboard"
@@ -14,6 +14,7 @@ import VerifyOtp from "./pages/VerifyOTP/VerifyOtp"
 import VerifyMfa from "./pages/VerifyMfa/VerifyMfa"
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword/ResetPassword"
+import JoinWorkspace from "./pages/JoinWorkspace/JoinWorkspace"
 import { useAuth } from "./context/AuthContext"
 import { useWorkspaces } from "./context/WorkspacesContext"
 import WorkspaceOnboarding from "./components/WorkspaceOnboarding/WorkspaceOnboarding"
@@ -21,11 +22,16 @@ import WorkspaceOnboarding from "./components/WorkspaceOnboarding/WorkspaceOnboa
 function ProtectedRoute({ children }) {
   const { user, isInitialized, mfaRequired } = useAuth()
   const { loading: workspacesLoading, workspaces } = useWorkspaces()
+  const location = useLocation()
   if (!isInitialized) return null
   if (!user) return <Navigate to="/login" />
   if (!user.isGuest) {
     if (mfaRequired) return <Navigate to="/verify-mfa" />
     if (workspacesLoading) return null
+    const pendingInviteToken = localStorage.getItem("pendingInviteToken")
+    if (pendingInviteToken && !location.pathname.startsWith("/join/")) {
+      return <Navigate to={`/join/${pendingInviteToken}`} />
+    }
     if (workspaces.length === 0) return <WorkspaceOnboarding />
   }
   return children
@@ -40,6 +46,7 @@ function App() {
       <Route path="/verify-mfa" element={<VerifyMfa />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/join/:token" element={<JoinWorkspace />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/my-tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
       <Route path="/all-tasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />
