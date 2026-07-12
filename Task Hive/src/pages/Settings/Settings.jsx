@@ -185,7 +185,7 @@ export default function Settings() {
         setMfaError("");
         setMfaBusy(true);
         try {
-            const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+            const { data, error } = await withTimeout(supabase.auth.mfa.enroll({ factorType: "totp" }));
             if (error) throw error;
             setMfaFactorId(data.id);
             setMfaQrCode(data.totp.qr_code);
@@ -205,14 +205,14 @@ export default function Settings() {
         }
         setMfaBusy(true);
         try {
-            const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
+            const { data: challenge, error: challengeError } = await withTimeout(supabase.auth.mfa.challenge({ factorId: mfaFactorId }));
             if (challengeError) throw challengeError;
 
-            const { error: verifyError } = await supabase.auth.mfa.verify({
+            const { error: verifyError } = await withTimeout(supabase.auth.mfa.verify({
                 factorId: mfaFactorId,
                 challengeId: challenge.id,
                 code: mfaCode.trim(),
-            });
+            }));
             if (verifyError) throw verifyError;
 
             setMfaEnrolling(false);
@@ -229,7 +229,7 @@ export default function Settings() {
 
     const handleCancelEnroll2fa = async () => {
         if (mfaFactorId) {
-            await supabase.auth.mfa.unenroll({ factorId: mfaFactorId }).catch(() => { });
+            await withTimeout(supabase.auth.mfa.unenroll({ factorId: mfaFactorId })).catch(() => { });
         }
         setMfaEnrolling(false);
         setMfaQrCode("");
@@ -243,7 +243,7 @@ export default function Settings() {
         if (!window.confirm("Disable two-factor authentication?")) return;
         setMfaBusy(true);
         try {
-            const { error } = await supabase.auth.mfa.unenroll({ factorId: verifiedTotpFactor.id });
+            const { error } = await withTimeout(supabase.auth.mfa.unenroll({ factorId: verifiedTotpFactor.id }));
             if (error) throw error;
             await refreshMfaFactors();
         } catch (err) {
