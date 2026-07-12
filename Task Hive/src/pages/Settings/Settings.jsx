@@ -14,6 +14,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useWorkspaces } from "../../context/WorkspacesContext";
 import { usePreferences } from "../../context/PreferencesContext";
 import { supabase } from "../../utils/supabaseClient";
+import { withTimeout } from "../../utils/withTimeout";
 
 let listFactorsPromise = null;
 
@@ -161,7 +162,7 @@ export default function Settings() {
         // resolving to { error }, which would otherwise skip setMfaLoading(false).
         try {
             if (!listFactorsPromise) {
-                listFactorsPromise = supabase.auth.mfa.listFactors().finally(() => { listFactorsPromise = null; });
+                listFactorsPromise = withTimeout(supabase.auth.mfa.listFactors()).finally(() => { listFactorsPromise = null; });
             }
             const { data, error } = await listFactorsPromise;
             if (!error) setMfaFactors(data?.totp || []);

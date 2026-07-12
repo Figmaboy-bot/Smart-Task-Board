@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react"
 import { supabase } from "../utils/supabaseClient"
+import { withTimeout } from "../utils/withTimeout"
 
 const AuthContext = createContext()
 
@@ -32,7 +33,7 @@ export function AuthProvider({ children }) {
     // leaving the whole app stuck on a blank screen forever.
     try {
       if (!mfaStatusPromise) {
-        mfaStatusPromise = supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+        mfaStatusPromise = withTimeout(supabase.auth.mfa.getAuthenticatorAssuranceLevel())
           .finally(() => { mfaStatusPromise = null })
       }
       const { data, error } = await mfaStatusPromise
@@ -75,19 +76,19 @@ export function AuthProvider({ children }) {
   }, [])
 
   const verifyMfa = async (code) => {
-    const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
+    const { data: factors, error: factorsError } = await withTimeout(supabase.auth.mfa.listFactors())
     if (factorsError) throw factorsError
     const factor = factors?.totp?.find((f) => f.status === "verified")
     if (!factor) throw new Error("No two-factor method found on this account.")
 
-    const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: factor.id })
+    const { data: challenge, error: challengeError } = await withTimeout(supabase.auth.mfa.challenge({ factorId: factor.id }))
     if (challengeError) throw challengeError
 
-    const { error: verifyError } = await supabase.auth.mfa.verify({
+    const { error: verifyError } = await withTimeout(supabase.auth.mfa.verify({
       factorId: factor.id,
       challengeId: challenge.id,
       code: code.trim(),
-    })
+    }))
     if (verifyError) throw verifyError
 
     await checkMfaStatus()
