@@ -4,10 +4,13 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ProfileProvider } from "./context/ProfileContext";
 import { PreferencesProvider } from "./context/PreferencesContext";
+import { ToastProvider } from "./context/ToastContext";
 import { WorkspacesProvider } from "./context/WorkspacesContext";
 import { TeamMembersProvider } from "./context/TeamMembersContext";
 import { TasksProvider } from "./context/TasksContext";
 import { ProjectsProvider } from "./context/ProjectsContext";
+import ToastContainer from "./components/Toast/ToastContainer";
+import RealtimeNotifications from "./components/RealtimeNotifications/RealtimeNotifications";
 import { BrowserRouter } from "react-router-dom";
 
 // No React.StrictMode: its intentional double-invocation of effects in dev
@@ -22,15 +25,19 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <ProfileProvider>
         <PreferencesProvider>
           <ThemeProvider>
-            <WorkspacesProvider>
-              <TeamMembersProvider>
-                <TasksProvider>
-                  <ProjectsProvider>
-                    <App />
-                  </ProjectsProvider>
-                </TasksProvider>
-              </TeamMembersProvider>
-            </WorkspacesProvider>
+            <ToastProvider>
+              <WorkspacesProvider>
+                <TeamMembersProvider>
+                  <TasksProvider>
+                    <ProjectsProvider>
+                      <ToastContainer />
+                      <RealtimeNotifications />
+                      <App />
+                    </ProjectsProvider>
+                  </TasksProvider>
+                </TeamMembersProvider>
+              </WorkspacesProvider>
+            </ToastProvider>
           </ThemeProvider>
         </PreferencesProvider>
       </ProfileProvider>

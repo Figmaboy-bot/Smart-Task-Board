@@ -12,7 +12,11 @@ function daysUntil(dueDateIso, today) {
 // Derives notifications live from the current task list rather than a
 // persisted table, since every case here (overdue / due today / due soon)
 // is reconstructable from a task's own due_date at read time.
-export function useNotifications(tasks, preferences = {}) {
+// `tick` is an optional cache-buster (e.g. a counter incremented on a
+// timer) so callers doing periodic re-checks (toast popups) can force this
+// to recompute even when `tasks` itself hasn't changed - a task can cross
+// from "due in 3 days" to "due today" purely because the clock moved on.
+export function useNotifications(tasks, preferences = {}, tick = 0) {
     const { notify_due_date: notifyDueDate = true, silence_non_urgent: silenceNonUrgent = false } = preferences;
 
     return useMemo(() => {
@@ -68,5 +72,6 @@ export function useNotifications(tasks, preferences = {}) {
             .slice(0, MAX_NOTIFICATIONS);
 
         return items;
-    }, [tasks, notifyDueDate, silenceNonUrgent]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tasks, notifyDueDate, silenceNonUrgent, tick]);
 }
