@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Projects.css";
 import EditableTable from "../../components/EditableTable/EditableTable";
 import ProjectDetailModal from "../../components/ProjectDetailModal/ProjectDetailModal";
+import { useProjects } from "../../hooks/useProjects";
 
 const columns = [
     { key: "name", label: "Project Name", cellClassName: "table-cell table-title", width: 30 },

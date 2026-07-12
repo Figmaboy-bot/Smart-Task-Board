@@ -192,8 +192,17 @@ export function TasksProvider({ children }) {
         if (error) console.error("Failed to update task status:", error);
     }, [isGuest]);
 
+    const deleteTask = useCallback(async (taskId) => {
+        setTasks((prev) => prev.filter((t) => t.id !== taskId));
+
+        if (isGuest) return;
+
+        const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+        if (error) console.error("Failed to delete task:", error);
+    }, [isGuest]);
+
     return (
-        <TasksContext.Provider value={{ tasks, loading, createTask, updateTask, updateTaskStatus }}>
+        <TasksContext.Provider value={{ tasks, loading, createTask, updateTask, updateTaskStatus, deleteTask }}>
             {children}
         </TasksContext.Provider>
     );

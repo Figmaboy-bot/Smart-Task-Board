@@ -90,6 +90,15 @@ export function ProjectsProvider({ children }) {
         return data;
     }, [user, isGuest, activeWorkspaceId]);
 
+    const deleteProject = useCallback(async (projectId) => {
+        setProjects((prev) => prev.filter((p) => p.id !== projectId));
+
+        if (isGuest) return;
+
+        const { error } = await supabase.from("projects").delete().eq("id", projectId);
+        if (error) console.error("Failed to delete project:", error);
+    }, [isGuest]);
+
     const projectsWithStats = useMemo(() => {
         const avatarByName = new Map(teamMembers.map((m) => [m.name, m.avatar_url]));
         const today = new Date();
@@ -122,7 +131,7 @@ export function ProjectsProvider({ children }) {
     }, [projects, tasks, teamMembers]);
 
     return (
-        <ProjectsContext.Provider value={{ projects: projectsWithStats, loading, createProject }}>
+        <ProjectsContext.Provider value={{ projects: projectsWithStats, loading, createProject, deleteProject }}>
             {children}
         </ProjectsContext.Provider>
     );

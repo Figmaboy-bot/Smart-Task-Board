@@ -3,7 +3,7 @@ import { XMarkIcon, CalendarIcon, UserGroupIcon, FlagIcon, LinkIcon } from "@her
 import ProjectTasksModal from "../ProjectTasksModal/ProjectTasksModal";
 import "./ProjectDetailModal.css";
 
-export default function ProjectDetailModal({ open, onClose, project }) {
+export default function ProjectDetailModal({ open, onClose, project, onDelete }) {
     const [showTasksModal, setShowTasksModal] = useState(false);
 
     if (!open || !project) return null;
@@ -133,8 +133,18 @@ export default function ProjectDetailModal({ open, onClose, project }) {
 
                 <div className="project-detail-footer">
                     <button className="project-detail-btn secondary" onClick={onClose}>Close</button>
-                    <button 
-                        className="project-detail-btn primary" 
+                    {onDelete && (
+                        <button
+                            className="project-detail-btn danger"
+                            onClick={() => {
+                                if (window.confirm(`Delete "${project.name}"? Tasks in this project will be kept but unlinked. This can't be undone.`)) onDelete(project);
+                            }}
+                        >
+                            Delete
+                        </button>
+                    )}
+                    <button
+                        className="project-detail-btn primary"
                         onClick={() => setShowTasksModal(true)}
                     >
                         View Tasks

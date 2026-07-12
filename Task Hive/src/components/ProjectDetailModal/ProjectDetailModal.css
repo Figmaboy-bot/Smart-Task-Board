@@ -246,6 +246,17 @@
     background: var(--grey-10);
 }
 
+.project-detail-btn.danger {
+    background: var(--color-white);
+    color: var(--error-50);
+    border: 1px solid var(--error-50);
+    flex: 0.6;
+}
+
+.project-detail-btn.danger:hover {
+    background: var(--error-0, #fef2f2);
+}
+
 @media (max-width: 500px) {
     .project-detail-meta {
         grid-template-columns: 1fr;

@@ -21,7 +21,7 @@ const COLUMN_META = [
 ];
 
 export default function AllTasks() {
-    const { tasks, loading, createTask, updateTask, updateTaskStatus } = useTasks();
+    const { tasks, loading, createTask, updateTask, updateTaskStatus, deleteTask } = useTasks();
     const { projects } = useProjects();
     const { teamMembers } = useTeamMembers();
     const { preferences } = usePreferences();
@@ -381,6 +381,7 @@ export default function AllTasks() {
                 onClose={() => setSelectedTask(null)}
                 task={selectedTask}
                 onEdit={openEditModal}
+                onDelete={(task) => { deleteTask(task.id); setSelectedTask(null); }}
             />
         </div>
     )

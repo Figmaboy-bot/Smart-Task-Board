@@ -13,7 +13,7 @@ import { usePreferences } from "../../context/PreferencesContext";
 import { formatDateWithPreference } from "../../utils/formatDate";
 import "./TaskDetailModal.css";
 
-export default function TaskDetailModal({ open, onClose, task, onEdit }) {
+export default function TaskDetailModal({ open, onClose, task, onEdit, onDelete }) {
     const { preferences } = usePreferences();
     if (!open || !task) return null;
 
@@ -134,6 +134,16 @@ export default function TaskDetailModal({ open, onClose, task, onEdit }) {
 
                 <div className="task-detail-footer">
                     <button className="task-detail-btn secondary" onClick={onClose}>Close</button>
+                    {onDelete && (
+                        <button
+                            className="task-detail-btn danger"
+                            onClick={() => {
+                                if (window.confirm(`Delete "${task.title}"? This can't be undone.`)) onDelete(task);
+                            }}
+                        >
+                            Delete
+                        </button>
+                    )}
                     <button className="task-detail-btn primary" onClick={() => onEdit && onEdit(task)}>Edit Task</button>
                 </div>
             </div>
