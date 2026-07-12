@@ -26,6 +26,8 @@ export default function AllTasks() {
     const { teamMembers } = useTeamMembers();
     const { preferences } = usePreferences();
 
+    const [search, setSearch] = useState("");
+
     const [date, setDate] = useState("All");
     const dates = ["All", "Today", "Upcoming", "Overdue"];
 
@@ -95,6 +97,13 @@ export default function AllTasks() {
 
     // Filter function
     const filterTask = useCallback((task) => {
+        // Search filter
+        if (search.trim()) {
+            const query = search.trim().toLowerCase();
+            const haystack = `${task.title || ""} ${task.desc || ""} ${task.project || ""} ${task.tag || ""}`.toLowerCase();
+            if (!haystack.includes(query)) return false;
+        }
+
         // Date filter
         if (date !== "All") {
             const taskDateStr = task.date;
@@ -149,7 +158,7 @@ export default function AllTasks() {
         }
 
         return true;
-    }, [date, priority, project, tag, createdBy]);
+    }, [search, date, priority, project, tag, createdBy]);
 
     // Filtered kanban columns
     const filteredKanbanColumns = useMemo(() => {
@@ -240,7 +249,7 @@ export default function AllTasks() {
         <div className="all-tasks-page">
             <Sidebar />
             <div className="all-tasks-content">
-                <Header onNotificationClick={() => { }} />
+                <Header onNotificationClick={() => { }} searchValue={search} onSearchChange={setSearch} />
                 <div className="Tasks-top-section">
                     <div className="all-tasks-container">
                         <h2>All Tasks</h2>
@@ -360,6 +369,10 @@ export default function AllTasks() {
                                 data={filteredTableData}
                                 onRowClick={(row) => setSelectedTask(row.originalTask)}
                                 onRowAction={(row) => openEditModal(row.originalTask)}
+                                onBulkDelete={(ids) => {
+                                    if (!window.confirm(`Delete ${ids.length} task${ids.length === 1 ? "" : "s"}? This can't be undone.`)) return;
+                                    ids.forEach((id) => deleteTask(id));
+                                }}
                             />
                         </div>
                     )}

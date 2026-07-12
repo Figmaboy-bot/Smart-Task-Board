@@ -35,6 +35,8 @@ export default function MyTasks() {
     const [dragOverCol, setDragOverCol] = useState(null);
     const dragInfo = useRef(null); // { colTitle, task }
 
+    const [search, setSearch] = useState("");
+
     const [date, setDate] = useState("All");
     const dates = ["All", "Today", "Upcoming", "Overdue"];
 
@@ -86,6 +88,13 @@ export default function MyTasks() {
 
     // Filter function wrapped in useCallback
     const filterTask = useCallback((task, columnTitle = null) => {
+        // Search filter
+        if (search.trim()) {
+            const query = search.trim().toLowerCase();
+            const haystack = `${task.title || ""} ${task.desc || ""} ${task.project || task.projectName || ""} ${task.tag || ""}`.toLowerCase();
+            if (!haystack.includes(query)) return false;
+        }
+
         // Date filter
         if (date !== "All") {
             const taskDateStr = task.date;
@@ -146,7 +155,7 @@ export default function MyTasks() {
         }
 
         return true;
-    }, [date, project, priority, status]);
+    }, [search, date, project, priority, status]);
 
     // Filtered kanban columns based on all filters
     const filteredKanbanColumns = useMemo(() => {
@@ -210,7 +219,7 @@ export default function MyTasks() {
         <div className="my-tasks-page">
             <Sidebar />
             <div className="my-tasks-content">
-                <Header onNotificationClick={() => { }} />
+                <Header onNotificationClick={() => { }} searchValue={search} onSearchChange={setSearch} />
                 <div className="my-tasks-main">
                     <div className="my-tasks-header">
                         <h2>My Tasks</h2>
@@ -352,6 +361,10 @@ export default function MyTasks() {
                                     data={filteredTableData}
                                     onRowClick={(row) => setSelectedTask(row.originalTask)}
                                     onRowAction={(row) => openEditModal(row.originalTask)}
+                                    onBulkDelete={(ids) => {
+                                        if (!window.confirm(`Delete ${ids.length} task${ids.length === 1 ? "" : "s"}? This can't be undone.`)) return;
+                                        ids.forEach((id) => deleteTask(id));
+                                    }}
                                 />
                             </div>
                         )}

@@ -16,6 +16,7 @@ export default function Projects() {
 
     const { projects, loading, createProject } = useProjects();
     const [showAddProjectModal, setShowAddProjectModal] = useState(false);
+    const [search, setSearch] = useState("");
 
     const [owner, setOwner] = useState(null);
     const [dueDate, setDueDate] = useState(null);
@@ -51,7 +52,7 @@ export default function Projects() {
         <div className="projects-page">
             <Sidebar />
             <div className="projects-content">
-                <Header onNotificationClick={() => { }} />
+                <Header onNotificationClick={() => { }} searchValue={search} onSearchChange={setSearch} />
                 <div className="project-top-content">
                     <h2>Projects Page</h2>
                     <div className="top-buttons">

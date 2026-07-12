@@ -1,3 +1,58 @@
+.table-selection-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: var(--primary-0, rgba(124, 58, 237, 0.08));
+    color: var(--grey-70);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.table-selection-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-selection-clear {
+    background: none;
+    border: none;
+    color: var(--grey-60);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 10px;
+}
+
+.table-selection-clear:hover {
+    color: var(--grey-70);
+}
+
+.table-selection-delete {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-white);
+    color: var(--error-50);
+    border: 1px solid var(--error-50);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.table-selection-delete:hover {
+    background: var(--error-0, #fef2f2);
+}
+
+.table-selection-delete-icon {
+    width: 14px;
+    height: 14px;
+}
+
 .table-row-clickable {
     cursor: pointer;
 }

@@ -15,6 +15,7 @@ const columns = [
 
 export default function ProjectList({ projects = [] }) {
     const [selectedProject, setSelectedProject] = useState(null);
+    const { deleteProject } = useProjects();
     const data = projects.map((p) => ({ ...p, progress: `${p.progress}%`, originalProject: p }));
 
     return (
@@ -23,12 +24,17 @@ export default function ProjectList({ projects = [] }) {
                 columns={columns}
                 data={data}
                 onRowClick={(row) => setSelectedProject(row.originalProject)}
+                onBulkDelete={(ids) => {
+                    if (!window.confirm(`Delete ${ids.length} project${ids.length === 1 ? "" : "s"}? Tasks in them will be kept but unlinked. This can't be undone.`)) return;
+                    ids.forEach((id) => deleteProject(id));
+                }}
             />
 
             <ProjectDetailModal
                 open={!!selectedProject}
                 onClose={() => setSelectedProject(null)}
                 project={selectedProject}
+                onDelete={(project) => { deleteProject(project.id); setSelectedProject(null); }}
             />
         </div>
     );

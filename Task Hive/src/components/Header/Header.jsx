@@ -14,8 +14,14 @@ const NOTIFICATION_ICON = {
   grey: <CalendarDaysIcon width={24} height={24} />,
 };
 
-function Header() {
-  const [searchQuery, setSearchQuery] = useState("");
+function Header({ searchValue, onSearchChange }) {
+  // Pages that filter their own list (All Tasks, Projects, Teams, ...) pass
+  // searchValue/onSearchChange to keep the query in their own state; pages
+  // that don't wire it up yet fall back to this local, inert state so the
+  // input still works as a plain text field.
+  const isControlled = onSearchChange !== undefined;
+  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  const searchQuery = isControlled ? searchValue : localSearchQuery;
   const { profilePic } = useProfile();
   const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
@@ -39,8 +45,8 @@ function Header() {
   const placeholder = searchPlaceholders[location.pathname] || "Search tasks, projects, or team members";
 
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-    // Add search functionality here
+    if (isControlled) onSearchChange(e.target.value);
+    else setLocalSearchQuery(e.target.value);
   };
 
   return (

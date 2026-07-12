@@ -1,8 +1,8 @@
 import React from "react";
 import "./EditableTable.css";
-import { EllipsisHorizontalCircleIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { EllipsisHorizontalCircleIcon, CheckIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-export default function EditableTable({ columns = [], data = [], onRowClick, onRowAction }) {
+export default function EditableTable({ columns = [], data = [], onRowClick, onRowAction, onBulkDelete }) {
   const tableData = Array.isArray(data) ? data : [];
   const [checkedRows, setCheckedRows] = React.useState([]);
   const [checkAll, setCheckAll] = React.useState(false);
@@ -10,6 +10,10 @@ export default function EditableTable({ columns = [], data = [], onRowClick, onR
     if (typeof col.width === 'number') return col.width + '%';
     if (typeof col.width === 'string' && col.width.endsWith('%')) return col.width;
     return '20%';
+  };
+  const clearSelection = () => {
+    setCheckedRows([]);
+    setCheckAll(false);
   };
   const handleCheckAll = (e) => {
     setCheckAll(e.target.checked);
@@ -26,9 +30,26 @@ export default function EditableTable({ columns = [], data = [], onRowClick, onR
         : [...prev, rowIdOrIdx]
     );
   };
+  const handleBulkDelete = () => {
+    if (!onBulkDelete || checkedRows.length === 0) return;
+    onBulkDelete(checkedRows);
+    clearSelection();
+  };
 
   return (
     <div className="users-table">
+    {onBulkDelete && checkedRows.length > 0 && (
+      <div className="table-selection-toolbar">
+        <span>{checkedRows.length} selected</span>
+        <div className="table-selection-actions">
+          <button type="button" className="table-selection-clear" onClick={clearSelection}>Clear</button>
+          <button type="button" className="table-selection-delete" onClick={handleBulkDelete}>
+            <TrashIcon className="table-selection-delete-icon" />
+            Delete
+          </button>
+        </div>
+      </div>
+    )}
     <div className="editable-table-wrapper" style={{ overflowX: "auto" }}>
       <table className="users-table-element">
         <thead>
