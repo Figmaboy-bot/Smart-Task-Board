@@ -1,30 +1,14 @@
--- Shareable workspace invite links: anyone who opens the link and signs in
--- can join, as an alternative to the email-targeted workspace_invites.
--- Redemption goes through a SECURITY DEFINER function so the raw table
--- doesn't need to be exposed to non-members - the token itself is the
--- credential, validated (not revoked / not expired / under max uses) and
--- consumed server-side.
+-- Fixes a bug in redeem_invite_link (0010): its OUT parameters were named
+-- workspace_id/workspace_name, which collide with the bare "workspace_id"
+-- column list in "on conflict (workspace_id, user_id)" - PL/pgSQL can't
+-- tell whether that's the OUT variable or the table column, and raises
+-- "column reference \"workspace_id\" is ambiguous" (42702) at call time.
+-- Renaming the OUT parameters removes the collision.
 -- Run this once via the Supabase dashboard SQL editor (or `supabase db push`).
 
-create table public.workspace_invite_links (
-  id uuid primary key default gen_random_uuid(),
-  workspace_id uuid not null references public.workspaces(id) on delete cascade,
-  token text not null unique default encode(gen_random_bytes(16), 'hex'),
-  role text not null default 'Member' check (role in ('Owner', 'Member')),
-  created_by uuid references auth.users(id),
-  created_at timestamptz not null default now(),
-  expires_at timestamptz,
-  max_uses integer,
-  use_count integer not null default 0,
-  revoked boolean not null default false
-);
-
-alter table public.workspace_invite_links enable row level security;
-
-create policy "owner can manage invite links" on public.workspace_invite_links
-  for all
-  using (public.is_workspace_owner(workspace_id))
-  with check (public.is_workspace_owner(workspace_id));
+-- CREATE OR REPLACE can't change a function's OUT-parameter row type, so the
+-- old signature has to be dropped first.
+drop function if exists public.redeem_invite_link(text);
 
 create or replace function public.redeem_invite_link(_token text)
 returns table (out_workspace_id uuid, out_workspace_name text)

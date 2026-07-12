@@ -2,7 +2,7 @@ import React from "react";
 import "./EditableTable.css";
 import { EllipsisHorizontalCircleIcon, CheckIcon } from "@heroicons/react/24/outline";
 
-export default function EditableTable({ columns = [], data = [] }) {
+export default function EditableTable({ columns = [], data = [], onRowClick, onRowAction }) {
   const tableData = Array.isArray(data) ? data : [];
   const [checkedRows, setCheckedRows] = React.useState([]);
   const [checkAll, setCheckAll] = React.useState(false);

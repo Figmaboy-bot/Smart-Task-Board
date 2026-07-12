@@ -299,12 +299,23 @@ export function WorkspacesProvider({ children }) {
     }, []);
 
     const redeemInviteLink = useCallback(async (token) => {
-        const { data, error } = await supabase.rpc("redeem_invite_link", { _token: token });
+        // On a cold page load (someone opening a shared link in a fresh
+        // tab), this call can race supabase-js's own auth-token lock while
+        // it's still being acquired by the session/MFA checks that fire on
+        // mount, which rejects with a lock-contention error rather than a
+        // real API response. That's transient, so retry a couple of times
+        // instead of surfacing a false "invalid link" to the user.
+        let data, error;
+        for (let attempt = 0; attempt < 3; attempt++) {
+            ({ data, error } = await supabase.rpc("redeem_invite_link", { _token: token }));
+            if (!error || !/lock/i.test(error.message || "")) break;
+            await new Promise((resolve) => setTimeout(resolve, 600));
+        }
         if (error) throw error;
         const row = data?.[0];
         if (!row) throw new Error("This invite link is invalid or has expired.");
 
-        const joined = { id: row.workspace_id, name: row.workspace_name, role: "Member" };
+        const joined = { id: row.out_workspace_id, name: row.out_workspace_name, role: "Member" };
         setWorkspaces((prev) => (prev.some((w) => w.id === joined.id) ? prev : [...prev, joined]));
         setActiveWorkspaceId(joined.id);
         return joined;
