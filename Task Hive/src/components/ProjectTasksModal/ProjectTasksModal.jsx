@@ -1,18 +1,28 @@
 import React from "react";
 import { XMarkIcon, CheckCircleIcon, ClockIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { useTasks } from "../../hooks/useTasks";
 import "./ProjectTasksModal.css";
 
+const COLUMN_TO_TASK_STATUS = { "TO-DO": "todo", "IN PROGRESS": "in-progress", "DONE": "completed" };
+
 export default function ProjectTasksModal({ open, onClose, project }) {
+    const { tasks } = useTasks();
+
     if (!open || !project) return null;
 
-    // Sample tasks for the project (in a real app, these would come from project data)
-    const projectTasks = project.tasks || [
-        { id: 1, title: "Design mockups", status: "completed", priority: "high", assignee: "Linda", dueDate: "Jan 10" },
-        { id: 2, title: "Frontend development", status: "in-progress", priority: "high", assignee: "Jake", dueDate: "Jan 15" },
-        { id: 3, title: "API integration", status: "in-progress", priority: "medium", assignee: "Me", dueDate: "Jan 18" },
-        { id: 4, title: "Testing & QA", status: "todo", priority: "medium", assignee: "Mathew", dueDate: "Jan 22" },
-        { id: 5, title: "Documentation", status: "todo", priority: "low", assignee: "Linda", dueDate: "Jan 25" },
-    ];
+    // task.status here is actually the task's priority (see TasksContext) and
+    // task.columnTitle is its kanban column - mapped to the local shape this
+    // modal already renders (status: todo/in-progress/completed).
+    const projectTasks = tasks
+        .filter((t) => t.project === project.name)
+        .map((t) => ({
+            id: t.id,
+            title: t.title,
+            status: COLUMN_TO_TASK_STATUS[t.columnTitle] || "todo",
+            priority: (t.status || "Medium").toLowerCase(),
+            assignee: t.user?.name || "Unassigned",
+            dueDate: t.date || "Not set",
+        }));
 
     const getStatusIcon = (status) => {
         switch (status) {

@@ -4,6 +4,7 @@ import './Teams.css';
 import IconButton from "../../components/Buttons/Buttons";
 import OutlineButton from "../../components/Buttons/Buttons";
 import AddTeamModal from "../../components/AddTeamModal/AddTeamModal";
+import Dropdown from "../../components/Dropdown/Dropdown";
 import { PlusCircleIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
 import { useTeamMembers } from "../../hooks/useTeamMembers";
@@ -12,27 +13,60 @@ import { useWorkspaces } from "../../context/WorkspacesContext";
 
 import EditableTable from "../../components/EditableTable/EditableTable";
 
+const STATUS_OPTIONS = [
+    { value: "all", label: "All Statuses" },
+    { value: "Active", label: "Active" },
+    { value: "Invited", label: "Invited" },
+    { value: "Suspended", label: "Suspended" },
+];
+
 export default function Teams() {
 
     const { user } = useAuth();
     const isGuest = !user || user.isGuest;
-    const { teamMembers, loading, createTeamMember } = useTeamMembers();
-    const { workspaces, activeWorkspaceId, inviteToWorkspace } = useWorkspaces();
+    const { teamMembers, loading, createTeamMember, removeTeamMember } = useTeamMembers();
+    const { workspaces, activeWorkspaceId, inviteToWorkspace, members, removeMember } = useWorkspaces();
     const [showAddTeamModal, setShowAddTeamModal] = useState(false);
     const [search, setSearch] = useState("");
+    const [showFilters, setShowFilters] = useState(false);
+    const [roleFilter, setRoleFilter] = useState(null);
+    const [statusFilter, setStatusFilter] = useState(null);
+
+    const roleOptions = useMemo(() => {
+        const roles = [...new Set(teamMembers.map((m) => m.role).filter(Boolean))];
+        return [{ value: "all", label: "All Roles" }, ...roles.map((r) => ({ value: r, label: r }))];
+    }, [teamMembers]);
 
     const rows = useMemo(() => {
         const query = search.trim().toLowerCase();
-        const mapped = teamMembers.map((m) => ({
-            ...m,
-            member: m.name,
-            img: m.avatar_url || "/Icons/default-profile.svg",
-        }));
-        if (!query) return mapped;
-        return mapped.filter((m) =>
-            `${m.name || ""} ${m.email || ""} ${m.role || ""}`.toLowerCase().includes(query)
-        );
-    }, [teamMembers, search]);
+        return teamMembers
+            .filter((m) => !roleFilter || roleFilter === "all" || m.role === roleFilter)
+            .filter((m) => !statusFilter || statusFilter === "all" || m.status === statusFilter)
+            .filter((m) => !query || `${m.name || ""} ${m.email || ""} ${m.role || ""}`.toLowerCase().includes(query))
+            .map((m) => ({
+                ...m,
+                member: m.name,
+                img: m.avatar_url || "/Icons/default-profile.svg",
+            }));
+    }, [teamMembers, search, roleFilter, statusFilter]);
+
+    const handleRemoveMember = (row) => {
+        if (row.email && row.email === user?.email) {
+            alert("You can't remove yourself from the team.");
+            return;
+        }
+        if (!window.confirm(`Remove ${row.name || row.email} from the team?`)) return;
+
+        removeTeamMember(row.id);
+
+        // team_members is a display roster separate from workspace_members
+        // (the table that actually gates access) - remove both so someone
+        // taken off the roster also loses real workspace access.
+        if (!isGuest && row.email) {
+            const accessRow = members.find((m) => m.email === row.email);
+            if (accessRow) removeMember(accessRow.id).catch((err) => console.error("Failed to revoke workspace access:", err));
+        }
+    };
 
     const columns = [
         {
@@ -76,7 +110,8 @@ export default function Teams() {
                             <OutlineButton
                                 icon={FunnelIcon}
                                 text="Filter"
-                                className="Outline-Button Add-Task"
+                                className={`Outline-Button Add-Task${showFilters ? " active" : ""}`}
+                                onClick={() => setShowFilters((v) => !v)}
                             />
                             <IconButton
                                 icon={PlusCircleIcon}
@@ -86,11 +121,29 @@ export default function Teams() {
                             />
                         </div>
                     </div>
+                    {showFilters && (
+                        <div className="tasks-filter-options" style={{ margin: "0 0 1rem" }}>
+                            <Dropdown
+                                options={roleOptions}
+                                value={roleFilter}
+                                onChange={setRoleFilter}
+                                placeholder="All Roles"
+                                className="custom-select"
+                            />
+                            <Dropdown
+                                options={STATUS_OPTIONS}
+                                value={statusFilter}
+                                onChange={setStatusFilter}
+                                placeholder="All Statuses"
+                                className="custom-select"
+                            />
+                        </div>
+                    )}
                     <div>
                         {loading ? (
                             <p>Loading team members…</p>
                         ) : (
-                            <EditableTable columns={columns} data={rows} />
+                            <EditableTable columns={columns} data={rows} onRowAction={handleRemoveMember} />
                         )}
                     </div>
                 </div>
