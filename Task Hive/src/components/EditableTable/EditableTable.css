@@ -1,3 +1,11 @@
+.table-row-clickable {
+    cursor: pointer;
+}
+
+.table-row-clickable:hover {
+    background: var(--primary-0, rgba(124, 58, 237, 0.06));
+}
+
 .checkbox-wrapper {
     position: relative;
     width: 16px;

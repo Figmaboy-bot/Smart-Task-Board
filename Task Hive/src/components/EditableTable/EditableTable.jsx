@@ -65,8 +65,12 @@ export default function EditableTable({ columns = [], data = [], onRowClick, onR
         <tbody>
           {tableData.map((row, rowIdx) => {
             return (
-              <tr key={row.id ?? rowIdx} className={rowIdx % 2 === 0 ? 'table-row-even' : 'table-row-odd'}>
-                <td className="table-cell checkbox-cell">
+              <tr
+                key={row.id ?? rowIdx}
+                className={`${rowIdx % 2 === 0 ? 'table-row-even' : 'table-row-odd'}${onRowClick ? ' table-row-clickable' : ''}`}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+              >
+                <td className="table-cell checkbox-cell" onClick={(e) => e.stopPropagation()}>
                   <div className="checkbox-wrapper">
                     <input
                       type="checkbox"
@@ -93,8 +97,14 @@ export default function EditableTable({ columns = [], data = [], onRowClick, onR
                   if (col.key === 'status') {
                     return (
                       <td key={col.key} className={col.cellClassName} style={{ width: getPercentWidth(col) }}>
-                        <span className={`status-cell ${row.status?.toLowerCase() || ''}`}>
-                          <span className={`status-circle ${row.status?.toLowerCase() || ''}`}></span>
+                        <span
+                          className={`status-cell ${row.status?.toLowerCase() || ''}`}
+                          style={row.statusColor ? { color: row.statusColor, background: `${row.statusColor}1a` } : undefined}
+                        >
+                          <span
+                            className={`status-circle ${row.status?.toLowerCase() || ''}`}
+                            style={row.statusColor ? { background: row.statusColor } : undefined}
+                          ></span>
                           {row[col.key]}
                         </span>
                       </td>
@@ -106,8 +116,13 @@ export default function EditableTable({ columns = [], data = [], onRowClick, onR
                     </td>
                   );
                 })}
-                <td className="table-cell actions">
-                  <button className="action-button"><EllipsisHorizontalCircleIcon /></button>
+                <td className="table-cell actions" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    className="action-button"
+                    onClick={() => (onRowAction || onRowClick)?.(row)}
+                  >
+                    <EllipsisHorizontalCircleIcon />
+                  </button>
                 </td>
               </tr>
             );

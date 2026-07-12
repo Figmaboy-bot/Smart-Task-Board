@@ -156,15 +156,18 @@ export default function MyTasks() {
         }));
     }, [myKanbanColumns, filterTask]);
 
-    // Example table columns and data for EditableTable
+    // Table columns for the List view. "status" holds the task's priority
+    // (High/Medium/Low, see TasksContext) and "section" holds the kanban
+    // column it's currently in (To-Do/In Progress/Done) - labels below
+    // reflect what's actually shown, not the raw field names.
     const tableColumns = [
-        { key: "title", label: "Task", headerClassName: "table-header-cell Task", cellClassName: "table-cell table-title", width: "20%" },
-        { key: "status", label: "Status", headerClassName: "table-header-cell Status", cellClassName: "table-cell table-status", width: "10%" },
-        { key: "desc", label: "Description", headerClassName: "table-header-cell Description", cellClassName: "table-cell table-desc", width: "30%" },
+        { key: "title", label: "Task", headerClassName: "table-header-cell Task", cellClassName: "table-cell table-title", width: "18%" },
+        { key: "status", label: "Priority", headerClassName: "table-header-cell Status", cellClassName: "table-cell table-status", width: "9%" },
+        { key: "section", label: "Status", headerClassName: "table-header-cell Action", cellClassName: "table-cell table-actions", width: "10%" },
+        { key: "desc", label: "Description", headerClassName: "table-header-cell Description", cellClassName: "table-cell table-desc", width: "27%" },
         { key: "userDisplay", label: "Assigned", headerClassName: "table-header-cell Assigned", cellClassName: "table-cell table-user", width: "12%" },
         { key: "date", label: "Date", headerClassName: "table-header-cell Date", cellClassName: "table-cell table-date", width: "9%" },
         { key: "links", label: "Links", headerClassName: "table-header-cell Links", cellClassName: "table-cell table-links", width: "9%" },
-        { key: "section", label: "Priority", headerClassName: "table-header-cell Action", cellClassName: "table-cell table-actions", width: "10%" },
     ];
 
     // Table data derived from kanban columns
@@ -173,6 +176,7 @@ export default function MyTasks() {
             col.tasks.map((task) => ({
                 ...task,
                 section: col.title,
+                originalTask: task,
                 userDisplay: (
                     <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <img src={task.user.avatar} alt={task.user.name} className="task-user-avatar" style={{ width: 22, height: 22 }} />
@@ -343,7 +347,12 @@ export default function MyTasks() {
                             </div>
                         ) : (
                             <div className="activity-list-view">
-                                <EditableTable columns={tableColumns} data={filteredTableData} />
+                                <EditableTable
+                                    columns={tableColumns}
+                                    data={filteredTableData}
+                                    onRowClick={(row) => setSelectedTask(row.originalTask)}
+                                    onRowAction={(row) => openEditModal(row.originalTask)}
+                                />
                             </div>
                         )}
                     </div>
