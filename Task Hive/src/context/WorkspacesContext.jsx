@@ -240,6 +240,73 @@ export function WorkspacesProvider({ children }) {
         setPendingInvites((prev) => prev.filter((i) => i.id !== inviteId));
     }, []);
 
+    const [inviteLinks, setInviteLinks] = useState([]);
+    const [inviteLinksLoading, setInviteLinksLoading] = useState(false);
+
+    useEffect(() => {
+        if (isGuest || !activeWorkspaceId) {
+            setInviteLinks([]);
+            return;
+        }
+
+        let cancelled = false;
+        setInviteLinksLoading(true);
+
+        supabase
+            .from("workspace_invite_links")
+            .select("id, token, role, use_count, max_uses, revoked, created_at")
+            .eq("workspace_id", activeWorkspaceId)
+            .eq("revoked", false)
+            .order("created_at", { ascending: true })
+            .then(({ data, error }) => {
+                if (cancelled) return;
+                if (error) {
+                    console.error("Failed to load invite links:", error);
+                    setInviteLinks([]);
+                } else {
+                    setInviteLinks(data);
+                }
+                setInviteLinksLoading(false);
+            });
+
+        return () => { cancelled = true };
+    }, [isGuest, activeWorkspaceId]);
+
+    const createInviteLink = useCallback(async (role = "Member") => {
+        if (!activeWorkspaceId) return null;
+        const { data, error } = await supabase
+            .from("workspace_invite_links")
+            .insert({
+                workspace_id: activeWorkspaceId,
+                role: role === "Owner" ? "Owner" : "Member",
+                created_by: user.id,
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        setInviteLinks((prev) => [...prev, data]);
+        return data;
+    }, [activeWorkspaceId, user]);
+
+    const revokeInviteLink = useCallback(async (linkId) => {
+        const { error } = await supabase.from("workspace_invite_links").update({ revoked: true }).eq("id", linkId);
+        if (error) throw error;
+        setInviteLinks((prev) => prev.filter((l) => l.id !== linkId));
+    }, []);
+
+    const redeemInviteLink = useCallback(async (token) => {
+        const { data, error } = await supabase.rpc("redeem_invite_link", { _token: token });
+        if (error) throw error;
+        const row = data?.[0];
+        if (!row) throw new Error("This invite link is invalid or has expired.");
+
+        const joined = { id: row.workspace_id, name: row.workspace_name, role: "Member" };
+        setWorkspaces((prev) => (prev.some((w) => w.id === joined.id) ? prev : [...prev, joined]));
+        setActiveWorkspaceId(joined.id);
+        return joined;
+    }, [setActiveWorkspaceId]);
+
     const inviteToWorkspace = useCallback(async ({ email, role }, workspaceId) => {
         const targetWorkspaceId = workspaceId || activeWorkspaceId;
         if (!targetWorkspaceId) return null;
@@ -277,6 +344,11 @@ export function WorkspacesProvider({ children }) {
             membersLoading,
             removeMember,
             cancelInvite,
+            inviteLinks,
+            inviteLinksLoading,
+            createInviteLink,
+            revokeInviteLink,
+            redeemInviteLink,
         }}>
             {children}
         </WorkspacesContext.Provider>
