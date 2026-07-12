@@ -196,11 +196,11 @@ export default function AuthFlow() {
     <div className="auth-flow-page">
       <div className="auth-flow-glow" />
 
-      <div className="auth-flow-card">
-        <div className="auth-flow-logo">
-          <img src="/TaskHive Logo.svg" alt="TaskHive" />
-        </div>
+      <div className="auth-flow-logo">
+        <img src="/TaskHive Logo.svg" alt="TaskHive" />
+      </div>
 
+      <div className="auth-flow-card">
         {step !== "entry" && (
           <button type="button" className="auth-flow-back" onClick={goBackToEntry} aria-label="Back">
             <ArrowLeftIcon />
