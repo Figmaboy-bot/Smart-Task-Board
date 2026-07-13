@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import TaskModal from "../../components/TaskModal/TaskModal";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
-import { PlusIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, ChatBubbleLeftRightIcon, PaperClipIcon, XMarkIcon, DocumentIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import { useMessages } from "../../hooks/useMessages";
 import { useTasks } from "../../hooks/useTasks";
 import { useProjects } from "../../hooks/useProjects";
@@ -22,8 +22,29 @@ function formatTime(isoString, { timezone, time_format } = {}) {
     });
 }
 
+function ChatAttachment({ url, name, type }) {
+    if (!url) return null;
+    if (type?.startsWith("image/")) {
+        return (
+            <a href={url} target="_blank" rel="noopener noreferrer" className="chat-attachment-image-link">
+                <img src={url} alt={name || "attachment"} className="chat-attachment-image" />
+            </a>
+        );
+    }
+    if (type?.startsWith("audio/")) {
+        return <audio controls src={url} className="chat-attachment-audio" />;
+    }
+    return (
+        <a href={url} target="_blank" rel="noopener noreferrer" className="chat-attachment-file">
+            <DocumentIcon className="chat-attachment-file-icon" />
+            <span className="chat-attachment-file-name">{name || "Attachment"}</span>
+            <ArrowDownTrayIcon className="chat-attachment-file-download" />
+        </a>
+    );
+}
+
 export default function Messages() {
-    const { messages, loading, sendMessage, currentUserId } = useMessages();
+    const { messages, loading, sendMessage, uploadAttachment, currentUserId } = useMessages();
     const { createTask } = useTasks();
     const { projects } = useProjects();
     const { teamMembers } = useTeamMembers();
@@ -31,16 +52,37 @@ export default function Messages() {
 
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [draft, setDraft] = useState("");
+    const [pendingAttachment, setPendingAttachment] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [attachError, setAttachError] = useState("");
     const messagesEndRef = useRef(null);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ block: "end" });
     }, [messages]);
 
     const handleSend = () => {
-        if (!draft.trim()) return;
-        sendMessage(draft);
+        if (!draft.trim() && !pendingAttachment) return;
+        sendMessage(draft, pendingAttachment);
         setDraft("");
+        setPendingAttachment(null);
+    };
+
+    const handleFilePick = async (e) => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
+        if (!file) return;
+        setAttachError("");
+        setUploading(true);
+        try {
+            const attachment = await uploadAttachment(file);
+            setPendingAttachment(attachment);
+        } catch (err) {
+            setAttachError(err.message || "Failed to upload file.");
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleAddTask = (task) => {

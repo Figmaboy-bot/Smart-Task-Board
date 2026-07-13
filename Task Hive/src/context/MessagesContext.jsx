@@ -69,9 +69,10 @@ export function MessagesProvider({ children }) {
         };
     }, [user, isGuest, activeWorkspaceId]);
 
-    const sendMessage = useCallback(async (body) => {
+    // attachment is the shape returned by uploadAttachment: { url, name, type, size }.
+    const sendMessage = useCallback(async (body, attachment) => {
         const trimmed = body.trim();
-        if (!trimmed) return null;
+        if (!trimmed && !attachment) return null;
 
         if (isGuest) {
             const localMessage = {
@@ -80,6 +81,10 @@ export function MessagesProvider({ children }) {
                 sender_name: "You",
                 body: trimmed,
                 created_at: new Date().toISOString(),
+                attachment_url: attachment?.url ?? null,
+                attachment_name: attachment?.name ?? null,
+                attachment_type: attachment?.type ?? null,
+                attachment_size: attachment?.size ?? null,
             };
             setMessages((prev) => [...prev, localMessage]);
             return localMessage;
@@ -92,6 +97,10 @@ export function MessagesProvider({ children }) {
                 sender_id: user.id,
                 sender_name: senderNameFromEmail(user.email),
                 body: trimmed,
+                attachment_url: attachment?.url ?? null,
+                attachment_name: attachment?.name ?? null,
+                attachment_type: attachment?.type ?? null,
+                attachment_size: attachment?.size ?? null,
             })
             .select()
             .single();
@@ -103,8 +112,25 @@ export function MessagesProvider({ children }) {
         return data;
     }, [user, isGuest, activeWorkspaceId]);
 
+    // Guest sessions never touch Supabase storage, so the file just gets a
+    // local blob URL - good enough to preview/play within the session.
+    const uploadAttachment = useCallback(async (file) => {
+        if (isGuest) {
+            return { url: URL.createObjectURL(file), name: file.name, type: file.type, size: file.size };
+        }
+
+        const path = `${activeWorkspaceId}/${crypto.randomUUID()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+            .from("message-attachments")
+            .upload(path, file);
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage.from("message-attachments").getPublicUrl(path);
+        return { url: publicUrl, name: file.name, type: file.type, size: file.size };
+    }, [isGuest, activeWorkspaceId]);
+
     return (
-        <MessagesContext.Provider value={{ messages, loading, sendMessage, currentUserId: user?.id || "guest" }}>
+        <MessagesContext.Provider value={{ messages, loading, sendMessage, uploadAttachment, currentUserId: user?.id || "guest" }}>
             {children}
         </MessagesContext.Provider>
     );

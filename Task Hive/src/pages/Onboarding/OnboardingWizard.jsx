@@ -53,6 +53,9 @@ export default function OnboardingWizard() {
   const [avatarFile, setAvatarFile] = useState(null)
   const [avatarPreview, setAvatarPreview] = useState("")
   const fileInputRef = useRef(null)
+  // Guards against inserting a duplicate workspace if the user hits Back
+  // from the invite step (which returns here) and Continue again.
+  const createdWorkspaceIdRef = useRef(null)
 
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
@@ -148,9 +151,14 @@ export default function OnboardingWizard() {
       setError("Please enter a workspace name.")
       return
     }
+    if (createdWorkspaceIdRef.current) {
+      setStep("invite")
+      return
+    }
     setLoading(true)
     try {
-      await createWorkspace(workspaceName, workspaceSize || null)
+      const workspace = await createWorkspace(workspaceName, workspaceSize || null)
+      createdWorkspaceIdRef.current = workspace?.id ?? null
       setStep("invite")
     } catch (err) {
       setError(err.message || "Failed to create your workspace. Please try again.")
