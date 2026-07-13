@@ -183,3 +183,9 @@
 .remove-link-btn:hover {
 	color: #dc2626;
 }
+
+.form-field-error {
+	color: #ff0c0c;
+	font-size: 0.8rem;
+	margin: 0.3rem 0 0;
+}

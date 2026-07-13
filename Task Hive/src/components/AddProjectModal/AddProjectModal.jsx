@@ -1,10 +1,14 @@
 import React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './AddProjectModal.css';
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AddProjectModal({ open, onClose, onSubmit }) {
 	const [error, setError] = useState("");
+
+	useEffect(() => {
+		if (open) setError("");
+	}, [open]);
 
 	if (!open) return null;
 	return (

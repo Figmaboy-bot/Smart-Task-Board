@@ -17,6 +17,10 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 	const [links, setLinks] = useState(initialTask?.rawLinks?.length ? initialTask.rawLinks : ['']);
 	const [errors, setErrors] = useState({});
 
+	React.useEffect(() => {
+		if (open) setErrors({});
+	}, [open]);
+
 	// Convert projects prop to dropdown options
 	const projectOptions = projects.length > 0
 		? projects.map(p => ({ value: p.name || p, label: p.name || p }))

@@ -18,6 +18,7 @@ export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [],
 		if (open) {
 			setSelectedWorkspaceIds(activeWorkspaceId ? [activeWorkspaceId] : []);
 			setAllWorkspaces(false);
+			setErrors({});
 		}
 	}, [open, activeWorkspaceId]);
 
@@ -46,12 +47,23 @@ export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [],
 					<button className="task-modal-close" onClick={onClose}><XMarkIcon className="task-modal-close-icon" /></button>
 				</div>
 				<form
+					noValidate
 					onSubmit={e => {
 						e.preventDefault();
 						const form = e.target;
 						const member = form.title.value;
 						const email = form.email.value;
 						const role = form.role.value;
+						const nextErrors = {};
+						if (!member.trim()) nextErrors.title = "Please enter the member's name.";
+						if (!email.trim()) nextErrors.email = "Please enter an email address.";
+						else if (!EMAIL_PATTERN.test(email.trim())) nextErrors.email = "Please enter a valid email address.";
+						if (!role.trim()) nextErrors.role = "Please enter a role.";
+						if (Object.keys(nextErrors).length > 0) {
+							setErrors(nextErrors);
+							return;
+						}
+						setErrors({});
 						// status is from state
 						// profilePic is from state
 						onSubmit && onSubmit({
@@ -126,15 +138,18 @@ export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [],
 						<div className="task-modal-field">
 							<label>Member Name</label>
 							<input name="title" className="form-input" required placeholder="Enter member name" />
+							{errors.title && <p className="form-field-error">{errors.title}</p>}
 						</div>
 						<div className="task-modal-field">
 							<label>Email</label>
 							<input name="email" type="email" required className="form-input" placeholder="Enter Email" />
+							{errors.email && <p className="form-field-error">{errors.email}</p>}
 						</div>
 						<div className="priority-due-date-assignee">
 							<div className="task-modal-field">
 								<label>Role</label>
 								<input name="role" type="text" required className="form-input" placeholder="Enter Role" />
+								{errors.role && <p className="form-field-error">{errors.role}</p>}
 							</div>
 							<div className="task-modal-field">
 								<label>Status</label>

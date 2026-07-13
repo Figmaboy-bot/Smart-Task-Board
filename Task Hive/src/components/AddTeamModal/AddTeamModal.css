@@ -167,3 +167,9 @@
   border-bottom: 1px solid var(--grey-30);
   font-weight: 600;
 }
+
+.form-field-error {
+  color: #ff0c0c;
+  font-size: 0.8rem;
+  margin: 0.3rem 0 0;
+}

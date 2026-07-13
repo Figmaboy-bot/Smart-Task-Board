@@ -121,3 +121,9 @@
   background: var(--color-background);
   color: var(--grey-80);
 }
+
+.form-field-error {
+  color: #ff0c0c;
+  font-size: 0.8rem;
+  margin: 0.3rem 0 0;
+}
