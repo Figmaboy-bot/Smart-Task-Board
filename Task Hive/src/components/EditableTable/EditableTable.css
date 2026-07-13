@@ -136,10 +136,27 @@
     table-layout: fixed;
 }
 
+/* Columns are sized via inline style (percent widths from column config),
+   not native table cell sizing, so rows/cells render as flex boxes rather
+   than relying on <table>'s own layout algorithm. */
+thead {
+    width: 100%;
+}
+
+tr {
+    display: flex;
+    flex-direction: row;
+}
+
+th {
+    padding: 0;
+    box-sizing: border-box;
+}
+
 td, th {
-  white-space: normal;      
-  word-break: break-word;  
-  overflow-wrap: anywhere; 
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
   overflow: ellipsis;
 }
 
@@ -257,16 +274,20 @@ td, th {
     padding: 2px 4px;
 }
 
+.users-table-element tbody tr:last-child td {
+    border-bottom: none;
+}
+
 .table-cell {
     padding: 14px 12px;
     font-size: 12px;
     color: var(--color-black);
-    border-bottom: 1px solid var(--grey-30);
+    border-bottom: 1px solid var(--grey-10);
     align-content: center;
     box-sizing: border-box;
-    white-space: nowrap;         
-    overflow: hidden;            
-    text-overflow: ellipsis;  
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .table-cell:last-child {
