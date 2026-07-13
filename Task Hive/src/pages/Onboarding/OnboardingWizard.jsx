@@ -179,6 +179,7 @@ export default function OnboardingWizard() {
     } catch {
       // Non-blocking - the workspace already exists, so there's nothing to retry into.
     }
+    completeOnboarding()
     navigate("/")
   }
 
