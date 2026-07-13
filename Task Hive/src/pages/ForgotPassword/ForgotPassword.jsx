@@ -32,11 +32,12 @@ export default function ForgotPassword() {
       </div>
 
       <div className="right-panel">
+        <div className="logo-container">
+          <img className="logo-icon" src="/TaskHive Logo.svg" alt="Logo" />
+        </div>
+
         <div className="form-wrapper">
           <div className="header-section">
-            <div className="logo-container">
-              <img className="logo-icon" src="/TaskHive Logo.svg" alt="Logo" />
-            </div>
             <h1 className="title">Forgot Password</h1>
             <p className="subtitle">Enter your email and we'll send you a reset code.</p>
           </div>
