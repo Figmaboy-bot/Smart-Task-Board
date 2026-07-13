@@ -13,6 +13,7 @@ import "./AuthFlow.css"
 
 const OTP_LENGTH = 6
 const RESEND_SECONDS = 102 // 01:42, matching the design
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function firstNameFrom(email) {
   const local = (email || "").split("@")[0].replace(/[0-9._-]+$/g, "")
@@ -85,6 +86,14 @@ export default function AuthFlow() {
   const handleEntryContinue = async (e) => {
     e.preventDefault()
     resetError()
+    if (!email.trim()) {
+      setError("Please enter your email address.")
+      return
+    }
+    if (!EMAIL_PATTERN.test(email.trim())) {
+      setError("Please enter a valid email address.")
+      return
+    }
     setLoading(true)
     try {
       const exists = await checkEmailExists(email)
@@ -115,6 +124,10 @@ export default function AuthFlow() {
   const handleWelcomeBackLogin = async (e) => {
     e.preventDefault()
     resetError()
+    if (!loginPassword) {
+      setError("Please enter your password.")
+      return
+    }
     setLoading(true)
     try {
       await login(email, loginPassword)
@@ -237,7 +250,7 @@ export default function AuthFlow() {
                 <span className="auth-flow-divider-line" />
               </div>
 
-              <form onSubmit={handleEntryContinue} className="auth-flow-form">
+              <form onSubmit={handleEntryContinue} className="auth-flow-form" noValidate>
                 <div className="auth-flow-field-group">
                   <label htmlFor="auth-email">Email</label>
                   <input
@@ -278,7 +291,7 @@ export default function AuthFlow() {
             </div>
 
             <div className="auth-flow-body">
-              <form onSubmit={handleWelcomeBackLogin} className="auth-flow-form">
+              <form onSubmit={handleWelcomeBackLogin} className="auth-flow-form" noValidate>
                 <div className="auth-flow-field-group">
                   <label htmlFor="auth-login-password">Password</label>
                   <div className="auth-flow-input-with-icon">
@@ -387,7 +400,7 @@ export default function AuthFlow() {
             </div>
 
             <div className="auth-flow-body">
-              <form onSubmit={handleCreateAccount} className="auth-flow-form">
+              <form onSubmit={handleCreateAccount} className="auth-flow-form" noValidate>
                 <div className="auth-flow-field-group">
                   <label htmlFor="auth-new-password">Password</label>
                   <div className="auth-flow-input-with-icon">
