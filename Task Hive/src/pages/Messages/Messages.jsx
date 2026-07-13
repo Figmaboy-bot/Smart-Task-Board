@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import TaskModal from "../../components/TaskModal/TaskModal";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
-import { PlusIcon, ChatBubbleLeftRightIcon, PaperClipIcon, XMarkIcon, DocumentIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, ChatBubbleLeftRightIcon, PaperClipIcon, XMarkIcon, DocumentIcon, ArrowDownTrayIcon, MicrophoneIcon, StopIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useMessages } from "../../hooks/useMessages";
 import { useTasks } from "../../hooks/useTasks";
 import { useProjects } from "../../hooks/useProjects";
@@ -10,6 +10,12 @@ import { useTeamMembers } from "../../hooks/useTeamMembers";
 import { usePreferences } from "../../context/PreferencesContext";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import './Messages.css';
+
+function formatDuration(totalSeconds) {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m}:${String(s).padStart(2, "0")}`;
+}
 
 function formatTime(isoString, { timezone, time_format } = {}) {
     const d = new Date(isoString);
@@ -55,12 +61,82 @@ export default function Messages() {
     const [pendingAttachments, setPendingAttachments] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [attachError, setAttachError] = useState("");
+    const [recording, setRecording] = useState(false);
+    const [recordingSeconds, setRecordingSeconds] = useState(0);
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const mediaStreamRef = useRef(null);
+    const recordedChunksRef = useRef([]);
+    const discardRecordingRef = useRef(false);
+    const recordingIntervalRef = useRef(null);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ block: "end" });
     }, [messages]);
+
+    // Releases the mic and stops the timer if the user navigates away
+    // mid-recording, rather than leaving the mic indicator on.
+    useEffect(() => {
+        return () => {
+            clearInterval(recordingIntervalRef.current);
+            mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+        };
+    }, []);
+
+    const stopRecording = () => {
+        clearInterval(recordingIntervalRef.current);
+        setRecording(false);
+        mediaRecorderRef.current?.stop();
+    };
+
+    const cancelRecording = () => {
+        discardRecordingRef.current = true;
+        stopRecording();
+    };
+
+    const startRecording = async () => {
+        setAttachError("");
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaStreamRef.current = stream;
+            recordedChunksRef.current = [];
+            discardRecordingRef.current = false;
+
+            const mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "";
+            const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+            };
+            recorder.onstop = async () => {
+                mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
+                mediaStreamRef.current = null;
+                if (discardRecordingRef.current) return;
+
+                const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+                const ext = blob.type.includes("mp4") ? "m4a" : "webm";
+                const file = new File([blob], `voice-message-${Date.now()}.${ext}`, { type: blob.type });
+
+                setUploading(true);
+                try {
+                    const uploaded = await uploadAttachment(file);
+                    setPendingAttachments((prev) => [...prev, uploaded]);
+                } catch (err) {
+                    setAttachError(err.message || "Failed to upload voice message.");
+                } finally {
+                    setUploading(false);
+                }
+            };
+
+            mediaRecorderRef.current = recorder;
+            recorder.start();
+            setRecording(true);
+            setRecordingSeconds(0);
+            recordingIntervalRef.current = setInterval(() => setRecordingSeconds((s) => s + 1), 1000);
+        } catch {
+            setAttachError("Couldn't access your microphone. Check your browser's permission for this site.");
+        }
+    };
 
     const handleSend = () => {
         if (!draft.trim() && pendingAttachments.length === 0) return;
@@ -168,21 +244,42 @@ export default function Messages() {
                                     ))}
                                 </div>
                             )}
-                            <div className="chat-input-top">
-                                <input
-                                    type="text"
-                                    className="chat-input"
-                                    placeholder="Message the team..."
-                                    value={draft}
-                                    onChange={(e) => setDraft(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
-                                />
-                                <button className="chat-send-btn" onClick={handleSend} disabled={uploading}>Send</button>
-                            </div>
+                            {recording ? (
+                                <div className="chat-recording-bar">
+                                    <span className="chat-recording-dot" />
+                                    <span className="chat-recording-time">{formatDuration(recordingSeconds)}</span>
+                                    <span className="chat-recording-label">Recording voice message…</span>
+                                    <button
+                                        type="button"
+                                        className="chat-recording-cancel"
+                                        onClick={cancelRecording}
+                                        aria-label="Cancel recording"
+                                    >
+                                        <TrashIcon />
+                                    </button>
+                                    <button type="button" className="chat-recording-stop" onClick={stopRecording}>
+                                        <StopIcon />
+                                        Stop
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="chat-input-top">
+                                    <input
+                                        type="text"
+                                        className="chat-input"
+                                        placeholder="Message the team..."
+                                        value={draft}
+                                        onChange={(e) => setDraft(e.target.value)}
+                                        onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
+                                    />
+                                    <button className="chat-send-btn" onClick={handleSend} disabled={uploading}>Send</button>
+                                </div>
+                            )}
                             <div className="chat-input-bottom">
                                 <input
                                     type="file"
                                     ref={fileInputRef}
+                                    multiple
                                     style={{ display: "none" }}
                                     accept="image/*,audio/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.zip"
                                     onChange={handleFilePick}
@@ -191,10 +288,19 @@ export default function Messages() {
                                     type="button"
                                     className="chat-form-btn"
                                     onClick={() => fileInputRef.current?.click()}
-                                    disabled={uploading}
+                                    disabled={uploading || recording}
                                 >
                                     <PaperClipIcon className="chat-input-bottom-left-icon" aria-hidden="true" />
                                     {uploading ? "Uploading…" : "Attach"}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="chat-form-btn"
+                                    onClick={startRecording}
+                                    disabled={uploading || recording}
+                                >
+                                    <MicrophoneIcon className="chat-input-bottom-left-icon" aria-hidden="true" />
+                                    Record
                                 </button>
                                 <button className="chat-form-btn" onClick={() => setShowTaskModal(true)}>
                                     <PlusIcon className="chat-input-bottom-left-icon" aria-hidden="true" /> Create task
