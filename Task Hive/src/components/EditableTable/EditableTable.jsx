@@ -14,6 +14,8 @@ export default function EditableTable({
   emptyDescription = "",
 }) {
   const tableData = Array.isArray(data) ? data : [];
+  const [checkedRows, setCheckedRows] = React.useState([]);
+  const [checkAll, setCheckAll] = React.useState(false);
 
   if (tableData.length === 0) {
     return (
@@ -22,8 +24,6 @@ export default function EditableTable({
       </div>
     );
   }
-  const [checkedRows, setCheckedRows] = React.useState([]);
-  const [checkAll, setCheckAll] = React.useState(false);
   const getPercentWidth = (col) => {
     if (typeof col.width === 'number') return col.width + '%';
     if (typeof col.width === 'string' && col.width.endsWith('%')) return col.width;

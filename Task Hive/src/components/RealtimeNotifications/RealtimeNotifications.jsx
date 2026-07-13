@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useWorkspaces } from "../../context/WorkspacesContext";
 import { usePreferences } from "../../context/PreferencesContext";
 import { useTasks } from "../../hooks/useTasks";
+import { useMessages } from "../../hooks/useMessages";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useToast } from "../../context/ToastContext";
 
@@ -19,34 +20,48 @@ export default function RealtimeNotifications() {
     const { activeWorkspaceId } = useWorkspaces();
     const { preferences } = usePreferences();
     const { tasks } = useTasks();
+    const { messages } = useMessages();
     const { showToast } = useToast();
     const navigate = useNavigate();
 
     const inAppEnabled = preferences.delivery_in_app;
 
-    // New messages in the team channel
+    // New messages in the team channel. Reads off the single shared
+    // MessagesContext subscription (see src/context/MessagesContext.jsx)
+    // instead of opening a second, duplicate `messages` INSERT channel for
+    // the same workspace - this component and the Messages page both watch
+    // the same list rather than each maintaining their own realtime channel.
+    const seenMessageIdsRef = useRef(new Set());
+    const messagesSeededRef = useRef(false);
+
+    useEffect(() => {
+        // Switching workspaces means the message list is for a different
+        // channel entirely - reseed instead of toasting its whole history.
+        messagesSeededRef.current = false;
+        seenMessageIdsRef.current = new Set();
+    }, [activeWorkspaceId]);
+
     useEffect(() => {
         if (isGuest || !activeWorkspaceId || !inAppEnabled) return;
 
-        const channel = supabase
-            .channel(`toast-messages-${activeWorkspaceId}`)
-            .on("postgres_changes", {
-                event: "INSERT", schema: "public", table: "messages",
-                filter: `workspace_id=eq.${activeWorkspaceId}`,
-            }, (payload) => {
-                const msg = payload.new;
-                if (msg.sender_id === user.id) return;
-                showToast({
-                    type: "info",
-                    title: msg.sender_name,
-                    message: msg.body,
-                    onClick: () => navigate("/messages"),
-                });
-            })
-            .subscribe();
+        if (!messagesSeededRef.current) {
+            messages.forEach((msg) => seenMessageIdsRef.current.add(msg.id));
+            messagesSeededRef.current = true;
+            return;
+        }
 
-        return () => { supabase.removeChannel(channel); };
-    }, [isGuest, activeWorkspaceId, user, inAppEnabled, showToast, navigate]);
+        messages.forEach((msg) => {
+            if (seenMessageIdsRef.current.has(msg.id)) return;
+            seenMessageIdsRef.current.add(msg.id);
+            if (msg.sender_id === user.id) return;
+            showToast({
+                type: "info",
+                title: msg.sender_name,
+                message: msg.body,
+                onClick: () => navigate("/messages"),
+            });
+        });
+    }, [messages, isGuest, activeWorkspaceId, user, inAppEnabled, showToast, navigate]);
 
     // A task gets (re)assigned to "Me"
     useEffect(() => {

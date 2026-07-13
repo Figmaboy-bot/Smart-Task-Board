@@ -9,6 +9,7 @@ import { WorkspacesProvider } from "./context/WorkspacesContext";
 import { TeamMembersProvider } from "./context/TeamMembersContext";
 import { TasksProvider } from "./context/TasksContext";
 import { ProjectsProvider } from "./context/ProjectsContext";
+import { MessagesProvider } from "./context/MessagesContext";
 import ToastContainer from "./components/Toast/ToastContainer";
 import RealtimeNotifications from "./components/RealtimeNotifications/RealtimeNotifications";
 import { BrowserRouter } from "react-router-dom";
@@ -30,9 +31,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                 <TeamMembersProvider>
                   <TasksProvider>
                     <ProjectsProvider>
-                      <ToastContainer />
-                      <RealtimeNotifications />
-                      <App />
+                      <MessagesProvider>
+                        <ToastContainer />
+                        <RealtimeNotifications />
+                        <App />
+                      </MessagesProvider>
                     </ProjectsProvider>
                   </TasksProvider>
                 </TeamMembersProvider>
