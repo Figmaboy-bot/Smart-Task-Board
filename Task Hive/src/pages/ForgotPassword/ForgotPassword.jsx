@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
-import './ForgotPassword.css'
-import '../../index.css'
+import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline"
+import "../Auth/AuthFlow.css"
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("")
@@ -26,46 +26,51 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="signup-container">
-      <div className="left-panel">
-        <img className="Signup-Image" src="/Login.jpg" alt="Forgot Password" />
+    <div className="auth-flow-page">
+      <div className="auth-flow-glow" />
+
+      <div className="auth-flow-logo">
+        <img src="/TaskHive Logo.svg" alt="TaskHive" />
       </div>
 
-      <div className="right-panel">
-        <div className="logo-container">
-          <img className="logo-icon" src="/TaskHive Logo.svg" alt="Logo" />
+      <div className="auth-flow-card">
+        <Link to="/login" className="auth-flow-back" aria-label="Back to login">
+          <ArrowLeftIcon />
+        </Link>
+
+        <div className="auth-flow-heading">
+          <h1>Forgot Password</h1>
+          <p>Enter your email and we'll send you a reset code.</p>
         </div>
 
-        <div className="form-wrapper">
-          <div className="header-section">
-            <h1 className="title">Forgot Password</h1>
-            <p className="subtitle">Enter your email and we'll send you a reset code.</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="form-fields">
-            <div className="form-group">
-              <label className="form-label">Email</label>
+        <div className="auth-flow-body">
+          <form onSubmit={handleSubmit} className="auth-flow-form">
+            <div className="auth-flow-field-group">
+              <label htmlFor="forgot-password-email">Email</label>
               <input
+                id="forgot-password-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter Email"
-                className="form-input"
                 required
+                autoFocus
               />
             </div>
 
-            {error && <p className="error-text">{error}</p>}
+            {error && <p className="auth-flow-error">{error}</p>}
 
-            <button type="submit" className="submit-button" disabled={loading}>
-              {loading ? "Sending…" : "Send Reset Code"}
+            <button type="submit" className="auth-flow-primary-button" disabled={loading}>
+              <span>{loading ? "Sending…" : "Send Reset Code"}</span>
+              {!loading && <ArrowRightIcon />}
             </button>
           </form>
-
-          <p className="login-link">
-            Remember your password? <Link to="/login">Login Here</Link>
-          </p>
         </div>
+      </div>
+
+      <div className="auth-flow-footer">
+        <span>Terms &amp; Conditions</span>
+        <span>Privacy Policy</span>
       </div>
     </div>
   )
