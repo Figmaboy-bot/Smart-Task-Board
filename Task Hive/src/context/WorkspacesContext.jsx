@@ -32,6 +32,7 @@ export function WorkspacesProvider({ children }) {
         if (isGuest) {
             setWorkspaces([]);
             setActiveWorkspaceIdState(null);
+            setNeedsOnboarding(false);
             setLoading(false);
             return;
         }
@@ -115,6 +116,7 @@ export function WorkspacesProvider({ children }) {
             if (cancelled) return;
 
             setWorkspaces(rows);
+            setNeedsOnboarding(rows.length === 0);
             const key = storageKey(user.id);
             const stored = key ? localStorage.getItem(key) : null;
             const validStored = rows.find((w) => w.id === stored);
@@ -124,6 +126,8 @@ export function WorkspacesProvider({ children }) {
 
         return () => { cancelled = true };
     }, [user, isGuest]);
+
+    const completeOnboarding = useCallback(() => setNeedsOnboarding(false), []);
 
     const createWorkspace = useCallback(async (name, size) => {
         const trimmed = name.trim();
@@ -325,6 +329,8 @@ export function WorkspacesProvider({ children }) {
             activeWorkspaceId,
             activeWorkspace,
             loading,
+            needsOnboarding,
+            completeOnboarding,
             setActiveWorkspaceId,
             createWorkspace,
             inviteToWorkspace,
