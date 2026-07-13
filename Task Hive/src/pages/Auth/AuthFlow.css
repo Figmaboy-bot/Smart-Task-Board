@@ -73,7 +73,7 @@
 }
 
 .auth-flow-heading h1 {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 500;
   color: #000000;
   letter-spacing: -0.9px;
@@ -127,15 +127,16 @@
 
 .auth-flow-google {
   width: 100%;
-  height: 59px;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 8px;
+  padding: 16px 20px;
   background: #ffffff;
   border: none;
   border-radius: 100px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  background-color: #F3F4F6;
   cursor: pointer;
   font-size: 1rem;
   color: #000000;
@@ -269,7 +270,7 @@
 .auth-flow-disclaimer {
   width: 100%;
   text-align: center;
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #6a7282;
   letter-spacing: -0.6px;
   line-height: 24px;
