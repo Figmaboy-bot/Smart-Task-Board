@@ -294,7 +294,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: #6a7282;
   cursor: pointer;
 }
@@ -302,13 +302,14 @@
 .auth-flow-checkbox input {
   width: 20px;
   height: 20px;
+  border-radius: 4px;
   accent-color: #826af6;
   cursor: pointer;
 }
 
 .auth-flow-link {
   color: #826af6;
-  font-size: 1.25rem;
+  font-size: 1rem;
   text-decoration: none;
   background: none;
   border: none;

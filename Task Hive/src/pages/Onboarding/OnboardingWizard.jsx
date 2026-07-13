@@ -24,6 +24,12 @@ const ROLE_OPTIONS = [
 
 const WORKSPACE_SIZES = ["Just Me", "2-10 people", "11-50 people", "50+"]
 
+// Mirrors WorkspacesContext's onboardingProgressKey - kept local since that
+// module can only export components (react-refresh/only-export-components).
+function onboardingProgressKey(userId) {
+  return userId ? `onboardingInProgress:${userId}` : null
+}
+
 function slugify(name) {
   return name
     .trim()
@@ -69,6 +75,15 @@ export default function OnboardingWizard() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
+
+  // Marks the wizard as in-progress so a page refresh (e.g. right after the
+  // workspace step succeeds, before the invite/ready steps) doesn't get read
+  // as "onboarding done" by WorkspacesContext just because a workspace now
+  // exists. Cleared by completeOnboarding/redeemInviteLink.
+  useEffect(() => {
+    const key = onboardingProgressKey(user?.id)
+    if (key) localStorage.setItem(key, "1")
+  }, [user?.id])
 
   useEffect(() => {
     if (!roleMenuOpen) return

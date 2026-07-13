@@ -6,6 +6,14 @@ function storageKey(userId) {
     return userId ? `activeWorkspaceId:${userId}` : null;
 }
 
+// Set the moment OnboardingWizard mounts, cleared on completeOnboarding/
+// redeemInviteLink. Lets the "has the user finished onboarding" decision
+// survive a page refresh mid-wizard, when workspace count alone can't be
+// trusted (see onboardingProgressKey usage below).
+function onboardingProgressKey(userId) {
+    return userId ? `onboardingInProgress:${userId}` : null;
+}
+
 const WorkspacesContext = createContext(null);
 
 // Real multi-tenant workspaces: every other data context reads
@@ -17,9 +25,17 @@ export function WorkspacesProvider({ children }) {
     const [workspaces, setWorkspaces] = useState([]);
     const [activeWorkspaceId, setActiveWorkspaceIdState] = useState(null);
     const [loading, setLoading] = useState(!isGuest);
+    // Surfaced instead of guessing needsOnboarding when the load below fails:
+    // guessing false would strand a brand-new user outside the wizard with
+    // no workspace, guessing true would wrongly send an existing user (whose
+    // workspaces we just failed to fetch) into the wizard and risk them
+    // creating a duplicate workspace.
+    const [loadError, setLoadError] = useState(false);
     // Decided once per login (not re-derived from `workspaces`), so creating
     // the first workspace mid-wizard doesn't yank the user out of onboarding
-    // before they've finished the invite/ready steps.
+    // before they've finished the invite/ready steps. Also kept true across
+    // a page refresh via onboardingProgressKey, since workspace count alone
+    // flips to "done" the moment the wizard's own workspace step succeeds.
     const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
     const setActiveWorkspaceId = useCallback((id) => {
@@ -33,12 +49,14 @@ export function WorkspacesProvider({ children }) {
             setWorkspaces([]);
             setActiveWorkspaceIdState(null);
             setNeedsOnboarding(false);
+            setLoadError(false);
             setLoading(false);
             return;
         }
 
         let cancelled = false;
         setLoading(true);
+        setLoadError(false);
 
         (async () => {
             // On a cold page load this can race supabase-js's own auth-token
@@ -62,6 +80,7 @@ export function WorkspacesProvider({ children }) {
             if (error) {
                 console.error("Failed to load workspaces:", error);
                 setWorkspaces([]);
+                setLoadError(true);
                 setLoading(false);
                 return;
             }
@@ -116,7 +135,9 @@ export function WorkspacesProvider({ children }) {
             if (cancelled) return;
 
             setWorkspaces(rows);
-            setNeedsOnboarding(rows.length === 0);
+            const progressKey = onboardingProgressKey(user.id);
+            const wizardInProgress = progressKey && localStorage.getItem(progressKey) === "1";
+            setNeedsOnboarding(rows.length === 0 || wizardInProgress);
             const key = storageKey(user.id);
             const stored = key ? localStorage.getItem(key) : null;
             const validStored = rows.find((w) => w.id === stored);
@@ -135,7 +156,11 @@ export function WorkspacesProvider({ children }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id, isGuest]);
 
-    const completeOnboarding = useCallback(() => setNeedsOnboarding(false), []);
+    const completeOnboarding = useCallback(() => {
+        setNeedsOnboarding(false);
+        const key = onboardingProgressKey(user?.id);
+        if (key) localStorage.removeItem(key);
+    }, [user]);
 
     const createWorkspace = useCallback(async (name, size) => {
         const trimmed = name.trim();
@@ -306,8 +331,10 @@ export function WorkspacesProvider({ children }) {
         setWorkspaces((prev) => (prev.some((w) => w.id === joined.id) ? prev : [...prev, joined]));
         setActiveWorkspaceId(joined.id);
         setNeedsOnboarding(false);
+        const key = onboardingProgressKey(user?.id);
+        if (key) localStorage.removeItem(key);
         return joined;
-    }, [setActiveWorkspaceId]);
+    }, [setActiveWorkspaceId, user]);
 
     const inviteToWorkspace = useCallback(async ({ email, role }, workspaceId) => {
         const targetWorkspaceId = workspaceId || activeWorkspaceId;
@@ -347,6 +374,7 @@ export function WorkspacesProvider({ children }) {
             activeWorkspaceId,
             activeWorkspace,
             loading,
+            loadError,
             needsOnboarding,
             completeOnboarding,
             setActiveWorkspaceId,

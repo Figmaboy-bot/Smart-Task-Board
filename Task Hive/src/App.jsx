@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
+import { ArrowPathIcon } from "@heroicons/react/24/outline"
 import AuthFlow from "./pages/Auth/AuthFlow"
 import Dashboard from "./pages/Dashboard/Dashboard"
 import MyTasks from "./pages/MyTasks/MyTasks"
@@ -19,7 +20,7 @@ import OnboardingWizard from "./pages/Onboarding/OnboardingWizard"
 
 function ProtectedRoute({ children }) {
   const { user, isInitialized, mfaRequired } = useAuth()
-  const { loading: workspacesLoading, needsOnboarding } = useWorkspaces()
+  const { loading: workspacesLoading, loadError: workspacesError, needsOnboarding } = useWorkspaces()
   const location = useLocation()
   if (!isInitialized) return null
   if (!user) return <Navigate to="/login" />
@@ -33,6 +34,31 @@ function ProtectedRoute({ children }) {
       return <Navigate to="/login" />
     }
     if (workspacesLoading) return null
+    // Don't guess needsOnboarding when the workspace fetch itself failed:
+    // defaulting to "no" would strand a brand-new user with no workspace,
+    // defaulting to "yes" risks nudging an existing user into recreating one.
+    if (workspacesError) {
+      return (
+        <div className="auth-flow-page">
+          <div className="auth-flow-glow" />
+          <div className="auth-flow-logo">
+            <img src="/TaskHive Logo.svg" alt="TaskHive" />
+          </div>
+          <div className="auth-flow-card">
+            <div className="auth-flow-heading">
+              <h1>Couldn't load your workspaces</h1>
+              <p>Something went wrong reaching TaskHive. Check your connection and try again.</p>
+            </div>
+            <div className="auth-flow-body">
+              <button type="button" className="auth-flow-primary-button" onClick={() => window.location.reload()}>
+                <span>Retry</span>
+                <ArrowPathIcon />
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    }
     const pendingInviteToken = localStorage.getItem("pendingInviteToken")
     if (pendingInviteToken && !location.pathname.startsWith("/join/")) {
       return <Navigate to={`/join/${pendingInviteToken}`} />
