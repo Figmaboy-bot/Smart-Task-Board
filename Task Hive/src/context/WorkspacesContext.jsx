@@ -1,14 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "./AuthContext";
 
 function storageKey(userId) {
     return userId ? `activeWorkspaceId:${userId}` : null;
-}
-
-function defaultNameFor(email) {
-    const prefix = (email || "My").split("@")[0];
-    return `${prefix}'s Workspace`;
 }
 
 const WorkspacesContext = createContext(null);
@@ -22,7 +17,6 @@ export function WorkspacesProvider({ children }) {
     const [workspaces, setWorkspaces] = useState([]);
     const [activeWorkspaceId, setActiveWorkspaceIdState] = useState(null);
     const [loading, setLoading] = useState(!isGuest);
-    const provisioning = useRef(false);
 
     const setActiveWorkspaceId = useCallback((id) => {
         setActiveWorkspaceIdState(id);
@@ -109,44 +103,10 @@ export function WorkspacesProvider({ children }) {
                 }
             }
 
-            // A signed-up user with no workspace yet (first login, or an
-            // account that somehow lost membership) gets a personal
-            // workspace provisioned automatically so the app is never stuck
-            // with nothing to show. Skipped when a workspace-invite-link
-            // redemption is pending, so a brand-new user who signed up via
-            // an invite link joins that workspace instead of also getting
-            // an unwanted empty one.
-            if (rows.length === 0 && !provisioning.current && !localStorage.getItem("pendingInviteToken")) {
-                provisioning.current = true;
-                try {
-                    const name = defaultNameFor(user.email);
-                    const { data: workspace, error: wsError } = await supabase
-                        .from("workspaces")
-                        .insert({ name, created_by: user.id })
-                        .select()
-                        .single();
-                    if (wsError) throw wsError;
-
-                    const { error: memberError } = await supabase
-                        .from("workspace_members")
-                        .insert({ workspace_id: workspace.id, user_id: user.id, email: user.email, role: "Owner" });
-                    if (memberError) throw memberError;
-
-                    await supabase.from("team_members").insert({
-                        workspace_id: workspace.id,
-                        name: defaultNameFor(user.email).replace("'s Workspace", ""),
-                        email: user.email,
-                        role: "Owner",
-                        status: "Active",
-                    });
-
-                    rows = [{ id: workspace.id, name: workspace.name, role: "Owner" }];
-                } catch (provisionError) {
-                    console.error("Failed to provision a default workspace:", provisionError);
-                } finally {
-                    provisioning.current = false;
-                }
-            }
+            // A signed-up user with no workspace yet gets the onboarding
+            // wizard (see OnboardingWizard / ProtectedRoute) instead of a
+            // workspace provisioned silently here - it's the wizard's own
+            // "Create your workspace" step that creates the first one.
 
             if (cancelled) return;
 
@@ -161,13 +121,13 @@ export function WorkspacesProvider({ children }) {
         return () => { cancelled = true };
     }, [user, isGuest]);
 
-    const createWorkspace = useCallback(async (name) => {
+    const createWorkspace = useCallback(async (name, size) => {
         const trimmed = name.trim();
         if (!trimmed) return null;
 
         const { data: workspace, error } = await supabase
             .from("workspaces")
-            .insert({ name: trimmed, created_by: user.id })
+            .insert({ name: trimmed, created_by: user.id, size: size || null })
             .select()
             .single();
         if (error) throw error;
