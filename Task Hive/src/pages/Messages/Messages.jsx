@@ -131,6 +131,9 @@ export default function Messages() {
                                         <div key={msg.id} className={`chat-message${isMe ? " chat-message-me" : " chat-message-them"}`}>
                                             <div className={`chat-message-bubble${isMe ? " chat-message-bubble-me" : " chat-message-bubble-them"}`}>
                                                 {!isMe && <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{msg.sender_name}</div>}
+                                                {msg.attachment_url && (
+                                                    <ChatAttachment url={msg.attachment_url} name={msg.attachment_name} type={msg.attachment_type} />
+                                                )}
                                                 {msg.body}
                                                 <div className={`chat-message-time${isMe ? " chat-message-time-me" : " chat-message-time-them"}`}>{formatTime(msg.created_at, preferences)}</div>
                                             </div>
@@ -142,6 +145,21 @@ export default function Messages() {
                         </div>
 
                         <div className="chat-input-bar">
+                            {attachError && <p className="chat-attach-error">{attachError}</p>}
+                            {pendingAttachment && (
+                                <div className="chat-pending-attachment">
+                                    <DocumentIcon className="chat-pending-attachment-icon" />
+                                    <span className="chat-pending-attachment-name">{pendingAttachment.name}</span>
+                                    <button
+                                        type="button"
+                                        className="chat-pending-attachment-remove"
+                                        onClick={() => setPendingAttachment(null)}
+                                        aria-label="Remove attachment"
+                                    >
+                                        <XMarkIcon />
+                                    </button>
+                                </div>
+                            )}
                             <div className="chat-input-top">
                                 <input
                                     type="text"
@@ -151,10 +169,25 @@ export default function Messages() {
                                     onChange={(e) => setDraft(e.target.value)}
                                     onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
                                 />
-                                <button className="chat-send-btn" onClick={handleSend}>Send</button>
+                                <button className="chat-send-btn" onClick={handleSend} disabled={uploading}>Send</button>
                             </div>
                             <div className="chat-input-bottom">
-                                <div />
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: "none" }}
+                                    accept="image/*,audio/*,.pdf,.doc,.docx,.txt,.csv,.xlsx,.zip"
+                                    onChange={handleFilePick}
+                                />
+                                <button
+                                    type="button"
+                                    className="chat-form-btn"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={uploading}
+                                >
+                                    <PaperClipIcon className="chat-input-bottom-left-icon" aria-hidden="true" />
+                                    {uploading ? "Uploading…" : "Attach"}
+                                </button>
                                 <button className="chat-form-btn" onClick={() => setShowTaskModal(true)}>
                                     <PlusIcon className="chat-input-bottom-left-icon" aria-hidden="true" /> Create task
                                 </button>
