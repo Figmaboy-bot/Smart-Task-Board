@@ -1,9 +1,27 @@
 import React from "react";
 import "./EditableTable.css";
-import { EllipsisHorizontalCircleIcon, CheckIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EllipsisHorizontalCircleIcon, CheckIcon, TrashIcon, InboxIcon } from "@heroicons/react/24/outline";
+import EmptyState from "../EmptyState/EmptyState";
 
-export default function EditableTable({ columns = [], data = [], onRowClick, onRowAction, onBulkDelete }) {
+export default function EditableTable({
+  columns = [],
+  data = [],
+  onRowClick,
+  onRowAction,
+  onBulkDelete,
+  emptyIcon = InboxIcon,
+  emptyTitle = "Nothing here yet",
+  emptyDescription = "",
+}) {
   const tableData = Array.isArray(data) ? data : [];
+
+  if (tableData.length === 0) {
+    return (
+      <div className="users-table">
+        <EmptyState icon={emptyIcon} title={emptyTitle} description={emptyDescription} />
+      </div>
+    );
+  }
   const [checkedRows, setCheckedRows] = React.useState([]);
   const [checkAll, setCheckAll] = React.useState(false);
   const getPercentWidth = (col) => {

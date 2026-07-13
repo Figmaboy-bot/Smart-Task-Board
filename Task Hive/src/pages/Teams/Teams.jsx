@@ -5,7 +5,7 @@ import IconButton from "../../components/Buttons/Buttons";
 import OutlineButton from "../../components/Buttons/Buttons";
 import AddTeamModal from "../../components/AddTeamModal/AddTeamModal";
 import Dropdown from "../../components/Dropdown/Dropdown";
-import { PlusCircleIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, FunnelIcon, UserGroupIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
 import { useTeamMembers } from "../../hooks/useTeamMembers";
 import { useAuth } from "../../context/AuthContext";
@@ -49,6 +49,8 @@ export default function Teams() {
                 img: m.avatar_url || "/Icons/default-profile.svg",
             }));
     }, [teamMembers, search, roleFilter, statusFilter]);
+
+    const filtersActive = Boolean(search.trim()) || (roleFilter && roleFilter !== "all") || (statusFilter && statusFilter !== "all");
 
     const handleRemoveMember = (row) => {
         if (row.email && row.email === user?.email) {
@@ -143,7 +145,14 @@ export default function Teams() {
                         {loading ? (
                             <p>Loading team members…</p>
                         ) : (
-                            <EditableTable columns={columns} data={rows} onRowAction={handleRemoveMember} />
+                            <EditableTable
+                                columns={columns}
+                                data={rows}
+                                onRowAction={handleRemoveMember}
+                                emptyIcon={filtersActive ? MagnifyingGlassIcon : UserGroupIcon}
+                                emptyTitle={filtersActive ? "No members match your filters" : "No team members yet"}
+                                emptyDescription={filtersActive ? "Try adjusting your search or filters." : "Add your first team member to get started."}
+                            />
                         )}
                     </div>
                 </div>
