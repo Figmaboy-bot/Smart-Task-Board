@@ -69,12 +69,6 @@ export default function OnboardingWizard() {
     if (profile?.role) setRole(profile.role)
   }, [profile])
 
-  useEffect(() => {
-    if (!workspaceName && user?.email) {
-      setWorkspaceName(`${user.email.split("@")[0]}'s Workspace`)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
 
   // Marks the wizard as in-progress so a page refresh (e.g. right after the
   // workspace step succeeds, before the invite/ready steps) doesn't get read
@@ -136,6 +130,7 @@ export default function OnboardingWizard() {
         last_name: lastName.trim(),
         role: role || null,
       })
+      if (!workspaceName) setWorkspaceName(`${firstName.trim()}'s Workspace`)
       setStep("workspace")
     } catch (err) {
       setError(err.message || "Failed to save your profile. Please try again.")

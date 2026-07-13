@@ -82,7 +82,7 @@
 }
 
 .auth-flow-heading p {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 400;
   color: #6a7282;
   letter-spacing: -0.6px;
@@ -321,7 +321,7 @@
 }
 
 .auth-flow-resend {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   color: #6a7282;
 }
 
@@ -632,6 +632,7 @@
 .onboarding-add-another {
   display: flex;
   align-items: center;
+  align-self: flex-start;
   gap: 6px;
   padding: 12px 20px;
   border: 1px solid #826af6;

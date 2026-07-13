@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
         subject: `${inviterLabel} invited you to ${workspaceName} on TaskHive`,
         html: `
           <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; color: #020617;">
-            <p style="font-size: 20px; font-weight: 600; margin: 0 0 24px;">TaskHive</p>
+            <img src="${SITE_URL}/taskhive-logo-email.png" alt="TaskHive" width="130" height="32" style="display: block; margin: 0 0 24px;" />
             <h2 style="font-size: 22px; font-weight: 600; margin: 0 0 12px;">You're invited to ${workspaceName}</h2>
             <p style="font-size: 15px; color: #6a7282; line-height: 1.5; margin: 0 0 28px;">
               ${inviterLabel} has invited you to join their workspace on TaskHive. Sign up or log in with this email address (${email}) to join automatically.
