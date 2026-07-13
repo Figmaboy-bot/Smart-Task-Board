@@ -70,8 +70,9 @@
 
 .form-input {
   width: 100%;
+  box-sizing: border-box;
   padding: 0.75rem 1rem;
-  background-color: var(--color-whiteß);
+  background-color: var(--color-white);
   border: 1px solid var(--grey-30);
   border-radius: 0.5rem;
   font-size: 0.8rem;

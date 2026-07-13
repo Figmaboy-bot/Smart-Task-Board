@@ -82,6 +82,18 @@
     vertical-align: middle;
 }
 
+/* Defined before .header-radius-left further down so that rule's
+   width/height: 100% wins the cascade on the header checkbox's div (which
+   carries both classes) - it needs to fill and center within its <th>,
+   not collapse to a fixed 20x20 box like the plain body-row wrapper does. */
+.checkbox-wrapper {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
 .checkbox-checkmark {
     position: absolute;
     left: 50%;
@@ -155,6 +167,8 @@ td, th {
     min-width: 40px;
     text-align: center;
     vertical-align: middle;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
     background: var(--grey-10);
     height: 42px;
     padding: 0;
@@ -193,20 +207,12 @@ td, th {
 .header-radius-left {
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .header-radius-right {
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
-}
-
-.checkbox-wrapper {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    margin: 0;
-    flex-shrink: 0;
 }
 
 .table-checkbox {
