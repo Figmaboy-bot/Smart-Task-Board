@@ -297,6 +297,7 @@ export function WorkspacesProvider({ children }) {
         const joined = { id: row.out_workspace_id, name: row.out_workspace_name, role: "Member" };
         setWorkspaces((prev) => (prev.some((w) => w.id === joined.id) ? prev : [...prev, joined]));
         setActiveWorkspaceId(joined.id);
+        setNeedsOnboarding(false);
         return joined;
     }, [setActiveWorkspaceId]);
 

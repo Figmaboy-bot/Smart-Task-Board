@@ -19,7 +19,7 @@ import OnboardingWizard from "./pages/Onboarding/OnboardingWizard"
 
 function ProtectedRoute({ children }) {
   const { user, isInitialized, mfaRequired } = useAuth()
-  const { loading: workspacesLoading, workspaces } = useWorkspaces()
+  const { loading: workspacesLoading, needsOnboarding } = useWorkspaces()
   const location = useLocation()
   if (!isInitialized) return null
   if (!user) return <Navigate to="/login" />
@@ -37,7 +37,7 @@ function ProtectedRoute({ children }) {
     if (pendingInviteToken && !location.pathname.startsWith("/join/")) {
       return <Navigate to={`/join/${pendingInviteToken}`} />
     }
-    if (workspaces.length === 0) return <OnboardingWizard />
+    if (needsOnboarding) return <OnboardingWizard />
   }
   return children
 }
