@@ -15,7 +15,7 @@ import ResetPassword from "./pages/ResetPassword/ResetPassword"
 import JoinWorkspace from "./pages/JoinWorkspace/JoinWorkspace"
 import { useAuth } from "./context/AuthContext"
 import { useWorkspaces } from "./context/WorkspacesContext"
-import WorkspaceOnboarding from "./components/WorkspaceOnboarding/WorkspaceOnboarding"
+import OnboardingWizard from "./pages/Onboarding/OnboardingWizard"
 
 function ProtectedRoute({ children }) {
   const { user, isInitialized, mfaRequired } = useAuth()
@@ -30,7 +30,7 @@ function ProtectedRoute({ children }) {
     if (pendingInviteToken && !location.pathname.startsWith("/join/")) {
       return <Navigate to={`/join/${pendingInviteToken}`} />
     }
-    if (workspaces.length === 0) return <WorkspaceOnboarding />
+    if (workspaces.length === 0) return <OnboardingWizard />
   }
   return children
 }
@@ -44,6 +44,7 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/join/:token" element={<JoinWorkspace />} />
+      <Route path="/onboarding-preview" element={<OnboardingWizard />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/my-tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
       <Route path="/all-tasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />
