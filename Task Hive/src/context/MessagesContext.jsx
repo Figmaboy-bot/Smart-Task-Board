@@ -69,10 +69,12 @@ export function MessagesProvider({ children }) {
         };
     }, [user, isGuest, activeWorkspaceId]);
 
-    // attachment is the shape returned by uploadAttachment: { url, name, type, size }.
-    const sendMessage = useCallback(async (body, attachment) => {
+    // attachments is an array of the shape returned by uploadAttachment:
+    // { url, name, type, size }.
+    const sendMessage = useCallback(async (body, attachments) => {
         const trimmed = body.trim();
-        if (!trimmed && !attachment) return null;
+        const files = attachments?.length ? attachments : [];
+        if (!trimmed && files.length === 0) return null;
 
         if (isGuest) {
             const localMessage = {
@@ -81,10 +83,7 @@ export function MessagesProvider({ children }) {
                 sender_name: "You",
                 body: trimmed,
                 created_at: new Date().toISOString(),
-                attachment_url: attachment?.url ?? null,
-                attachment_name: attachment?.name ?? null,
-                attachment_type: attachment?.type ?? null,
-                attachment_size: attachment?.size ?? null,
+                attachments: files,
             };
             setMessages((prev) => [...prev, localMessage]);
             return localMessage;
@@ -97,10 +96,7 @@ export function MessagesProvider({ children }) {
                 sender_id: user.id,
                 sender_name: senderNameFromEmail(user.email),
                 body: trimmed,
-                attachment_url: attachment?.url ?? null,
-                attachment_name: attachment?.name ?? null,
-                attachment_type: attachment?.type ?? null,
-                attachment_size: attachment?.size ?? null,
+                attachments: files,
             })
             .select()
             .single();

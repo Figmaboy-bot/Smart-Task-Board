@@ -33,6 +33,24 @@
     gap: 0.5rem;
 }
 
+.filter-popover-anchor {
+    position: relative;
+}
+
+.team-filter-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 20;
+    display: flex;
+    gap: 0.5rem;
+    background: var(--color-white);
+    border: 1px solid var(--grey-20);
+    border-radius: 8px;
+    padding: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 /* All table-cell/row/header styling lives in EditableTable.css - it's a
    shared component used by other pages too, not just Teams. */
 .tb-hd-bg {

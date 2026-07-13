@@ -52,7 +52,7 @@ export default function Messages() {
 
     const [showTaskModal, setShowTaskModal] = useState(false);
     const [draft, setDraft] = useState("");
-    const [pendingAttachment, setPendingAttachment] = useState(null);
+    const [pendingAttachments, setPendingAttachments] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [attachError, setAttachError] = useState("");
     const messagesEndRef = useRef(null);
@@ -63,26 +63,30 @@ export default function Messages() {
     }, [messages]);
 
     const handleSend = () => {
-        if (!draft.trim() && !pendingAttachment) return;
-        sendMessage(draft, pendingAttachment);
+        if (!draft.trim() && pendingAttachments.length === 0) return;
+        sendMessage(draft, pendingAttachments);
         setDraft("");
-        setPendingAttachment(null);
+        setPendingAttachments([]);
     };
 
     const handleFilePick = async (e) => {
-        const file = e.target.files?.[0];
+        const files = [...(e.target.files || [])];
         e.target.value = "";
-        if (!file) return;
+        if (files.length === 0) return;
         setAttachError("");
         setUploading(true);
         try {
-            const attachment = await uploadAttachment(file);
-            setPendingAttachment(attachment);
+            const uploaded = await Promise.all(files.map((file) => uploadAttachment(file)));
+            setPendingAttachments((prev) => [...prev, ...uploaded]);
         } catch (err) {
             setAttachError(err.message || "Failed to upload file.");
         } finally {
             setUploading(false);
         }
+    };
+
+    const removePendingAttachment = (index) => {
+        setPendingAttachments((prev) => prev.filter((_, i) => i !== index));
     };
 
     const handleAddTask = (task) => {
@@ -131,9 +135,9 @@ export default function Messages() {
                                         <div key={msg.id} className={`chat-message${isMe ? " chat-message-me" : " chat-message-them"}`}>
                                             <div className={`chat-message-bubble${isMe ? " chat-message-bubble-me" : " chat-message-bubble-them"}`}>
                                                 {!isMe && <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{msg.sender_name}</div>}
-                                                {msg.attachment_url && (
-                                                    <ChatAttachment url={msg.attachment_url} name={msg.attachment_name} type={msg.attachment_type} />
-                                                )}
+                                                {msg.attachments?.map((att, i) => (
+                                                    <ChatAttachment key={att.url || i} url={att.url} name={att.name} type={att.type} />
+                                                ))}
                                                 {msg.body}
                                                 <div className={`chat-message-time${isMe ? " chat-message-time-me" : " chat-message-time-them"}`}>{formatTime(msg.created_at, preferences)}</div>
                                             </div>
@@ -146,18 +150,22 @@ export default function Messages() {
 
                         <div className="chat-input-bar">
                             {attachError && <p className="chat-attach-error">{attachError}</p>}
-                            {pendingAttachment && (
-                                <div className="chat-pending-attachment">
-                                    <DocumentIcon className="chat-pending-attachment-icon" />
-                                    <span className="chat-pending-attachment-name">{pendingAttachment.name}</span>
-                                    <button
-                                        type="button"
-                                        className="chat-pending-attachment-remove"
-                                        onClick={() => setPendingAttachment(null)}
-                                        aria-label="Remove attachment"
-                                    >
-                                        <XMarkIcon />
-                                    </button>
+                            {pendingAttachments.length > 0 && (
+                                <div className="chat-pending-attachments">
+                                    {pendingAttachments.map((att, i) => (
+                                        <div className="chat-pending-attachment" key={att.url || i}>
+                                            <DocumentIcon className="chat-pending-attachment-icon" />
+                                            <span className="chat-pending-attachment-name">{att.name}</span>
+                                            <button
+                                                type="button"
+                                                className="chat-pending-attachment-remove"
+                                                onClick={() => removePendingAttachment(i)}
+                                                aria-label="Remove attachment"
+                                            >
+                                                <XMarkIcon />
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                             <div className="chat-input-top">

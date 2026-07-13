@@ -111,12 +111,32 @@ export default function Teams() {
                     <div className="team-top-content">
                         <h2>Teams Page</h2>
                         <div className="top-buttons">
-                            <OutlineButton
-                                icon={FunnelIcon}
-                                text="Filter"
-                                className={`Outline-Button Add-Task${showFilters ? " active" : ""}`}
-                                onClick={() => setShowFilters((v) => !v)}
-                            />
+                            <div className="filter-popover-anchor">
+                                <OutlineButton
+                                    icon={FunnelIcon}
+                                    text="Filter"
+                                    className={`Outline-Button Add-Task${showFilters ? " active" : ""}`}
+                                    onClick={() => setShowFilters((v) => !v)}
+                                />
+                                {showFilters && (
+                                    <div className="team-filter-popover">
+                                        <Dropdown
+                                            options={roleOptions}
+                                            value={roleFilter}
+                                            onChange={setRoleFilter}
+                                            placeholder="All Roles"
+                                            className="custom-select"
+                                        />
+                                        <Dropdown
+                                            options={STATUS_OPTIONS}
+                                            value={statusFilter}
+                                            onChange={setStatusFilter}
+                                            placeholder="All Statuses"
+                                            className="custom-select"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                             <IconButton
                                 icon={PlusCircleIcon}
                                 text="Add Team"
@@ -125,24 +145,6 @@ export default function Teams() {
                             />
                         </div>
                     </div>
-                    {showFilters && (
-                        <div className="tasks-filter-options" style={{ margin: "0 0 1rem" }}>
-                            <Dropdown
-                                options={roleOptions}
-                                value={roleFilter}
-                                onChange={setRoleFilter}
-                                placeholder="All Roles"
-                                className="custom-select"
-                            />
-                            <Dropdown
-                                options={STATUS_OPTIONS}
-                                value={statusFilter}
-                                onChange={setStatusFilter}
-                                placeholder="All Statuses"
-                                className="custom-select"
-                            />
-                        </div>
-                    )}
                     <div>
                         {loading ? (
                             <p>Loading team members…</p>
