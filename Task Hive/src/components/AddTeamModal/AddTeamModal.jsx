@@ -18,9 +18,13 @@ export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [],
 		if (open) {
 			setSelectedWorkspaceIds(activeWorkspaceId ? [activeWorkspaceId] : []);
 			setAllWorkspaces(false);
-			setErrors({});
 		}
 	}, [open, activeWorkspaceId]);
+
+	const handleClose = () => {
+		setErrors({});
+		onClose();
+	};
 
 	const toggleWorkspace = (id) => {
 		setSelectedWorkspaceIds((prev) => (
@@ -44,7 +48,7 @@ export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [],
 			<div className="task-modal">
 				<div className="task-modal-header">
 					<h3>Add New Team Member</h3>
-					<button className="task-modal-close" onClick={onClose}><XMarkIcon className="task-modal-close-icon" /></button>
+					<button className="task-modal-close" onClick={handleClose}><XMarkIcon className="task-modal-close-icon" /></button>
 				</div>
 				<form
 					noValidate
@@ -188,7 +192,7 @@ export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [],
 							</div>
 						)}
 						<div className="create-task-button">
-							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>
+							<button type="button" className="task-modal-submit close-task-button" onClick={handleClose}>Cancel</button>
 							<button type="submit" className="task-modal-submit" disabled={!canSubmit}>Add team member</button>
 						</div>
 					</div>

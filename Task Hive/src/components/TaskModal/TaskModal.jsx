@@ -17,9 +17,10 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 	const [links, setLinks] = useState(initialTask?.rawLinks?.length ? initialTask.rawLinks : ['']);
 	const [errors, setErrors] = useState({});
 
-	React.useEffect(() => {
-		if (open) setErrors({});
-	}, [open]);
+	const handleClose = () => {
+		setErrors({});
+		onClose();
+	};
 
 	// Convert projects prop to dropdown options
 	const projectOptions = projects.length > 0
@@ -74,7 +75,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 			<div className="task-modal">
 				<div className="task-modal-header">
 					<h3>{isEditing ? "Edit Task" : "Add New Task"}</h3>
-					<button className="task-modal-close" onClick={onClose}><XMarkIcon className="task-modal-close-icon" /></button>
+					<button className="task-modal-close" onClick={handleClose}><XMarkIcon className="task-modal-close-icon" /></button>
 				</div>
 				<form
 					noValidate
@@ -229,7 +230,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 							))}
 						</div>
 						<div className="create-task-button">
-							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>
+							<button type="button" className="task-modal-submit close-task-button" onClick={handleClose}>Cancel</button>
 							<button type="submit" className="task-modal-submit">{isEditing ? "Save Changes" : "Add Task"}</button>
 						</div>
 					</div>

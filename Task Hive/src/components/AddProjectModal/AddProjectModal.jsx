@@ -1,14 +1,15 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import './AddProjectModal.css';
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AddProjectModal({ open, onClose, onSubmit }) {
 	const [error, setError] = useState("");
 
-	useEffect(() => {
-		if (open) setError("");
-	}, [open]);
+	const handleClose = () => {
+		setError("");
+		onClose();
+	};
 
 	if (!open) return null;
 	return (
@@ -16,7 +17,7 @@ export default function AddProjectModal({ open, onClose, onSubmit }) {
 			<div className="task-modal">
 				<div className="task-modal-header">
 					<h3>Add New Project</h3>
-					<button className="task-modal-close" onClick={onClose}><XMarkIcon className="task-modal-close-icon" /></button>
+					<button className="task-modal-close" onClick={handleClose}><XMarkIcon className="task-modal-close-icon" /></button>
 				</div>
 				<form
 					noValidate
@@ -51,7 +52,7 @@ export default function AddProjectModal({ open, onClose, onSubmit }) {
 							<input name="dueDate" type="date" className="form-input" />
 						</div>
 						<div className="create-task-button">
-							<button type="button" className="task-modal-submit close-task-button" onClick={onClose}>Cancel</button>
+							<button type="button" className="task-modal-submit close-task-button" onClick={handleClose}>Cancel</button>
 							<button type="submit" className="task-modal-submit">Add Project</button>
 						</div>
 					</div>
