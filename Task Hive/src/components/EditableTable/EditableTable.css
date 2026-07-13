@@ -75,33 +75,6 @@
     background: var(--color-white);
 }
 
-.checkbox-wrapper {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    margin: 0;
-}
-
-.header-radius-left {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-content: center;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.table-checkbox {
-    width: 20px;
-    height: 20px;
-    margin: 0;
-    z-index: 1;
-    border: 1.5px solid var(--grey-30);
-    flex-wrap: nowrap;
-}
-
 .checkbox-cell {
     width: 5% !important;
     min-width: 40px;
@@ -180,7 +153,6 @@ td, th {
 .checkbox-header {
     width: 5%;
     min-width: 40px;
-    max-width: 80px;
     text-align: center;
     vertical-align: middle;
     background: var(--grey-10);
@@ -205,10 +177,14 @@ td, th {
     justify-content: flex-start;
 }
 
-.header-main {
+.header-main,
+.header-radius-left,
+.header-radius-right {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
     background: var(--color-background);
     overflow: hidden;
-    height: 100%;
     display: flex;
     align-items: center;
     padding: 14px 12px;
@@ -217,23 +193,20 @@ td, th {
 .header-radius-left {
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
-    background: var(--color-background);
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 14px 12px;
+    justify-content: center;
 }
 
 .header-radius-right {
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
-    background: var(--color-background);
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding: 14px 12px;
+}
+
+.checkbox-wrapper {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .table-checkbox {
@@ -247,6 +220,7 @@ td, th {
     outline: none;
     cursor: pointer;
     transition: border-color 0.2s;
+    flex-shrink: 0;
 }
 
 .table-checkbox:checked {
@@ -294,6 +268,7 @@ td, th {
     display: flex;
     gap: 8px;
     align-items: center;
+    width: 10%;
 }
 
 .img-member {
