@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import { useProfile } from "../../context/ProfileContext"
 import { useWorkspaces } from "../../context/WorkspacesContext"
+import { useTeamMembers } from "../../hooks/useTeamMembers"
 import {
   ArrowRightIcon,
   ArrowLeftIcon,
@@ -43,6 +44,7 @@ export default function OnboardingWizard() {
   const { user } = useAuth()
   const { profile, saveProfile, uploadAvatar } = useProfile()
   const { createWorkspace, inviteToWorkspace, completeOnboarding } = useWorkspaces()
+  const { createTeamMember } = useTeamMembers()
 
   const [step, setStep] = useState("welcome") // welcome | profile | workspace | invite | ready
   const [error, setError] = useState("")
@@ -177,7 +179,14 @@ export default function OnboardingWizard() {
     }
     setLoading(true)
     try {
-      await Promise.all(emails.map((email) => inviteToWorkspace({ email, role: "Member" })))
+      // Mirrors Teams.jsx's invite flow: a team_members row (so the invitee
+      // shows up in the Teams table right away, status "Invited") plus the
+      // workspace_invites row (the source of truth that auto-joins them and
+      // triggers the notification email).
+      await Promise.all(emails.map(async (email) => {
+        await createTeamMember({ member: email.split("@")[0], email, role: "Member", status: "Invited" })
+        await inviteToWorkspace({ email, role: "Member" })
+      }))
       setStep("ready")
     } catch (err) {
       setError(err.message || "Failed to send invitations. Please try again.")
