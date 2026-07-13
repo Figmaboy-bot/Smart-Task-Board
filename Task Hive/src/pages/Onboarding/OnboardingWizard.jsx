@@ -9,6 +9,7 @@ import {
   UserIcon,
   PlusIcon,
   XMarkIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/outline"
 import "../Auth/AuthFlow.css"
 
@@ -37,7 +38,7 @@ export default function OnboardingWizard() {
   const { profile, saveProfile, uploadAvatar } = useProfile()
   const { createWorkspace, inviteToWorkspace } = useWorkspaces()
 
-  const [step, setStep] = useState("welcome") // welcome | profile | workspace | invite | ready
+  const [step, setStep] = useState("profile") // welcome | profile | workspace | invite | ready
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -48,6 +49,8 @@ export default function OnboardingWizard() {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [role, setRole] = useState("")
+  const [roleMenuOpen, setRoleMenuOpen] = useState(false)
+  const roleMenuRef = useRef(null)
 
   const [workspaceName, setWorkspaceName] = useState("")
   const [workspaceSize, setWorkspaceSize] = useState("")
@@ -66,6 +69,17 @@ export default function OnboardingWizard() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
+
+  useEffect(() => {
+    if (!roleMenuOpen) return
+    const handleClickOutside = (e) => {
+      if (roleMenuRef.current && !roleMenuRef.current.contains(e.target)) {
+        setRoleMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [roleMenuOpen])
 
   useEffect(() => {
     return () => {
@@ -276,16 +290,36 @@ export default function OnboardingWizard() {
 
                 <div className="auth-flow-field-group">
                   <label htmlFor="onboarding-role">What's your role</label>
-                  <select
-                    id="onboarding-role"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                  >
-                    <option value="">Select your role</option>
-                    {ROLE_OPTIONS.map((r) => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
+                  <div className="onboarding-select-wrapper" ref={roleMenuRef}>
+                    <button
+                      type="button"
+                      id="onboarding-role"
+                      className={`onboarding-select-trigger${roleMenuOpen ? " open" : ""}`}
+                      onClick={() => setRoleMenuOpen((v) => !v)}
+                      aria-haspopup="listbox"
+                      aria-expanded={roleMenuOpen}
+                    >
+                      <span className={role ? "" : "onboarding-select-placeholder"}>
+                        {role || "Select your role"}
+                      </span>
+                      <ChevronDownIcon className={roleMenuOpen ? "flipped" : ""} />
+                    </button>
+                    {roleMenuOpen && (
+                      <ul className="onboarding-select-menu" role="listbox">
+                        {ROLE_OPTIONS.map((r) => (
+                          <li
+                            key={r}
+                            role="option"
+                            aria-selected={role === r}
+                            className={`onboarding-select-option${role === r ? " selected" : ""}`}
+                            onClick={() => { setRole(r); setRoleMenuOpen(false) }}
+                          >
+                            {r}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
 
                 {error && <p className="auth-flow-error">{error}</p>}

@@ -138,7 +138,9 @@ export function AuthProvider({ children }) {
   }
 
   const requestPasswordReset = async (email) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    })
     if (error) throw error
     localStorage.setItem("pendingResetEmail", email)
   }
