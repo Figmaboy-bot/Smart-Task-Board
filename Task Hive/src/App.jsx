@@ -44,7 +44,6 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/join/:token" element={<JoinWorkspace />} />
-      <Route path="/onboarding-preview" element={<OnboardingWizard />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/my-tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
       <Route path="/all-tasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />

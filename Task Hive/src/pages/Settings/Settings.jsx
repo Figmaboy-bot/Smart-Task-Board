@@ -99,7 +99,32 @@ export default function Settings() {
         navigate("/login");
     };
 
-    const { profilePic, updateProfilePic } = useProfile();
+    const { profilePic, updateProfilePic, uploadAvatar } = useProfile();
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [avatarError, setAvatarError] = useState("");
+
+    const handleAvatarChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        e.target.value = "";
+
+        if (isGuest) {
+            const reader = new FileReader();
+            reader.onload = (ev) => updateProfilePic(ev.target.result);
+            reader.readAsDataURL(file);
+            return;
+        }
+
+        setAvatarError("");
+        setUploadingAvatar(true);
+        try {
+            await uploadAvatar(file);
+        } catch (err) {
+            setAvatarError(err.message || "Failed to upload picture.");
+        } finally {
+            setUploadingAvatar(false);
+        }
+    };
     const { preferences, updatePreferences } = usePreferences();
     const [setting, setSetting] = useState("Profile");
     const settings = ["Profile", "Workspace", "Notifications", "Productivity", "Integrations", "Security", "Preferences"];
@@ -319,22 +344,18 @@ export default function Settings() {
                                         accept="image/*"
                                         id="profile-pic-input"
                                         style={{ display: "none" }}
-                                        onChange={e => {
-                                            if (e.target.files && e.target.files[0]) {
-                                                const reader = new FileReader();
-                                                reader.onload = ev => updateProfilePic(ev.target.result);
-                                                reader.readAsDataURL(e.target.files[0]);
-                                            }
-                                        }}
+                                        onChange={handleAvatarChange}
                                     />
                                     <IconButton
                                         type="button"
                                         className="change-pic-btn"
                                         onClick={() => document.getElementById("profile-pic-input").click()}
-                                        text="Change Picture"
+                                        text={uploadingAvatar ? "Uploading…" : "Change Picture"}
                                         icon={PencilIcon}
+                                        disabled={uploadingAvatar}
                                     />
                                 </div>
+                                {avatarError && <p style={{ color: "var(--error-50)" }}>{avatarError}</p>}
                             </div>
                             <label className="label">
                                 <p>Name:</p>
