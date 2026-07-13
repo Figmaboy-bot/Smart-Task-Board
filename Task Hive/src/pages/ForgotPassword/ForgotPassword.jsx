@@ -4,6 +4,8 @@ import { useAuth } from "../../context/AuthContext"
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline"
 import "../Auth/AuthFlow.css"
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function ForgotPassword() {
   const [email, setEmail] = useState("")
   const [error, setError] = useState("")
@@ -14,6 +16,14 @@ export default function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
+    if (!email.trim()) {
+      setError("Please enter your email address.")
+      return
+    }
+    if (!EMAIL_PATTERN.test(email.trim())) {
+      setError("Please enter a valid email address.")
+      return
+    }
     setLoading(true)
     try {
       await requestPasswordReset(email)
@@ -44,7 +54,7 @@ export default function ForgotPassword() {
         </div>
 
         <div className="auth-flow-body">
-          <form onSubmit={handleSubmit} className="auth-flow-form">
+          <form onSubmit={handleSubmit} className="auth-flow-form" noValidate>
             <div className="auth-flow-field-group">
               <label htmlFor="forgot-password-email">Email</label>
               <input

@@ -86,7 +86,7 @@ export default function ResetPassword() {
         <h2>Reset Password</h2>
         <p>Enter the {OTP_LENGTH}-digit code sent to your email, then choose a new password.</p>
 
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }} noValidate>
           <div className="otp-inputs">
             {otp.map((digit, i) => (
               <input

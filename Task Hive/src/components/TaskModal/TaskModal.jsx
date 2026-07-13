@@ -15,6 +15,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 	const [tag, setTag] = useState(initialTask?.tag || null);
 	const [status, setStatus] = useState(initialTask ? (COLUMN_TO_STATUS[initialTask.columnTitle] || null) : null);
 	const [links, setLinks] = useState(initialTask?.rawLinks?.length ? initialTask.rawLinks : ['']);
+	const [errors, setErrors] = useState({});
 
 	// Convert projects prop to dropdown options
 	const projectOptions = projects.length > 0
@@ -72,12 +73,21 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 					<button className="task-modal-close" onClick={onClose}><XMarkIcon className="task-modal-close-icon" /></button>
 				</div>
 				<form
+					noValidate
 					onSubmit={e => {
 						e.preventDefault();
 						const form = e.target;
 						const title = form.title.value;
 						const description = form.description.value;
 						const dueDate = form.dueDate.value;
+						const nextErrors = {};
+						if (!title.trim()) nextErrors.title = "Please enter a task title.";
+						if (!dueDate) nextErrors.dueDate = "Please choose a due date.";
+						if (Object.keys(nextErrors).length > 0) {
+							setErrors(nextErrors);
+							return;
+						}
+						setErrors({});
 						// Filter out empty links
 						const validLinks = links.filter(link => link.trim() !== '');
 						const submittedTask = {
@@ -109,6 +119,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 						<div className="task-modal-field">
 							<label>Task Title</label>
 							<input name="title" className="form-input" required placeholder="Enter Title" defaultValue={initialTask?.title || ""} />
+							{errors.title && <p className="form-field-error">{errors.title}</p>}
 						</div>
 						<div className="task-modal-field">
 							<label>Description</label>
@@ -118,6 +129,7 @@ export default function TaskModal({ open, onClose, onSubmit, projects = [], team
 							<div className="task-modal-field">
 								<label>Due Date</label>
 								<input name="dueDate" type="date" className="form-input" required placeholder="Enter Due Date" defaultValue={initialTask?.due_date || ""} />
+								{errors.dueDate && <p className="form-field-error">{errors.dueDate}</p>}
 							</div>
 							<div className="task-modal-field">
 								<label>Project</label>

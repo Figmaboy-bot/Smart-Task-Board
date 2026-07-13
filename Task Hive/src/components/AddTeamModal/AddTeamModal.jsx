@@ -5,11 +5,14 @@ import { XMarkIcon, PencilIcon } from "@heroicons/react/24/outline";
 import Dropdown from "../Dropdown/Dropdown";
 import IconButton from "../Buttons/Buttons";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function AddTeamModal({ open, onClose, onSubmit, workspaces = [], activeWorkspaceId }) {
 	const [profilePic, setProfilePic] = useState("/Icons/default-profile.svg");
 	const [status, setStatus] = useState(null);
 	const [selectedWorkspaceIds, setSelectedWorkspaceIds] = useState([]);
 	const [allWorkspaces, setAllWorkspaces] = useState(false);
+	const [errors, setErrors] = useState({});
 
 	React.useEffect(() => {
 		if (open) {

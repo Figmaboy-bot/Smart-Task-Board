@@ -122,6 +122,10 @@ export default function OnboardingWizard() {
   const handleProfileContinue = async (e) => {
     e.preventDefault()
     resetError()
+    if (!firstName.trim() || !lastName.trim()) {
+      setError("Please enter your first and last name.")
+      return
+    }
     setLoading(true)
     try {
       if (avatarFile) {
@@ -143,6 +147,10 @@ export default function OnboardingWizard() {
   const handleWorkspaceContinue = async (e) => {
     e.preventDefault()
     resetError()
+    if (!workspaceName.trim()) {
+      setError("Please enter a workspace name.")
+      return
+    }
     setLoading(true)
     try {
       await createWorkspace(workspaceName, workspaceSize || null)
@@ -248,7 +256,7 @@ export default function OnboardingWizard() {
               <p>How should we address you?</p>
             </div>
             <div className="auth-flow-body">
-              <form onSubmit={handleProfileContinue} className="auth-flow-form">
+              <form onSubmit={handleProfileContinue} className="auth-flow-form" noValidate>
                 <div className="auth-flow-field-group">
                   <label>Profile Photo</label>
                   <div className="onboarding-avatar-row">
@@ -356,7 +364,7 @@ export default function OnboardingWizard() {
               <p>How should we address you?</p>
             </div>
             <div className="auth-flow-body">
-              <form onSubmit={handleWorkspaceContinue} className="auth-flow-form">
+              <form onSubmit={handleWorkspaceContinue} className="auth-flow-form" noValidate>
                 <div className="auth-flow-field-group">
                   <label htmlFor="onboarding-workspace-name">Workspace Name</label>
                   <input

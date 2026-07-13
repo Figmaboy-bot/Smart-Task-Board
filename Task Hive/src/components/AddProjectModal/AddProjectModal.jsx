@@ -1,8 +1,10 @@
 import React from "react";
+import { useState } from "react";
 import './AddProjectModal.css';
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AddProjectModal({ open, onClose, onSubmit }) {
+	const [error, setError] = useState("");
 
 	if (!open) return null;
 	return (
@@ -13,12 +15,18 @@ export default function AddProjectModal({ open, onClose, onSubmit }) {
 					<button className="task-modal-close" onClick={onClose}><XMarkIcon className="task-modal-close-icon" /></button>
 				</div>
 				<form
+					noValidate
 					onSubmit={e => {
 						e.preventDefault();
 						const form = e.target;
 						const title = form.title.value;
 						const description = form.description.value;
 						const dueDate = form.dueDate.value;
+						if (!title.trim()) {
+							setError("Please enter a project title.");
+							return;
+						}
+						setError("");
 						onSubmit && onSubmit({ title, description, dueDate });
 						form.reset();
 						onClose();
@@ -28,6 +36,7 @@ export default function AddProjectModal({ open, onClose, onSubmit }) {
 						<div className="task-modal-field">
 							<label>Project Title</label>
 							<input name="title" className="form-input" required placeholder="Enter Title" />
+							{error && <p className="form-field-error">{error}</p>}
 						</div>
 						<div className="task-modal-field">
 							<label>Description</label>
