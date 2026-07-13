@@ -125,7 +125,15 @@ export function WorkspacesProvider({ children }) {
         })();
 
         return () => { cancelled = true };
-    }, [user, isGuest]);
+        // Keyed on user.id rather than the user object itself: Supabase
+        // hands onAuthStateChange a new object reference on every event,
+        // including background TOKEN_REFRESHED ones. Depending on the whole
+        // object re-ran this effect - and its setLoading(true) - on every
+        // refresh, which unmounts OnboardingWizard via ProtectedRoute
+        // (`if (workspacesLoading) return null`) and wipes its in-progress
+        // step state.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.id, isGuest]);
 
     const completeOnboarding = useCallback(() => setNeedsOnboarding(false), []);
 
@@ -319,8 +327,17 @@ export function WorkspacesProvider({ children }) {
         if (targetWorkspaceId === activeWorkspaceId) {
             setPendingInvites((prev) => [...prev, data]);
         }
+
+        // Best-effort notification - the invite row above is what actually
+        // grants access (auto-joined on signup/login), so a failure here
+        // shouldn't block or roll back the invite itself.
+        const workspaceName = workspaces.find((w) => w.id === targetWorkspaceId)?.name;
+        supabase.functions
+            .invoke("send-invite-email", { body: { email: data.email, workspaceName } })
+            .catch((err) => console.error("Failed to send invite email:", err));
+
         return data;
-    }, [user, activeWorkspaceId]);
+    }, [user, activeWorkspaceId, workspaces]);
 
     const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) || null;
 
