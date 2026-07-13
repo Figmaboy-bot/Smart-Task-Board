@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "./AuthContext";
+import { useProfile } from "./ProfileContext";
 
 function storageKey(userId) {
     return userId ? `activeWorkspaceId:${userId}` : null;
@@ -21,6 +22,7 @@ const WorkspacesContext = createContext(null);
 // sessions never touch Supabase, so they get no workspace concept at all.
 export function WorkspacesProvider({ children }) {
     const { user } = useAuth();
+    const { profile } = useProfile();
     const isGuest = !user || user.isGuest;
     const [workspaces, setWorkspaces] = useState([]);
     const [activeWorkspaceId, setActiveWorkspaceIdState] = useState(null);
@@ -178,19 +180,25 @@ export function WorkspacesProvider({ children }) {
             .insert({ workspace_id: workspace.id, user_id: user.id, email: user.email, role: "Owner" });
         if (memberError) throw memberError;
 
+        // Prefer the name/avatar collected in the wizard's profile step
+        // (already saved to `profiles` by the time this step runs) over the
+        // email handle, so the owner shows up in the Teams table properly
+        // instead of as e.g. "olarenwaju374".
+        const profileName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
         await supabase.from("team_members").insert({
             workspace_id: workspace.id,
-            name: (user.email || "Me").split("@")[0],
+            name: profileName || (user.email || "Me").split("@")[0],
             email: user.email,
             role: "Owner",
             status: "Active",
+            avatar_url: profile?.avatar_url || null,
         });
 
         const newRow = { id: workspace.id, name: workspace.name, role: "Owner" };
         setWorkspaces((prev) => [...prev, newRow]);
         setActiveWorkspaceId(workspace.id);
         return newRow;
-    }, [user, setActiveWorkspaceId]);
+    }, [user, profile, setActiveWorkspaceId]);
 
     const [members, setMembers] = useState([]);
     const [pendingInvites, setPendingInvites] = useState([]);

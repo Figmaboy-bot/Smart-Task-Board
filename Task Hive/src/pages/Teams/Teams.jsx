@@ -4,6 +4,7 @@ import './Teams.css';
 import IconButton from "../../components/Buttons/Buttons";
 import OutlineButton from "../../components/Buttons/Buttons";
 import AddTeamModal from "../../components/AddTeamModal/AddTeamModal";
+import AlertModal from "../../components/AlertModal/AlertModal";
 import Dropdown from "../../components/Dropdown/Dropdown";
 import { PlusCircleIcon, FunnelIcon, UserGroupIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
@@ -27,6 +28,7 @@ export default function Teams() {
     const { teamMembers, loading, createTeamMember, removeTeamMember } = useTeamMembers();
     const { workspaces, activeWorkspaceId, inviteToWorkspace, members, removeMember } = useWorkspaces();
     const [showAddTeamModal, setShowAddTeamModal] = useState(false);
+    const [selfRemoveAlertOpen, setSelfRemoveAlertOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [showFilters, setShowFilters] = useState(false);
     const [roleFilter, setRoleFilter] = useState(null);
@@ -54,7 +56,7 @@ export default function Teams() {
 
     const handleRemoveMember = (row) => {
         if (row.email && row.email === user?.email) {
-            alert("You can't remove yourself from the team.");
+            setSelfRemoveAlertOpen(true);
             return;
         }
         if (!window.confirm(`Remove ${row.name || row.email} from the team?`)) return;
@@ -176,6 +178,12 @@ export default function Teams() {
                         });
                         setShowAddTeamModal(false);
                     }}
+                />
+                <AlertModal
+                    open={selfRemoveAlertOpen}
+                    title="Can't remove yourself"
+                    message="You can't remove yourself from the team."
+                    onClose={() => setSelfRemoveAlertOpen(false)}
                 />
             </div>
         </div>
