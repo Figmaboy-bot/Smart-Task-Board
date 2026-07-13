@@ -4,10 +4,11 @@ import ClipboardDocumentCheckIcon from "@heroicons/react/24/outline/ClipboardDoc
 import ClockIcon from "@heroicons/react/24/outline/ClockIcon";
 import CheckBadgeIcon from "@heroicons/react/24/outline/CheckBadgeIcon";
 import PlusCircleIcon from "@heroicons/react/24/outline/PlusCircleIcon";
-import { EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 import EditableTable from "../EditableTable/EditableTable";
 import ActivityTaskCard from "../ActivityTaskCard/ActivityTaskCard";
 import TaskModal from "../TaskModal/TaskModal";
+import EmptyState from "../EmptyState/EmptyState";
 
 const COLUMN_META = [
 	{ title: "TO-DO", icon: ClipboardDocumentCheckIcon, color: "#2563eb" },
@@ -110,6 +111,12 @@ export function TeamActivity({ tasks = [], loading, projects = [], teamMembers =
 			<div className="team-activity-board">
 				{loading ? (
 					<p>Loading tasks…</p>
+				) : tasks.length === 0 ? (
+					<EmptyState
+						icon={ClipboardDocumentListIcon}
+						title="No tasks yet"
+						description="Add your first task to see it show up here."
+					/>
 				) : view === "kanban" ? (
 					columns.map((col) => (
 						<div
@@ -133,13 +140,17 @@ export function TeamActivity({ tasks = [], loading, projects = [], teamMembers =
 									<button className="column-add"><EllipsisVerticalIcon className="plusicon" /></button>
 								</div>
 							</div>
-							{col.tasks.map((task) => (
-								<ActivityTaskCard
-									key={task.id}
-									task={task}
-									onDragStart={() => handleDragStart(col.title, task)}
-								/>
-							))}
+							{col.tasks.length === 0 ? (
+								<p className="column-empty">No tasks</p>
+							) : (
+								col.tasks.map((task) => (
+									<ActivityTaskCard
+										key={task.id}
+										task={task}
+										onDragStart={() => handleDragStart(col.title, task)}
+									/>
+								))
+							)}
 						</div>
 					))
 				) : (

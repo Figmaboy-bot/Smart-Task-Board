@@ -2,12 +2,13 @@ import React, { useState, useMemo, useCallback, useRef } from "react"
 import Sidebar from "../../components/Sidebar/Sidebar"
 import Header from "../../components/Header/Header"
 import IconButton from "../../components/Buttons/Buttons"
-import { PlusCircleIcon, EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline"
+import { PlusCircleIcon, EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon, ClipboardDocumentListIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import ActivityTaskCard from "../../components/ActivityTaskCard/ActivityTaskCard";
 import EditableTable from "../../components/EditableTable/EditableTable"
 import Dropdown from "../../components/Dropdown/Dropdown"
 import TaskModal from "../../components/TaskModal/TaskModal";
 import TaskDetailModal from "../../components/TaskDetailModal/TaskDetailModal";
+import EmptyState from "../../components/EmptyState/EmptyState";
 import { useTasks } from "../../hooks/useTasks"
 import { useProjects } from "../../hooks/useProjects"
 import { useTeamMembers } from "../../hooks/useTeamMembers"
@@ -209,6 +210,8 @@ export default function AllTasks() {
         });
     }, [tableData, filterTask]);
 
+    const filtersActive = Boolean(search.trim()) || date !== "All" || priority !== "all" || project !== "all" || tag !== "all" || createdBy !== "all";
+
     const handleDragStart = (colTitle, task) => {
         dragInfo.current = { colTitle, task };
     };
@@ -328,6 +331,12 @@ export default function AllTasks() {
                 <div className="Tasks-main-contents">
                     {loading ? (
                         <p>Loading tasks…</p>
+                    ) : filteredTableData.length === 0 ? (
+                        <EmptyState
+                            icon={filtersActive ? MagnifyingGlassIcon : ClipboardDocumentListIcon}
+                            title={filtersActive ? "No tasks match your filters" : "No tasks yet"}
+                            description={filtersActive ? "Try adjusting your search or filters." : "Add your first task to get started."}
+                        />
                     ) : view === "kanban" ? (
                         <div className="team-activity-board">
                             {filteredKanbanColumns.map((col) => (
@@ -351,14 +360,18 @@ export default function AllTasks() {
                                             <EllipsisVerticalIcon className="plusicon" />
                                         </div>
                                     </div>
-                                    {col.tasks.map((task) => (
-                                        <ActivityTaskCard
-                                            key={task.id}
-                                            task={task}
-                                            onClick={() => setSelectedTask(task)}
-                                            onDragStart={() => handleDragStart(col.title, task)}
-                                        />
-                                    ))}
+                                    {col.tasks.length === 0 ? (
+                                        <p className="column-empty">No tasks</p>
+                                    ) : (
+                                        col.tasks.map((task) => (
+                                            <ActivityTaskCard
+                                                key={task.id}
+                                                task={task}
+                                                onClick={() => setSelectedTask(task)}
+                                                onDragStart={() => handleDragStart(col.title, task)}
+                                            />
+                                        ))
+                                    )}
                                 </div>
                             ))}
                         </div>

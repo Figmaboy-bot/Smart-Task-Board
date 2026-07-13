@@ -104,6 +104,8 @@ export default function Projects() {
         });
     }, [projects, search, owner, status, dueDate]);
 
+    const filtersActive = Boolean(search.trim()) || (owner && owner !== "all") || (status && status !== "all") || (dueDate && dueDate !== "all");
+
 
     return (
         <div className="projects-page">
@@ -180,9 +182,9 @@ export default function Projects() {
                     {loading ? (
                         <p>Loading projects…</p>
                     ) : view === "grid" ? (
-                        <ProjectGrid projects={filteredProjects} />
+                        <ProjectGrid projects={filteredProjects} filtersActive={filtersActive} />
                     ) : (
-                        <ProjectList projects={filteredProjects} />
+                        <ProjectList projects={filteredProjects} filtersActive={filtersActive} />
                     )}
                 </div>
             </div>

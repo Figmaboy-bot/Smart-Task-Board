@@ -1,13 +1,14 @@
 import Sidebar from "../../components/Sidebar/Sidebar"
 import Header from "../../components/Header/Header"
 import IconButton from "../../components/Buttons/Buttons"
-import { PlusCircleIcon, EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon } from "@heroicons/react/24/outline"
+import { PlusCircleIcon, EllipsisVerticalIcon, ViewColumnsIcon, TableCellsIcon, ClipboardDocumentListIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline"
 import Dropdown from "../../components/Dropdown/Dropdown"
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import ActivityTaskCard from "../../components/ActivityTaskCard/ActivityTaskCard"
 import EditableTable from "../../components/EditableTable/EditableTable";
 import TaskModal from "../../components/TaskModal/TaskModal"
 import TaskDetailModal from "../../components/TaskDetailModal/TaskDetailModal"
+import EmptyState from "../../components/EmptyState/EmptyState"
 import { useTasks } from "../../hooks/useTasks"
 import { useProjects } from "../../hooks/useProjects"
 import { useTeamMembers } from "../../hooks/useTeamMembers"
@@ -200,6 +201,8 @@ export default function MyTasks() {
     const filteredTableData = useMemo(() => {
         return tableData.filter(task => filterTask(task, task.section));
     }, [tableData, filterTask]);
+
+    const filtersActive = Boolean(search.trim()) || date !== "All" || project !== "all" || priority !== "all" || status !== "all";
 
     const handleDragStart = (colTitle, task) => {
         dragInfo.current = { colTitle, task };
