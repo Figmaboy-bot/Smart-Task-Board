@@ -38,7 +38,7 @@ export default function OnboardingWizard() {
   const { profile, saveProfile, uploadAvatar } = useProfile()
   const { createWorkspace, inviteToWorkspace } = useWorkspaces()
 
-  const [step, setStep] = useState("profile") // welcome | profile | workspace | invite | ready
+  const [step, setStep] = useState("welcome") // welcome | profile | workspace | invite | ready
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 

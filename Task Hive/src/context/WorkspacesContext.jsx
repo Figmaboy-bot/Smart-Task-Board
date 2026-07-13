@@ -17,6 +17,10 @@ export function WorkspacesProvider({ children }) {
     const [workspaces, setWorkspaces] = useState([]);
     const [activeWorkspaceId, setActiveWorkspaceIdState] = useState(null);
     const [loading, setLoading] = useState(!isGuest);
+    // Decided once per login (not re-derived from `workspaces`), so creating
+    // the first workspace mid-wizard doesn't yank the user out of onboarding
+    // before they've finished the invite/ready steps.
+    const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
     const setActiveWorkspaceId = useCallback((id) => {
         setActiveWorkspaceIdState(id);

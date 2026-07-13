@@ -36,6 +36,7 @@ const PASSWORD_RULES = [
 export default function AuthFlow() {
   const navigate = useNavigate()
   const {
+    user,
     checkEmailExists,
     sendSignupOtp,
     verifySignupOtp,
@@ -68,6 +69,16 @@ export default function AuthFlow() {
     const id = setInterval(() => setSecondsLeft((s) => s - 1), 1000)
     return () => clearInterval(id)
   }, [step, secondsLeft])
+
+  // Clicking the confirmation link in the signup OTP email (instead of
+  // typing the code below) signs the user in directly. Land them on the
+  // create-password step instead of leaving the account without one.
+  useEffect(() => {
+    if (user && !user.isGuest && localStorage.getItem("pendingEmail") === user.email) {
+      setEmail(user.email)
+      setStep("create-password")
+    }
+  }, [user])
 
   const resetError = () => error && setError("")
 

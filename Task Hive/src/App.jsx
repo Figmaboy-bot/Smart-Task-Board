@@ -25,6 +25,13 @@ function ProtectedRoute({ children }) {
   if (!user) return <Navigate to="/login" />
   if (!user.isGuest) {
     if (mfaRequired) return <Navigate to="/verify-mfa" />
+    // Clicking the confirmation link in the signup OTP email (instead of
+    // typing the code into AuthFlow) signs the user in directly, bypassing
+    // the create-password step. Send them back to finish it instead of
+    // letting them into an app they have no password for.
+    if (localStorage.getItem("pendingEmail") === user.email) {
+      return <Navigate to="/login" />
+    }
     if (workspacesLoading) return null
     const pendingInviteToken = localStorage.getItem("pendingInviteToken")
     if (pendingInviteToken && !location.pathname.startsWith("/join/")) {
@@ -44,7 +51,6 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/join/:token" element={<JoinWorkspace />} />
-      <Route path="/onboarding-preview" element={<OnboardingWizard />} />
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/my-tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
       <Route path="/all-tasks" element={<ProtectedRoute><AllTasks /></ProtectedRoute>} />
