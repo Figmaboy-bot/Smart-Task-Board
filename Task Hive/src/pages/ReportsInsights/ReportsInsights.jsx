@@ -6,6 +6,8 @@ import TaskDetailModal from "../../components/TaskDetailModal/TaskDetailModal"
 import { useTasks, PRIORITY_COLOR } from "../../hooks/useTasks"
 import { useProjects } from "../../hooks/useProjects"
 import { useTeamMembers } from "../../hooks/useTeamMembers"
+import { ChartBarIcon, CheckCircleIcon } from "@heroicons/react/24/outline"
+import EmptyState from "../../components/EmptyState/EmptyState"
 import './ReportsInsights.css'
 
 const STATUS_COLUMNS = [
@@ -36,7 +38,7 @@ function BarList({ items, maxValue, total }) {
     const [hovered, setHovered] = useState(null);
 
     if (items.length === 0) {
-        return <p className="ri-empty">No data yet.</p>;
+        return <EmptyState compact icon={ChartBarIcon} title="No data yet" />;
     }
 
     return (
@@ -201,7 +203,7 @@ export default function ReportsInsights() {
                     <div className="ri-card">
                         <h3>Overdue Tasks</h3>
                         {stats.overdue.length === 0 ? (
-                            <p className="ri-empty">Nothing overdue. Nice work.</p>
+                            <EmptyState compact icon={CheckCircleIcon} title="Nothing overdue" description="Nice work." />
                         ) : (
                             <div className="ri-overdue-list">
                                 {stats.overdue.map(task => (

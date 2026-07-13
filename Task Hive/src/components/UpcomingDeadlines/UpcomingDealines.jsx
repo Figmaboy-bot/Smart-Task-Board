@@ -6,6 +6,7 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon
 } from '@heroicons/react/24/outline';
+import EmptyState from '../EmptyState/EmptyState';
 
 export function UpcomingDeadlines({ tasks = [] }) {
     const trackRef = useRef(null);
@@ -69,7 +70,7 @@ export function UpcomingDeadlines({ tasks = [] }) {
             </div>
 
             {upcoming.length === 0 ? (
-                <p style={{ color: "var(--grey-50)" }}>No upcoming deadlines.</p>
+                <EmptyState compact icon={CalendarIcon} title="No upcoming deadlines" description="You're all caught up." />
             ) : (
                 <div className="tasks-carousel">
                     <div className="tasks-track" ref={trackRef}>

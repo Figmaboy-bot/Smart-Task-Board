@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import TaskModal from "../../components/TaskModal/TaskModal";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { useMessages } from "../../hooks/useMessages";
 import { useTasks } from "../../hooks/useTasks";
 import { useProjects } from "../../hooks/useProjects";
 import { useTeamMembers } from "../../hooks/useTeamMembers";
 import { usePreferences } from "../../context/PreferencesContext";
+import EmptyState from "../../components/EmptyState/EmptyState";
 import './Messages.css';
 
 function formatTime(isoString, { timezone, time_format } = {}) {
@@ -76,7 +77,11 @@ export default function Messages() {
                             {loading ? (
                                 <p style={{ color: "var(--grey-50)" }}>Loading messages…</p>
                             ) : messages.length === 0 ? (
-                                <p style={{ color: "var(--grey-50)" }}>No messages yet. Say hello.</p>
+                                <EmptyState
+                                    icon={ChatBubbleLeftRightIcon}
+                                    title="No messages yet"
+                                    description="Say hello to get the conversation started."
+                                />
                             ) : (
                                 messages.map((msg) => {
                                     const isMe = msg.sender_id === currentUserId;

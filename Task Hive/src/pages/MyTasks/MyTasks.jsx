@@ -324,6 +324,12 @@ export default function MyTasks() {
                     <div className="Tasks-main-contents">
                         {loading ? (
                             <p>Loading tasks…</p>
+                        ) : filteredTableData.length === 0 ? (
+                            <EmptyState
+                                icon={filtersActive ? MagnifyingGlassIcon : ClipboardDocumentListIcon}
+                                title={filtersActive ? "No tasks match your filters" : "No tasks assigned to you yet"}
+                                description={filtersActive ? "Try adjusting your search or filters." : "Tasks assigned to you will show up here."}
+                            />
                         ) : view === "kanban" ? (
                             <div className="team-activity-board">
                                 {filteredKanbanColumns.map((col) => (
@@ -346,14 +352,18 @@ export default function MyTasks() {
                                                 <EllipsisVerticalIcon className="plusicon" />
                                             </div>
                                         </div>
-                                        {col.tasks.map((task) => (
-                                            <ActivityTaskCard
-                                                key={task.id}
-                                                task={task}
-                                                onClick={() => setSelectedTask(task)}
-                                                onDragStart={() => handleDragStart(col.title, task)}
-                                            />
-                                        ))}
+                                        {col.tasks.length === 0 ? (
+                                            <p className="column-empty">No tasks</p>
+                                        ) : (
+                                            col.tasks.map((task) => (
+                                                <ActivityTaskCard
+                                                    key={task.id}
+                                                    task={task}
+                                                    onClick={() => setSelectedTask(task)}
+                                                    onDragStart={() => handleDragStart(col.title, task)}
+                                                />
+                                            ))
+                                        )}
                                     </div>
                                 ))}
                             </div>
