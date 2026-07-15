@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import TaskModal from "../../components/TaskModal/TaskModal";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
-import { PlusIcon, ChatBubbleLeftRightIcon, PaperClipIcon, XMarkIcon, DocumentIcon, ArrowDownTrayIcon, MicrophoneIcon, StopIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, ChatBubbleLeftRightIcon, PaperClipIcon, XMarkIcon, DocumentIcon, ArrowDownTrayIcon, MicrophoneIcon, StopIcon, TrashIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/outline";
 import { useMessages } from "../../hooks/useMessages";
 import { useTasks } from "../../hooks/useTasks";
 import { useProjects } from "../../hooks/useProjects";
@@ -28,7 +28,76 @@ function formatTime(isoString, { timezone, time_format } = {}) {
     });
 }
 
-function ChatAttachment({ url, name, type }) {
+// Voice notes come out of MediaRecorder as webm without a duration written
+// into the container header, so Chrome can't report audio.duration for them
+// (stays Infinity/NaN forever, even after the file round-trips through
+// storage). We recorded the real length client-side, so that's used as the
+// source of truth instead of waiting on a duration the browser will never
+// resolve; native duration is only used as a fallback for non-recorded audio.
+function VoiceMessagePlayer({ url, duration: knownDuration }) {
+    const audioRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(knownDuration || 0);
+
+    const togglePlay = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        if (isPlaying) audio.pause();
+        else audio.play();
+    };
+
+    const handleLoadedMetadata = () => {
+        if (knownDuration) return;
+        const nativeDuration = audioRef.current?.duration;
+        if (Number.isFinite(nativeDuration)) setDuration(nativeDuration);
+    };
+
+    const handleSeek = (e) => {
+        const audio = audioRef.current;
+        if (!audio || !duration) return;
+        const value = Number(e.target.value);
+        audio.currentTime = value;
+        setCurrentTime(value);
+    };
+
+    return (
+        <div className="chat-attachment-voice">
+            <audio
+                ref={audioRef}
+                src={url}
+                preload="metadata"
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={() => { setIsPlaying(false); setCurrentTime(0); }}
+                onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+                onLoadedMetadata={handleLoadedMetadata}
+            />
+            <button
+                type="button"
+                className="chat-voice-play-btn"
+                onClick={togglePlay}
+                aria-label={isPlaying ? "Pause voice message" : "Play voice message"}
+            >
+                {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </button>
+            <input
+                type="range"
+                className="chat-voice-seek"
+                min={0}
+                max={duration || 0}
+                step={0.1}
+                value={Math.min(currentTime, duration || 0)}
+                onChange={handleSeek}
+                disabled={!duration}
+                aria-label="Seek voice message"
+            />
+            <span className="chat-voice-time">{formatDuration(Math.round(currentTime))} / {formatDuration(Math.round(duration))}</span>
+        </div>
+    );
+}
+
+function ChatAttachment({ url, name, type, duration }) {
     if (!url) return null;
     if (type?.startsWith("image/")) {
         return (
@@ -38,7 +107,7 @@ function ChatAttachment({ url, name, type }) {
         );
     }
     if (type?.startsWith("audio/")) {
-        return <audio controls src={url} className="chat-attachment-audio" />;
+        return <VoiceMessagePlayer url={url} duration={duration} />;
     }
     return (
         <a href={url} target="_blank" rel="noopener noreferrer" className="chat-attachment-file">
@@ -70,6 +139,7 @@ export default function Messages() {
     const recordedChunksRef = useRef([]);
     const discardRecordingRef = useRef(false);
     const recordingIntervalRef = useRef(null);
+    const recordingStartedAtRef = useRef(null);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ block: "end" });
@@ -113,6 +183,9 @@ export default function Messages() {
                 mediaStreamRef.current = null;
                 if (discardRecordingRef.current) return;
 
+                const durationSeconds = recordingStartedAtRef.current
+                    ? Math.round((Date.now() - recordingStartedAtRef.current) / 1000)
+                    : 0;
                 const blob = new Blob(recordedChunksRef.current, { type: recorder.mimeType || "audio/webm" });
                 const ext = blob.type.includes("mp4") ? "m4a" : "webm";
                 const file = new File([blob], `voice-message-${Date.now()}.${ext}`, { type: blob.type });
@@ -120,7 +193,7 @@ export default function Messages() {
                 setUploading(true);
                 try {
                     const uploaded = await uploadAttachment(file);
-                    setPendingAttachments((prev) => [...prev, uploaded]);
+                    setPendingAttachments((prev) => [...prev, { ...uploaded, duration: durationSeconds, isVoiceMessage: true }]);
                 } catch (err) {
                     setAttachError(err.message || "Failed to upload voice message.");
                 } finally {
@@ -129,6 +202,7 @@ export default function Messages() {
             };
 
             mediaRecorderRef.current = recorder;
+            recordingStartedAtRef.current = Date.now();
             recorder.start();
             setRecording(true);
             setRecordingSeconds(0);
@@ -212,7 +286,7 @@ export default function Messages() {
                                             <div className={`chat-message-bubble${isMe ? " chat-message-bubble-me" : " chat-message-bubble-them"}`}>
                                                 {!isMe && <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{msg.sender_name}</div>}
                                                 {msg.attachments?.map((att, i) => (
-                                                    <ChatAttachment key={att.url || i} url={att.url} name={att.name} type={att.type} />
+                                                    <ChatAttachment key={att.url || i} url={att.url} name={att.name} type={att.type} duration={att.duration} />
                                                 ))}
                                                 {msg.body}
                                                 <div className={`chat-message-time${isMe ? " chat-message-time-me" : " chat-message-time-them"}`}>{formatTime(msg.created_at, preferences)}</div>
@@ -230,8 +304,12 @@ export default function Messages() {
                                 <div className="chat-pending-attachments">
                                     {pendingAttachments.map((att, i) => (
                                         <div className="chat-pending-attachment" key={att.url || i}>
-                                            <DocumentIcon className="chat-pending-attachment-icon" />
-                                            <span className="chat-pending-attachment-name">{att.name}</span>
+                                            {att.isVoiceMessage
+                                                ? <MicrophoneIcon className="chat-pending-attachment-icon" />
+                                                : <DocumentIcon className="chat-pending-attachment-icon" />}
+                                            <span className="chat-pending-attachment-name">
+                                                {att.isVoiceMessage ? `Voice message · ${formatDuration(att.duration)}` : att.name}
+                                            </span>
                                             <button
                                                 type="button"
                                                 className="chat-pending-attachment-remove"

@@ -298,10 +298,53 @@
     display: block;
 }
 
-.chat-attachment-audio {
-    display: block;
+.chat-attachment-voice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     max-width: 260px;
     margin-bottom: 6px;
+}
+
+.chat-attachment-voice audio {
+    display: none;
+}
+
+.chat-voice-play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.25);
+    color: inherit;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.chat-message-bubble-them .chat-voice-play-btn {
+    background: var(--grey-10);
+}
+
+.chat-voice-play-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.chat-voice-seek {
+    flex: 1;
+    min-width: 0;
+    accent-color: currentColor;
+}
+
+.chat-voice-time {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .chat-attachment-file {
